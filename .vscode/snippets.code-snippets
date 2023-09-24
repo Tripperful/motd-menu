@@ -1,0 +1,23 @@
+{
+  "New component": {
+    "scope": "typescriptreact",
+    "prefix": "component",
+    "body": [
+      "import React from 'react';",
+      "import { FC } from 'react';",
+      "import { createUseStyles } from 'react-jss';",
+      "",
+      "const useStyles = createUseStyles({",
+      "\troot: {},",
+      "});",
+      "",
+      "export const $TM_FILENAME_BASE: FC = () => {",
+      "\tconst c = useStyles();",
+      "",
+      "\treturn <div className={c.root}>$0</div>;",
+      "};",
+      ""
+    ],
+    "description": "Create a new blank component"
+  }
+}

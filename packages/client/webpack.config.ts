@@ -1,0 +1,82 @@
+import GzipPlugin from 'compression-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import path from 'path';
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import { Configuration } from 'webpack';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+
+const cd = (...args: string[]) => path.resolve(__dirname, ...args);
+
+const buildDir = cd('./dist');
+
+const config: ({}, { mode }) => Configuration = (_, { mode }) => {
+  return {
+    entry: {
+      index: './src/index.tsx',
+    },
+    output: {
+      filename: '[name].js',
+      sourceMapFilename: '[file].map',
+      path: buildDir,
+      clean: true,
+      publicPath: '/',
+    },
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js'],
+      plugins: [new TsconfigPathsPlugin()],
+    },
+    plugins: [
+      new ForkTsCheckerWebpackPlugin({
+        typescript: {
+          diagnosticOptions: {
+            semantic: true,
+            syntactic: true,
+          },
+          mode: 'write-references',
+        },
+      }),
+      new HtmlWebpackPlugin({
+        title: 'MOTD menu',
+        minify: true,
+        hash: true,
+        inject: false,
+        template: './src/template.ejs',
+      }),
+      new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),
+      ...(mode === 'production' ? [new GzipPlugin()] : []),
+    ],
+    module: {
+      rules: [
+        {
+          test: /\.(j|t)sx?$/i,
+          exclude: /node_modules/,
+          use: 'babel-loader',
+        },
+        {
+          test: /\.png$/i,
+          type: 'asset',
+        },
+        {
+          test: /\.svg$/i,
+          type: 'asset',
+          resourceQuery: /url/,
+        },
+        {
+          test: /\.svg$/i,
+          issuer: /\.[jt]sx?$/,
+          resourceQuery: { not: [/url/] },
+          use: ['@svgr/webpack'],
+        },
+        {
+          test: /\.wav$/,
+          type: 'asset/resource',
+        },
+      ],
+    },
+    devtool: 'source-map',
+    target: ['web'],
+  };
+};
+
+export default config;

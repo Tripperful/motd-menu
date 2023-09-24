@@ -1,0 +1,12 @@
+{
+  "configurations": [
+    {
+      "name": "start",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run-script", "watch"]
+    }
+  ]
+}

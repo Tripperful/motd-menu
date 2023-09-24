@@ -1,0 +1,12 @@
+{
+  "extends": "@motd-menu/common/tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "CommonJS",
+    "baseUrl": ".",
+    "paths": {
+      "~root/*": ["../../*"]
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "allowJs": false,
+    "noEmitOnError": true,
+    "alwaysStrict": true,
+    "noImplicitThis": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "downlevelIteration": true,
+    "baseUrl": ".",
+    "paths": {
+      "~root/*": ["../../*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"]
+}
