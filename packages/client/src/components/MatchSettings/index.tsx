@@ -6,7 +6,9 @@ import { Page } from '~components/common/Page';
 import { Switch } from '~components/common/Switch';
 
 const useStyles = createUseStyles({
-  root: {},
+  root: {
+    padding: '1em',
+  },
 });
 
 const CvarSwitch: FC<{ cvar: Cvar; label: string }> = ({ cvar, label }) => {
