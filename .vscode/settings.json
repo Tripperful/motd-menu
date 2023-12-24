@@ -2,17 +2,5 @@
   "files.exclude": {
     "**/node_modules": true
   },
-  "editor.tabSize": 2,
-  "sqltools.connections": [
-    {
-      "previewLimit": 50,
-      "server": "localhost",
-      "port": 5432,
-      "askForPassword": true,
-      "driver": "PostgreSQL",
-      "name": "motd-menu",
-      "database": "motd-menu",
-      "username": "motd-menu"
-    }
-  ]
+  "editor.tabSize": 2
 }
