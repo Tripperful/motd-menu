@@ -57,6 +57,8 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     res.cookie('userId', userId);
     res.cookie('steamId', steamId);
     res.cookie('permissions', JSON.stringify(permissions));
+
+    next();
   } catch {
     res.clearCookie('version');
     res.clearCookie('token');
@@ -69,5 +71,4 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     res.status(401);
     res.end('Unauthorized');
   }
-  next();
 };
