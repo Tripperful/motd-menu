@@ -1,5 +1,6 @@
 {
   "name": "@motd-menu/server",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
     "build": "webpack --mode=production",
@@ -8,5 +9,8 @@
     "start": "npm run build && npm run launch",
     "watch": "concurrently \"webpack --mode=development --watch\" \"nodemon ./dist --watch ./dist\"",
     "wipedb": "ts-node ./wipe-db"
+  },
+  "dependencies": {
+    "@motd-menu/common": "1.0.0"
   }
 }

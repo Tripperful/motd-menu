@@ -1,5 +1,6 @@
 {
   "name": "@motd-menu/common",
+  "version": "1.0.0",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
