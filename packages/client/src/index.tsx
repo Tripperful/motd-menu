@@ -4,6 +4,7 @@ import { Notifications } from '~components/Notifications';
 import { withCvars } from './hooks/useCvar';
 import { Router } from './router';
 import { useGlobalStyles } from './styles/global';
+import { SnowOverlay } from '~components/SnowOverlay/SnowOverlay';
 
 const App: FC = () => {
   useGlobalStyles();
@@ -12,6 +13,7 @@ const App: FC = () => {
     <>
       <Router />
       <Notifications />
+      <SnowOverlay />
     </>
   );
 };

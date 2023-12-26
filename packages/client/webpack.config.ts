@@ -54,7 +54,7 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
           use: 'babel-loader',
         },
         {
-          test: /\.png$/i,
+          test: /\.(png|webm)$/i,
           type: 'asset',
         },
         {
