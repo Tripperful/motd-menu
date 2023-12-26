@@ -1,7 +1,9 @@
 {
   "name": "motd-menu",
   "workspaces": [
-    "packages/*"
+    "packages/common",
+    "packages/client",
+    "packages/server"
   ],
   "scripts": {
     "start:server": "npm run start -w packages/server",

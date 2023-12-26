@@ -5,17 +5,11 @@ A nice server menu with a maplist, playerlist and so on that is supposed to be o
 [![Video](https://img.youtube.com/vi/AXj5gNjZJUs/hqdefault.jpg)](https://www.youtube.com/embed/AXj5gNjZJUs)
 
 ### Requirements
-- PostgreSQL Database
+- Docker
 - Source Dedicated Server
 
-### Installation
-`npm install`
-
 ### Building
-`npm run build`
+`docker compose build`
 
 ### Launching
-`npm run launch`
-
-### Development
-`npm run watch`
+`docker compose up`
