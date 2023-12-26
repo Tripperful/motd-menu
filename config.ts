@@ -5,6 +5,7 @@ export const config: Config = {
   rconPassword: '123123',
   rconKeepAlive: 60 * 10,
   db: {
+    host: 'db',
     user: 'motd-menu',
     password: '123123',
   },
