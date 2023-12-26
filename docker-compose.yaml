@@ -1,0 +1,27 @@
+name: motd-menu
+services:
+  db:
+    image: 'postgres:latest'
+    volumes:
+      - /var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=motd-menu
+      - POSTGRES_PASSWORD=123123
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready --username=motd-menu && psql --username=motd-menu --list"
+        ]
+      interval: 1s
+      timeout: 60s
+      retries: 5
+  server:
+    build:
+      context: .
+      target: server
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "80:25080"

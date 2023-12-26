@@ -6,7 +6,6 @@ import { SrcdsApi } from './SrcdsApi';
 
 export class RconSrcdsApi implements SrcdsApi {
   private connections: Record<string, RconApi> = {};
-  private token: string;
 
   constructor(
     private ip: string,
