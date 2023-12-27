@@ -2,6 +2,7 @@ import { Permission } from '@motd-menu/common';
 import { RequestHandler } from 'express';
 import { db } from './db';
 import { getSrcdsApi } from './srcdsApi';
+import { dbgInfo, dbgWarn } from './util';
 
 export interface MotdSessionData {
   ip: string;
@@ -24,7 +25,13 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     const port = Number((req.query?.port as string) ?? cookie?.port);
     const token = (req.query?.token as string) ?? cookie?.token;
 
+    dbgInfo(
+      `Auth-protected request to ${ip}:${port} is received with token ${token}`,
+    );
+
     if (!(ip && port && token)) {
+      dbgWarn(`Missing required auth request parameters`);
+
       throw 'Unauthorized';
     }
 
