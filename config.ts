@@ -1,7 +1,7 @@
 import { Config } from '@motd-menu/common';
 
 export const config: Config = {
-  port: 80,
+  port: Number(process.env.MOTD_WEB_PORT),
   rconPassword: process.env.MOTD_RCON_PASSWORD,
   rconKeepAlive: 60 * 10,
   db: {
