@@ -2,15 +2,13 @@ import { Config } from '@motd-menu/common';
 
 export const config: Config = {
   port: 80,
-  rconPassword: '123123',
+  rconPassword: process.env.MOTD_RCON_PASSWORD,
   rconKeepAlive: 60 * 10,
   db: {
     host: 'db',
     user: 'motd-menu',
     password: '123123',
   },
-  rootAdmins: [
-    '76561197960465565', // Tripperful
-  ],
-  steamWebApiKey: '',
+  rootAdmins: process.env.MOTD_ROOT_ADMINS.split(',').map((v) => v.trim()),
+  steamWebApiKey: process.env.MOTD_STEAM_API_KEY,
 };

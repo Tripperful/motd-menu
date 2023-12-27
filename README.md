@@ -11,5 +11,10 @@ A nice server menu with a maplist, playerlist and so on that is supposed to be o
 ### Building
 `docker compose build`
 
+### Configuring
+Copy `.env.example` -> `.env`
+
+Change the values
+
 ### Launching
 `docker compose up`
