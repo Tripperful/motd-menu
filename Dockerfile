@@ -1,11 +1,5 @@
 FROM node:20.10.0 as server
 
-ADD . /motd-menu
+ADD ./start.sh /start.sh
 
-WORKDIR /motd-menu
-
-RUN \
-  npm ci && \
-  npm run build
-
-ENTRYPOINT [ "node", "/motd-menu/packages/server/dist/index.js" ]
+ENTRYPOINT [ "/start.sh" ]
