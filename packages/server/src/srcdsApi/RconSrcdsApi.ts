@@ -1,6 +1,6 @@
 import { Cvar } from '@motd-menu/common';
 import { RconApi, SrcdsRcon } from 'src/rcon';
-import { uSteamIdTo64 } from 'src/util';
+import { dbgInfo, dbgWarn, uSteamIdTo64 } from 'src/util';
 import { config } from '~root/config';
 import { SrcdsApi } from './SrcdsApi';
 
@@ -24,6 +24,8 @@ export class RconSrcdsApi implements SrcdsApi {
   }
 
   async auth(token: string) {
+    dbgInfo(`Received auth request for token ${token}`);
+
     const res = await this.rcon.exec('motd_menu_auth ' + token);
 
     const credentials = res.split('\n');
@@ -32,10 +34,24 @@ export class RconSrcdsApi implements SrcdsApi {
     const steamId = uSteamIdTo64(credentials[2]);
 
     if (!(name && userIdStr && steamId)) {
+      dbgWarn(
+        `Failed to authenticate token ${token}, received response: ${JSON.stringify(
+          { name, userIdStr, steamId },
+        )}`,
+      );
+
       return null;
     }
 
     const userId = Number(userIdStr);
+
+    dbgInfo(
+      `Authenticated token ${token}, credentials: ${JSON.stringify({
+        name,
+        userId,
+        steamId,
+      })}`,
+    );
 
     return { steamId, name, userId };
   }
