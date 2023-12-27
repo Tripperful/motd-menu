@@ -29,4 +29,5 @@ services:
       - MOTD_ROOT_ADMINS=${MOTD_ROOT_ADMINS}
       - MOTD_STEAM_API_KEY=${MOTD_STEAM_API_KEY}
       - MOTD_WEB_PORT=${MOTD_WEB_PORT}
+      - MOTD_DEBUG_LOG=${MOTD_DEBUG_LOG}
     network_mode: host
