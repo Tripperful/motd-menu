@@ -8,4 +8,4 @@ RUN \
   npm ci && \
   npm run build
 
-ENTRYPOINT [ "node", "/motd-menu/packages/server/dist/index.js" ]
+ENTRYPOINT [ "./start.sh" ]
