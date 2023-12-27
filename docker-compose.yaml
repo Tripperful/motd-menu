@@ -16,6 +16,9 @@ services:
       interval: 1s
       timeout: 60s
       retries: 5
+    network_mode: host
+    ports:
+      - "5432:5432"
   server:
     build:
       context: .
@@ -27,5 +30,6 @@ services:
       - MOTD_RCON_PASSWORD=${MOTD_RCON_PASSWORD}
       - MOTD_ROOT_ADMINS=${MOTD_ROOT_ADMINS}
       - MOTD_STEAM_API_KEY=${MOTD_STEAM_API_KEY}
+    network_mode: host
     ports:
       - "25080:80"
