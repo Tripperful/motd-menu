@@ -28,16 +28,24 @@ export class RconSrcdsApi implements SrcdsApi {
 
     const res = await this.rcon.exec('motd_menu_auth ' + token);
 
+    dbgInfo(`Auth response: ${res}`);
+
     const credentials = res.split('\n');
 
     const [name, userIdStr] = credentials;
     const steamId = uSteamIdTo64(credentials[2]);
 
+    dbgInfo(
+      `Parsed response credentials: ${JSON.stringify({
+        name,
+        userIdStr,
+        steamId,
+      })}}`,
+    );
+
     if (!(name && userIdStr && steamId)) {
       dbgWarn(
-        `Failed to authenticate token ${token}, received response: ${JSON.stringify(
-          { name, userIdStr, steamId },
-        )}`,
+        `Failed to authenticate token ${token} due to partially missing credentials`,
       );
 
       return null;
