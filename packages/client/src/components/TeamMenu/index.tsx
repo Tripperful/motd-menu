@@ -15,7 +15,7 @@ const menuItems: MenuItemInfo[] = [
     color: theme.teamColors.spectator,
   },
   {
-    title: 'Combile',
+    title: 'Combine',
     link: '2',
     Icon: CombineIcon,
     color: theme.teamColors.combine,
