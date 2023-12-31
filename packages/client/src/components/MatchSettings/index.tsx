@@ -8,14 +8,21 @@ import { Switch } from '~components/common/Switch';
 const useStyles = createUseStyles({
   root: {
     padding: '1em',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  cvarSwitch: {
+    display: 'flex',
+    gap: '0.5em',
   },
 });
 
 const CvarSwitch: FC<{ cvar: Cvar; label: string }> = ({ cvar, label }) => {
+  const c = useStyles();
   const [value, setValue, loading] = useCvar(cvar);
 
   return (
-    <div>
+    <div className={c.cvarSwitch}>
       <Switch
         active={value && value == '1'}
         setActive={(active) => setValue(active ? '1' : '0')}
