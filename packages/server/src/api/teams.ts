@@ -2,19 +2,26 @@ import { Router } from 'express';
 
 export const teamsApi = Router();
 
-teamsApi.post('/set/:steamId?/:teamIndex', async (req, res) => {
+teamsApi.post('/set/:userId?/:teamIndex', async (req, res) => {
   try {
-    const { teamIndex, steamId } = req.params;
+    const { teamIndex } = req.params;
     const {
       srcdsApi,
-      sessionData: { permissions },
+      sessionData: { permissions, userId: ownUserId },
     } = res.locals;
 
-    if (steamId && !permissions.includes('teams_others_edit')) {
-      return res.status(403).end();
+    const settingOwnTeam = req.params.userId == null;
+    let userId: number;
+
+    if (settingOwnTeam) {
+      userId = ownUserId;
+    } else {
+      if (!permissions.includes('teams_others_edit')) {
+        return res.status(403).end();
+      }
     }
 
-    await srcdsApi.setPlayerTeam(steamId, Number(teamIndex));
+    await srcdsApi.setPlayerTeam(userId, Number(teamIndex));
 
     res.status(200).end();
   } catch {

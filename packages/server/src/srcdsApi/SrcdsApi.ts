@@ -13,8 +13,8 @@ export interface SrcdsApi {
     ...cvars: TCvars[]
   ): Promise<{ [cvar in TCvars]: string }>;
   setCvar(cvar: Cvar, value: string): Promise<void>;
-  setPlayerTeam(steamId: string, teamIndex: number): Promise<void>;
+  setPlayerTeam(userId: number, teamIndex: number): Promise<void>;
   getMaps(): Promise<string[]>;
-  changelevel(mapName: string): Promise<void>;
+  changelevel(token: string, mapName: string): Promise<void>;
   getOnlinePlayersSteamIds(): Promise<string[]>;
 }

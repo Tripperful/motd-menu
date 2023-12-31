@@ -123,9 +123,12 @@ mapsApi.delete('/favorite/:mapName', async (req, res) => {
 
 mapsApi.post('/changelevel/:mapName', async (req, res) => {
   try {
-    const { srcdsApi } = res.locals;
+    const {
+      srcdsApi,
+      sessionData: { token },
+    } = res.locals;
 
-    await srcdsApi.changelevel(req.params.mapName);
+    await srcdsApi.changelevel(token, req.params.mapName);
 
     res.status(200).end();
   } catch {

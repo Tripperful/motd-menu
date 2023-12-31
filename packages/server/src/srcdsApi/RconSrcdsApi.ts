@@ -32,8 +32,9 @@ export class RconSrcdsApi implements SrcdsApi {
 
     const credentials = res.split('\n');
 
-    const [name, userIdStr] = credentials;
+    const [prefixAndName, userIdStr] = credentials;
     const steamId = uSteamIdTo64(credentials[2]);
+    const name = prefixAndName.substring(25);
 
     dbgInfo(
       `Parsed response credentials: ${JSON.stringify({
@@ -86,11 +87,8 @@ export class RconSrcdsApi implements SrcdsApi {
     await this.rcon.exec(cvar + ' ' + sanitizedValue);
   }
 
-  async setPlayerTeam(steamId: string, teamIndex: number) {
-    // TODO
-    await this.rcon.exec(
-      'say Setting ' + steamId + "'s " + 'team to ' + teamIndex,
-    );
+  async setPlayerTeam(userId: number, teamIndex: number) {
+    await this.rcon.exec(`motd_team_change ${userId} ${teamIndex}`);
   }
 
   async getMaps() {
@@ -99,8 +97,8 @@ export class RconSrcdsApi implements SrcdsApi {
     return [...res.matchAll(/^PENDING:.+?(\S+)$/gm)].map((entry) => entry[1]);
   }
 
-  async changelevel(mapName: string) {
-    await this.rcon.exec('changelevel ' + mapName);
+  async changelevel(token: string, mapName: string) {
+    await this.rcon.exec(`mm_changelevel ${token} ${mapName}`);
   }
 
   async getOnlinePlayersSteamIds() {
