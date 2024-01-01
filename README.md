@@ -12,7 +12,7 @@ A nice server menu with a maplist, playerlist and so on that is supposed to be o
 `docker compose build`
 
 ### Configuring
-Copy `.env.example` -> `.env`
+Copy `.env.example` to `.env`
 
 Change the values
 
