@@ -1,5 +1,25 @@
-export const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text);
+export const copyToClipboard = async (text: string) => {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const textArea = document.createElement('textarea');
+
+      try {
+        textArea.value = text;
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.position = 'fixed';
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+      } finally {
+        textArea.remove();
+      }
+    }
+  } catch {}
 };
 
 export const getCookies = () => {
