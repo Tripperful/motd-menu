@@ -1,4 +1,12 @@
 import { Config } from '@motd-menu/common';
+import dotenv from 'dotenv';
+import path from 'path';
+
+if (!process.env.MOTD_WEB_PORT) {
+  dotenv.config({
+    path: path.resolve(__dirname, '../../../.env'),
+  });
+}
 
 export const config: Config = {
   port: Number(process.env.MOTD_WEB_PORT),
