@@ -17,7 +17,9 @@ mapsApi.get('/', async (_req, res) => {
 
     await db.maps.init(mapNames);
 
-    const mapPreviews = await db.maps.get(steamId);
+    const mapPreviews = (await db.maps.get(steamId)).filter((p) =>
+      mapNames.includes(p.name),
+    );
 
     res.status(200).end(JSON.stringify(mapPreviews));
   } catch {
