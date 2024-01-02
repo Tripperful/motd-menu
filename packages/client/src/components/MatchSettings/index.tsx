@@ -10,6 +10,7 @@ const useStyles = createUseStyles({
     padding: '1em',
     display: 'flex',
     flexDirection: 'column',
+    gap: '0.5em',
   },
   cvarSwitch: {
     display: 'flex',
@@ -39,8 +40,6 @@ export const MatchSettings: FC = () => {
   return (
     <Page title="Match settings">
       <div className={c.root}>
-        <CvarSwitch cvar="mp_teamplay" label="Team play" />
-        <CvarSwitch cvar="mp_timelimit" label="Time limit" />
         <CvarSwitch cvar="sv_cheats" label="Cheats" />
       </div>
     </Page>

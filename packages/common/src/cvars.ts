@@ -20,14 +20,6 @@ interface CvarPermissions {
 }
 
 export const cvarGroups: Partial<Record<Cvar, CvarPermissions>> = {
-  mp_teamplay: {
-    view: ['cvars_matchmaking_view'],
-    edit: ['cvars_matchmaking_edit'],
-  },
-  mp_timelimit: {
-    view: ['cvars_matchmaking_view'],
-    edit: ['cvars_matchmaking_edit'],
-  },
   sv_cheats: {
     view: ['cvars_admin_view'],
     edit: ['cvars_admin_edit'],
