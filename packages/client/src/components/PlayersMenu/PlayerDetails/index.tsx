@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
-import { usePlayer } from 'src/hooks/state/players';
+import { usePlayerProfile } from 'src/hooks/state/players';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { steamProfileLink } from 'src/util';
@@ -84,7 +84,7 @@ const PlayerDetailsContent: FC = () => {
   const c = useStyles();
 
   const { steamId } = useParams();
-  const player = usePlayer(steamId);
+  const player = usePlayerProfile(steamId);
   const profileLink = steamProfileLink(player.steamId);
   const canViewPermissions = useCheckPermission('permissions_view');
 

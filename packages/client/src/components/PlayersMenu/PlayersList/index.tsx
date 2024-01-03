@@ -1,7 +1,7 @@
 import { range } from 'lodash';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
-import { usePlayers } from 'src/hooks/state/players';
+import { useOnlinePlayers } from 'src/hooks/state/players';
 import { skeletonBg } from '~styles/elements';
 import { PlayersListItem } from './PlayersListItem';
 
@@ -61,7 +61,7 @@ export const PlayerListSkeleton: FC = () => {
 };
 
 const PlayersListItems: FC = () => {
-  const players = usePlayers();
+  const players = useOnlinePlayers();
 
   return (
     <>

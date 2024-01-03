@@ -73,6 +73,12 @@ class MotdApi {
     return JSON.parse(res) as SteamPlayerData[];
   }
 
+  public async getPlayer(steamId: string) {
+    const res = await this.get('players/' + steamId);
+
+    return JSON.parse(res) as SteamPlayerData;
+  }
+
   public async getPlayerPermissions(steamId: string) {
     const res = await this.get('players/permissions/' + steamId);
 

@@ -1,17 +1,12 @@
-import { useMemo } from 'react';
 import { motdApi } from 'src/api';
 import { createGlobalState } from './util';
 
 const fetchPlayers = () => motdApi.getPlayers();
 
-export const { useExternalState: usePlayers, reset: resetPlayers } =
+export const { useExternalState: useOnlinePlayers, reset: resetOnlinePlayers } =
   createGlobalState(fetchPlayers);
 
-export const usePlayer = (steamId: string) => {
-  const players = usePlayers();
+const fetchPlayer = (steamId: string) => motdApi.getPlayer(steamId);
 
-  return useMemo(
-    () => players.find((p) => p.steamId === steamId),
-    [players, steamId],
-  );
-};
+export const { useExternalState: usePlayerProfile } =
+  createGlobalState(fetchPlayer);
