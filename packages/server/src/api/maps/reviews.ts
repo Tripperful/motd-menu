@@ -79,7 +79,7 @@ reviewsApi.delete('/:mapName/:authorSteamId?', async (req, res) => {
 
   authorSteamId ??= steamId;
 
-  if (!(authorSteamId === steamId || permissions.includes('maps_edit'))) {
+  if (!(authorSteamId === steamId || permissions.includes('comments_edit'))) {
     return res.status(403).end();
   }
 

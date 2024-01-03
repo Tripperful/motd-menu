@@ -84,7 +84,7 @@ export const MapReview: FC<{
 
   const { mapName, rate, author, comment } = review;
 
-  const canEditReviews = useCheckPermission('maps_edit');
+  const canEditReviews = useCheckPermission('comments_edit');
   const steamId = useMySteamId();
 
   const canDelete = steamId === review.steamId || canEditReviews;
