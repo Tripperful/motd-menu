@@ -4,7 +4,6 @@ import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
 import { usePlayerProfile } from 'src/hooks/state/players';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
-import { useGoBack } from 'src/hooks/useGoBack';
 import { steamProfileLink } from 'src/util';
 import { MapDetails } from '~components/MapList/MapDetails';
 import { CopyOnClick } from '~components/common/CopyOnClick';
@@ -135,10 +134,9 @@ const RatedMapDetails: FC = () => {
 
 export const PlayerDetails: FC = () => {
   const c = useStyles();
-  const goBack = useGoBack();
 
   return (
-    <SidePanel title="Player details" onClose={goBack}>
+    <SidePanel title="Player details">
       <div className={c.root}>
         <Suspense fallback="Loading...">
           <PlayerDetailsContent />
