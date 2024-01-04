@@ -15,6 +15,7 @@ const useStyles = createUseStyles({
     alignItems: 'flex-start',
     position: 'relative',
     minHeight: '1.5em',
+    flex: '0 0 auto',
   },
   editButton: {
     ...outlineButton(),
