@@ -1,4 +1,5 @@
-CREATE OR REPLACE FUNCTION json_map_review (review maps_reviews) RETURNS json AS $$ BEGIN RETURN json_build_object(
+CREATE
+OR REPLACE FUNCTION json_map_review (review maps_reviews) RETURNS json AS $$ BEGIN RETURN json_build_object(
     'rate',
     review.rate,
     'mapName',
@@ -16,7 +17,9 @@ CREATE OR REPLACE FUNCTION json_map_review (review maps_reviews) RETURNS json AS
   );
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE FUNCTION map_reviews (map_name text) RETURNS json AS $$ BEGIN RETURN json_agg(json_map_review(maps_reviews))
+
+CREATE
+OR REPLACE FUNCTION map_reviews (map_name text) RETURNS json AS $$ BEGIN RETURN json_agg(json_map_review(maps_reviews))
 FROM maps_reviews
 WHERE maps_reviews.map_id = (
     SELECT id
@@ -25,12 +28,16 @@ WHERE maps_reviews.map_id = (
   );
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE FUNCTION map_reviews_by_author (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(json_map_review(maps_reviews))
+
+CREATE
+OR REPLACE FUNCTION map_reviews_by_author (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(json_map_review(maps_reviews))
 FROM maps_reviews
 WHERE maps_reviews.steam_id = map_reviews_by_author.steam_id::bigint;
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE FUNCTION set_map_review (map_name text, review json) RETURNS bigint AS $$
+
+CREATE
+OR REPLACE FUNCTION set_map_review (map_name text, review json) RETURNS bigint AS $$
 DECLARE ts bigint;
 BEGIN
 INSERT INTO maps_reviews (map_id, steam_id, rate, comment)
@@ -53,7 +60,9 @@ RETURNING EXTRACT(
 RETURN ts;
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE PROCEDURE delete_map_review (map_name text, steam_id text) AS $$ BEGIN
+
+CREATE
+OR REPLACE PROCEDURE delete_map_review (map_name text, steam_id text) AS $$ BEGIN
 DELETE FROM maps_reviews
 WHERE maps_reviews.map_id = (
     SELECT maps.id

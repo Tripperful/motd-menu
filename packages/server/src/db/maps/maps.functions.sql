@@ -1,9 +1,12 @@
-CREATE OR REPLACE PROCEDURE maps_init (maps json) AS $$ BEGIN
+CREATE
+OR REPLACE PROCEDURE maps_init (maps json) AS $$ BEGIN
 INSERT INTO maps(name)
 VALUES (json_array_elements_text(maps)) ON CONFLICT DO NOTHING;
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE FUNCTION maps_previews (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(
+
+CREATE
+OR REPLACE FUNCTION maps_previews (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(
     json_build_object(
       'id',
       maps.id,
@@ -47,7 +50,9 @@ CREATE OR REPLACE FUNCTION maps_previews (steam_id text) RETURNS json AS $$ BEGI
 FROM maps;
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE FUNCTION map_details (map_name text, steam_id text) RETURNS json AS $$ BEGIN RETURN json_build_object(
+
+CREATE
+OR REPLACE FUNCTION map_details (map_name text, steam_id text) RETURNS json AS $$ BEGIN RETURN json_build_object(
     'id',
     maps.id,
     'name',
@@ -86,13 +91,17 @@ FROM maps
 WHERE maps.name = map_name;
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE PROCEDURE map_set_description (map_name text, info json) AS $$ BEGIN
+
+CREATE
+OR REPLACE PROCEDURE map_set_description (map_name text, info json) AS $$ BEGIN
 UPDATE maps
 SET description = map_set_description.info->>'description'
 WHERE name = map_set_description.map_name;
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE PROCEDURE map_set_images (map_name text, images json) AS $$ BEGIN
+
+CREATE
+OR REPLACE PROCEDURE map_set_images (map_name text, images json) AS $$ BEGIN
 DELETE from maps_images
 WHERE maps_images.map_id = (
     SELECT id
@@ -109,7 +118,9 @@ FROM maps,
 WHERE maps.name = map_set_images.map_name ON CONFLICT DO NOTHING;
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE PROCEDURE map_set_tags (map_name text, tags json) AS $$
+
+CREATE
+OR REPLACE PROCEDURE map_set_tags (map_name text, tags json) AS $$
 DECLARE temp_map_id int;
 BEGIN
 SELECT id INTO temp_map_id
@@ -122,7 +133,9 @@ INSERT INTO maps_tags(map_id, tag)
 VALUES(temp_map_id, json_array_elements_text(tags)) ON CONFLICT DO NOTHING;
 END;
 $$ LANGUAGE plpgsql;
-CREATE OR REPLACE PROCEDURE map_set_favorite (map_name text, steam_id text, favorite boolean) AS $$
+
+CREATE
+OR REPLACE PROCEDURE map_set_favorite (map_name text, steam_id text, favorite boolean) AS $$
 DECLARE temp_map_id int;
 BEGIN
 SELECT id INTO temp_map_id
