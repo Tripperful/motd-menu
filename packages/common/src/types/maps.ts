@@ -1,5 +1,6 @@
 export interface MapPreviewData {
   id: number;
+  parentMap?: string;
   name: string;
   rate?: number;
   image?: string;
@@ -10,6 +11,7 @@ export interface MapPreviewData {
 export interface MapDetailsData {
   name: string;
   description?: string;
+  otherVersions?: string[];
   images: string[];
   tags: string[];
   isFavorite?: boolean;

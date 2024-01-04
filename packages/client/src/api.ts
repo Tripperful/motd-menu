@@ -128,6 +128,14 @@ class MotdApi {
     return JSON.parse(res) as MapDetailsData;
   }
 
+  public async setMapParent(mapName: string, parentMapName?: string) {
+    if (parentMapName) {
+      await this.post(`maps/parent/${mapName}/${parentMapName}`);
+    } else {
+      await this.delete(`maps/parent/${mapName}`);
+    }
+  }
+
   public async setMapDescription(mapName: string, description?: string) {
     await this.post(
       'maps/description/' + mapName,

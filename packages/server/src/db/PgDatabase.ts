@@ -19,6 +19,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
             'maps_previews',
             steamId,
           )) as Database['maps']['get'],
+    setParent: (mapName: string, parentMapName?: string) =>
+      this.call('map_set_parent', mapName, parentMapName),
     setDescription: (mapName: string, description?: string) =>
       this.call('map_set_description', mapName, description),
     setImages: (mapName: string, images: string[]) =>

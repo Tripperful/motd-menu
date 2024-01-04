@@ -1,12 +1,11 @@
 import classNames from 'classnames';
 import React, { FC, MouseEventHandler, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link, Route, Routes, useParams } from 'react-router-dom';
 import { motdApi } from 'src/api';
 import { setMapDetails, useMapDetails } from 'src/hooks/state/mapDetails';
 import { addNotification } from 'src/hooks/state/notifications';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
-import { useGoBack } from 'src/hooks/useGoBack';
 import { SidePanel } from '~components/common/SidePanel';
 import HeartEmptyIcon from '~icons/heart-outline.svg';
 import HeartIcon from '~icons/heart.svg';
@@ -18,6 +17,7 @@ import { EditDescriptionPopup } from './EditDescriptionPopup';
 import { MapImages } from './MapImages';
 import { MapReviews } from './MapReviews';
 import { MapTags } from './MapTags';
+import { OtherVersions } from './OtherVersions';
 
 const useStyles = createUseStyles({
   root: {
@@ -71,6 +71,7 @@ const useStyles = createUseStyles({
 
 interface MapDetailsProps {
   mapName: string;
+  backPath?: string;
 }
 
 const MapDetailsContent: FC<MapDetailsProps> = ({ mapName }) => {
@@ -111,10 +112,24 @@ const MapDetailsContent: FC<MapDetailsProps> = ({ mapName }) => {
         {description || 'No description'}
       </div>
       <MapTags mapName={mapName} />
+      <OtherVersions mapName={mapName} />
       <MapReviews mapName={mapName} />
       <Routes>
         <Route
           path="/edit-description"
+          element={
+            <EditDescriptionPopup
+              initialDescription={description}
+              onSubmit={onDescriptionSubmit}
+            />
+          }
+        />
+        <Route
+          path="/versions/:mapName/*"
+          Component={function OtherVersionDetails() {
+            const { mapName } = useParams();
+            return <MapDetails mapName={mapName} backPath="../.." />;
+          }}
           element={
             <EditDescriptionPopup
               initialDescription={description}
@@ -176,9 +191,11 @@ const FavButton: FC<MapDetailsProps> = ({ mapName }) => {
   );
 };
 
-export const MapDetails: FC<MapDetailsProps> = ({ mapName }) => {
+export const MapDetails: FC<MapDetailsProps> = ({
+  mapName,
+  backPath = '..',
+}) => {
   const c = useStyles();
-  const goBack = useGoBack();
 
   const onRunMapClick: MouseEventHandler<HTMLDivElement> = () => {
     motdApi.runMap(mapName);
@@ -186,7 +203,7 @@ export const MapDetails: FC<MapDetailsProps> = ({ mapName }) => {
   };
 
   return (
-    <SidePanel onClose={goBack} title={'Map details - ' + mapName}>
+    <SidePanel backPath={backPath} title={'Map details - ' + mapName}>
       <div className={c.root}>
         <div className={c.content}>
           <Suspense fallback="Loading...">

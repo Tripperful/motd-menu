@@ -41,6 +41,49 @@ mapsApi.get('/:mapName', async (req, res) => {
   }
 });
 
+mapsApi.post('/parent/:mapName/:parentMapName', async (req, res) => {
+  try {
+    const { mapName, parentMapName } = req.params;
+
+    if (mapName === parentMapName) {
+      res.status(400).end();
+      return;
+    }
+
+    const { permissions } = res.locals.sessionData;
+
+    if (!permissions.includes('maps_edit')) {
+      res.status(403).end();
+      return;
+    }
+
+    await db.maps.setParent(mapName, parentMapName);
+
+    res.status(200).end();
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+mapsApi.delete('/parent/:mapName', async (req, res) => {
+  try {
+    const { permissions } = res.locals.sessionData;
+
+    if (!permissions.includes('maps_edit')) {
+      res.status(403).end();
+      return;
+    }
+
+    await db.maps.setParent(req.params.mapName, null);
+
+    res.status(200).end();
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
 mapsApi.post('/description/:mapName', async (req, res) => {
   try {
     const { permissions } = res.locals.sessionData;

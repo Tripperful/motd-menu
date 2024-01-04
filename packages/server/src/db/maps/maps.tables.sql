@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS
   maps (
     id SERIAL PRIMARY KEY,
+    parent_id int REFERENCES maps (id),
     name text UNIQUE,
     display_name text,
     description text

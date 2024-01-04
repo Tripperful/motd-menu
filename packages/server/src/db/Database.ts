@@ -11,6 +11,7 @@ export interface Database {
     init(mapNames: string[]): Promise<void>;
     get(steamId: string): Promise<MapPreviewData[]>;
     get(steamId: string, mapName: string): Promise<MapDetailsData>;
+    setParent(mapName: string, parentMapName?: string): Promise<void>;
     setDescription(mapName: string, description?: string): Promise<void>;
     setImages(mapName: string, images: string[]): Promise<void>;
     setTags(mapName: string, tags: string[]): Promise<void>;

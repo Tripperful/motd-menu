@@ -10,6 +10,13 @@ OR REPLACE FUNCTION maps_previews (steam_id text) RETURNS json AS $$ BEGIN RETUR
     json_build_object(
       'id',
       maps.id,
+      'parentMap',
+      (
+        SELECT m.name
+        FROM maps m
+        WHERE m.id = maps.parent_id
+        LIMIT 1
+      ),
       'name',
       maps.name,
       'image',
@@ -59,6 +66,13 @@ OR REPLACE FUNCTION map_details (map_name text, steam_id text) RETURNS json AS $
     maps.name,
     'description',
     maps.description,
+    'otherVersions',
+    ARRAY(
+      SELECT m1.name
+      FROM maps m1
+      WHERE m1.parent_id = maps.id
+      ORDER BY m1.name
+    ),
     'images',
     ARRAY(
       SELECT image_url
@@ -89,6 +103,14 @@ OR REPLACE FUNCTION map_details (map_name text, steam_id text) RETURNS json AS $
   )
 FROM maps
 WHERE maps.name = map_name;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE map_set_parent (map_name text, parent_map_name text) AS $$ BEGIN
+UPDATE maps
+SET parent_id = (SELECT m.id FROM maps m WHERE m.name = parent_map_name LIMIT 1)
+WHERE name = map_set_parent.map_name AND name != map_set_parent.parent_map_name;
 END;
 $$ LANGUAGE plpgsql;
 

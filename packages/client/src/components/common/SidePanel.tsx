@@ -1,6 +1,7 @@
 import React, { FC, MouseEventHandler, useLayoutEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { createUseStyles } from 'react-jss';
+import { useNavigate } from 'react-router-dom';
 import { fullscreen } from '~styles/elements';
 import { boxShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
@@ -30,10 +31,11 @@ const useStyles = createUseStyles({
 });
 
 export const SidePanel: FC<
-  ChildrenProps & { title: string; onClose: () => void }
-> = ({ title, onClose, children }) => {
+  ChildrenProps & { title: string; backPath?: string }
+> = ({ title, backPath = '..', children }) => {
   const c = useStyles();
   const [shown, setShown] = useState(false);
+  const nav = useNavigate();
 
   useLayoutEffect(() => {
     setShown(true);
@@ -41,7 +43,7 @@ export const SidePanel: FC<
 
   const onBgClick: MouseEventHandler<HTMLDivElement> = (e) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      nav(backPath, { relative: 'path' });
     }
   };
 
@@ -50,7 +52,7 @@ export const SidePanel: FC<
     createPortal(
       <div className={c.bg} onPointerDown={onBgClick}>
         <div className={c.root}>
-          <PageHeader title={title} />
+          <PageHeader title={title} backPath={backPath} />
           <div className={c.content}>{children}</div>
         </div>
       </div>,

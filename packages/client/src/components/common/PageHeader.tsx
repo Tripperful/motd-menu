@@ -27,13 +27,14 @@ const useStyles = createUseStyles({
 
 export const PageHeader: FC<{
   title: string;
+  backPath?: string;
   children?: React.ReactNode;
-}> = ({ title, children }) => {
+}> = ({ title, backPath = '..', children }) => {
   const c = useStyles();
 
   return (
     <div className={c.root}>
-      <Link className={c.backButton} to=".." relative="path">
+      <Link className={c.backButton} to={backPath} relative="path">
         <BackIcon />
       </Link>
       <div className={c.title}>{title}</div>

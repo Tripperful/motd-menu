@@ -77,6 +77,8 @@ const MapListContent: FC = () => {
       maps.filter((m) => {
         let show = true;
 
+        show &&= !m.parentMap;
+
         if (search) {
           show &&= m.name.toLowerCase().includes(search.toLowerCase());
         }
