@@ -18,6 +18,14 @@ const useStyles = createUseStyles({
     gap: '0.5em',
     alignItems: 'center',
   },
+  cvarTextControl: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '25em',
+    '& > div': {
+      marginLeft: '0.2em',
+    },
+  },
 });
 
 interface SwitchControlProps {}
@@ -125,7 +133,8 @@ export const CvarTextControl: FC<CvarControlProps & TextControlProps> = ({
   const label = cvarDisplayNames[cvar];
 
   return (
-    <div className={c.cvarControl}>
+    <div className={c.cvarTextControl}>
+      <div>{label}</div>
       <input
         type="text"
         value={curValue ?? ''}
@@ -133,7 +142,6 @@ export const CvarTextControl: FC<CvarControlProps & TextControlProps> = ({
         onChange={(e) => setCurValue(e.currentTarget.value)}
         disabled={disabled}
       />
-      <div>{label}</div>
     </div>
   );
 };
