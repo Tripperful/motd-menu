@@ -29,7 +29,7 @@ const menuItems: MenuItemInfo[] = [
 ];
 
 export const MainMenu: FC = () => (
-  <Suspense fallback="Loading...">
+  <Suspense>
     <Menu items={menuItems} hint="Main menu" />
   </Suspense>
 );
