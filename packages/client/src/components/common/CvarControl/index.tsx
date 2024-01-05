@@ -47,8 +47,6 @@ export const CvarSwitchControl: FC<CvarControlProps & SwitchControlProps> = ({
 interface NumberControlProps {
   min?: number;
   max?: number;
-  step?: number;
-  showSlider?: boolean;
 }
 
 export const CvarNumberControl: FC<CvarControlProps & NumberControlProps> = ({
@@ -58,8 +56,6 @@ export const CvarNumberControl: FC<CvarControlProps & NumberControlProps> = ({
   disabled,
   min = -Infinity,
   max = Infinity,
-  step,
-  showSlider,
 }) => {
   const c = useStyles();
 

@@ -11,6 +11,7 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
+    overflow: 'hidden auto',
   },
 });
 
