@@ -3,7 +3,7 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import { Configuration } from 'webpack';
+import { Configuration, DefinePlugin } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 const cd = (...args: string[]) => path.resolve(__dirname, ...args);
@@ -27,6 +27,9 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
       plugins: [new TsconfigPathsPlugin()],
     },
     plugins: [
+      new DefinePlugin({
+        BUILD_TIMESTAMP: Date.now(),
+      }),
       new ForkTsCheckerWebpackPlugin({
         typescript: {
           diagnosticOptions: {

@@ -24,6 +24,11 @@ const useStyles = createUseStyles({
     padding: '6em',
     position: 'relative',
   },
+  buildTimestamp: {
+    position: 'absolute',
+    right: '1em',
+    top: '1em',
+  },
   items: {
     position: 'absolute',
     left: '50%',
@@ -71,6 +76,15 @@ const backItem: MenuItemInfo = {
   size: 0.5,
 };
 
+const buildTimestampFormat = Intl.DateTimeFormat(navigator.language, {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+});
+
 export const Menu: FC<{ items: MenuItemInfo[]; hint?: string }> = ({
   items,
   hint,
@@ -99,6 +113,11 @@ export const Menu: FC<{ items: MenuItemInfo[]; hint?: string }> = ({
 
   return (
     <div className={c.root}>
+      {permissions.includes('dev') && (
+        <div className={c.buildTimestamp}>
+          Build timestamp: {buildTimestampFormat.format(BUILD_TIMESTAMP)}
+        </div>
+      )}
       {hoveredItem && (
         <div className={c.activeItemTitle}>{hoveredItem.title}</div>
       )}
