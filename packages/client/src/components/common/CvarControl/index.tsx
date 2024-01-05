@@ -21,6 +21,7 @@ const useStyles = createUseStyles({
   cvarTextControl: {
     display: 'flex',
     flexDirection: 'column',
+    gap: '0.2em',
     width: '25em',
     '& > div': {
       marginLeft: '0.2em',
