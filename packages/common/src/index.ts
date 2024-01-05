@@ -7,6 +7,7 @@ export * from './types/permissions';
 export * from './types/reviews';
 export * from './types/steam';
 export * from './types/util';
+export * from './types/log';
 
 export const allPermissions = Object.keys(
   permissionDescriptions,

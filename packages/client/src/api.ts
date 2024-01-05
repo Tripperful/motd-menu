@@ -6,6 +6,7 @@ import {
   MapReviewData,
   Permission,
   SteamPlayerData,
+  Severity,
 } from '@motd-menu/common';
 
 class MotdApi {
@@ -63,8 +64,12 @@ class MotdApi {
     return this.query('DELETE', endpoint, body);
   }
 
+  public async sendLog(severity: Severity, log: string) {
+    this.post('log/' + severity, log);
+  }
+
   public async closeMenu() {
-    this.post('/menu/close');
+    this.post('menu/close');
   }
 
   public async getPlayers() {

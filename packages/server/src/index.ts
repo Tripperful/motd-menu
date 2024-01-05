@@ -7,6 +7,7 @@ import { config } from '~root/config';
 import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
+import { logDbgInfo } from './util';
 
 const app = express();
 
@@ -16,6 +17,10 @@ const staticServer = expressStaticGzip(staticDir, {
 });
 
 app.set('x-powered-by', false);
+app.use((_, res, next) => {
+  res.cookie('sendLogs', JSON.stringify(logDbgInfo));
+  next();
+});
 app.use(cookieParser());
 app.use('/', authMiddleware);
 app.use(bodyParser.json({ strict: false }));
