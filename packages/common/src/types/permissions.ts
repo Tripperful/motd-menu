@@ -1,15 +1,4 @@
-export type Permission =
-  | 'permissions_view'
-  | 'permissions_edit'
-  | 'maps_edit'
-  | 'comments_edit'
-  | 'teams_others_edit'
-  | 'cvars_matchmaking_view'
-  | 'cvars_matchmaking_edit'
-  | 'cvars_admin_view'
-  | 'cvars_admin_edit';
-
-export const permissionDescriptions: Record<Permission, string> = {
+export const permissionDescriptions = {
   permissions_view: "View players' permissions",
   permissions_edit: "Edit players' permissions",
   maps_edit: 'Edit maps images, descriptions, etc',
@@ -19,4 +8,7 @@ export const permissionDescriptions: Record<Permission, string> = {
   cvars_matchmaking_edit: 'Edit matchmaking cvars',
   cvars_admin_view: 'View admin cvars',
   cvars_admin_edit: 'Edit admin cvars',
+  dev: 'Developer',
 };
+
+export type Permission = keyof typeof permissionDescriptions;

@@ -1,5 +1,7 @@
 import Color from 'color';
 import { createUseStyles } from 'react-jss';
+import arrowDownSrc from '~icons/chevron-down.svg?url';
+import arrowUpSrc from '~icons/chevron-up.svg?url';
 import { theme } from './theme';
 
 export const useGlobalStyles = createUseStyles({
@@ -45,7 +47,7 @@ export const useGlobalStyles = createUseStyles({
       outline: 'none',
       '-webkit-user-drag': 'none',
     },
-    'textarea, input[type=text]': {
+    'textarea, input[type=text], input[type=number]': {
       font: 'inherit',
       color: 'inherit',
       resize: 'none',
@@ -61,6 +63,24 @@ export const useGlobalStyles = createUseStyles({
         font: 'inherit',
         color: 'inherit',
         opacity: 0.7,
+      },
+      '&:disabled': {
+        opacity: 0.5,
+      },
+    },
+    'input[type=number]': {
+      width: '6em',
+      '&::-webkit-inner-spin-button': {
+        '-webkit-appearance': 'none',
+        width: '1.5em',
+        margin: '-0.5em',
+        cursor: 'pointer',
+      },
+      '&:not(:disabled):hover': {
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '1.5em',
+        backgroundPosition: 'top -0.2em right 0, bottom -0.2em right 0',
+        backgroundImage: `url('${arrowUpSrc}'), url('${arrowDownSrc}')`,
       },
     },
     iframe: {

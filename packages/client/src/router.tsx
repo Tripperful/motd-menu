@@ -2,8 +2,9 @@ import React, { FC } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Exit } from '~components/Exit';
 import { MainMenu } from '~components/MainMenu';
-import { MatchSettings } from '~components/MatchSettings';
+import { MatchMenu } from '~components/MatchMenu';
 import { PlayersMenu } from '~components/PlayersMenu';
+import { ServerSettings } from '~components/ServerSettings';
 import { TeamMenu } from '~components/TeamMenu';
 import { MapList } from './components/MapList';
 
@@ -16,8 +17,9 @@ export const Router: FC = () => {
           <Route path="exit" element={<Exit />} />
           <Route path="maps/:mapName?/*" element={<MapList />} />
           <Route path="teams/:teamIndex?" element={<TeamMenu />} />
-          <Route path="matchSettings" element={<MatchSettings />} />
+          <Route path="serverSettings" element={<ServerSettings />} />
           <Route path="players/*" element={<PlayersMenu />} />
+          <Route path="match/*" element={<MatchMenu />} />
         </Route>
       </Routes>
     </BrowserRouter>

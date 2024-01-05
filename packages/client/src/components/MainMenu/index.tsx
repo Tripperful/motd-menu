@@ -3,6 +3,7 @@ import { Menu, MenuItemInfo } from '~components/common/Menu';
 import TeamsIcon from '~icons/flag.svg';
 import KnobsIcon from '~icons/knobs.svg';
 import PlayersIcon from '~icons/people.svg';
+import PlayIcon from '~icons/play.svg';
 import TerrainIcon from '~icons/terrain.svg';
 
 const menuItems: MenuItemInfo[] = [
@@ -14,10 +15,16 @@ const menuItems: MenuItemInfo[] = [
     Icon: PlayersIcon,
   },
   {
-    title: 'Match settings',
-    link: 'matchSettings',
+    title: 'Server settings',
+    link: 'serverSettings',
     Icon: KnobsIcon,
-    permissions: ['cvars_matchmaking_view'],
+    permissions: ['cvars_matchmaking_view', 'cvars_admin_view'],
+  },
+  {
+    title: 'Match menu',
+    link: 'match',
+    Icon: PlayIcon,
+    permissions: ['dev'],
   },
 ];
 

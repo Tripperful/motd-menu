@@ -19,7 +19,8 @@ const useStyles = createUseStyles({
   },
   knob: {
     backgroundColor: theme.fg1,
-    transition: 'transform 0.25s ease-out, width 0.25s ease-out',
+    transition:
+      'transform 0.25s ease-out, width 0.25s ease-out, opacity 0.25s ease-out',
     transform: 'translateX(0)',
     width: '0.75em',
     height: '0.75em',
@@ -27,6 +28,7 @@ const useStyles = createUseStyles({
   },
   unknown: {
     width: '2.25em',
+    opacity: 0.2,
   },
   active: {
     transform: 'translateX(1.5em)',
