@@ -3,7 +3,7 @@ import debounce from 'lodash/debounce';
 import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useLocation } from 'react-router-dom';
-import { useMyPermissions } from 'src/hooks/useMyPermissions';
+import { useMyPermissions } from 'src/hooks/state/permissions';
 import BackIcon from '~icons/chevron-left.svg';
 import CrossIcon from '~icons/close.svg';
 import { filterShadow } from '~styles/shadows';

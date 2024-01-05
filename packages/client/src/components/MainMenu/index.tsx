@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, Suspense } from 'react';
 import { Menu, MenuItemInfo } from '~components/common/Menu';
 import TeamsIcon from '~icons/flag.svg';
 import KnobsIcon from '~icons/knobs.svg';
@@ -28,4 +28,8 @@ const menuItems: MenuItemInfo[] = [
   },
 ];
 
-export const MainMenu: FC = () => <Menu items={menuItems} hint="Main menu" />;
+export const MainMenu: FC = () => (
+  <Suspense fallback="Loading...">
+    <Menu items={menuItems} hint="Main menu" />
+  </Suspense>
+);

@@ -1,13 +1,24 @@
 import { Permission } from '@motd-menu/common';
 import { motdApi } from 'src/api';
+import { useSessionData } from '../useSessionData';
 import { createGlobalState } from './util';
 
-const playerPermissionsState = createGlobalState((steamId: string) =>
-  motdApi.getPlayerPermissions(steamId),
-);
+const playerPermissionsState = createGlobalState(async (steamId: string) => {
+  const { steamId: mySteamId, permissions: myPermissions } = useSessionData();
+
+  if (steamId === mySteamId) {
+    return myPermissions;
+  }
+
+  return await motdApi.getPlayerPermissions(steamId);
+});
 
 export const usePlayerPermissions = (steamId: string) =>
   playerPermissionsState.useExternalState(steamId);
+
+export const useMyPermissions = () => {
+  return usePlayerPermissions(useSessionData().steamId);
+};
 
 export const setPlayerPermissionGranted = (
   steamId: string,
