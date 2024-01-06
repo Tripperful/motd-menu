@@ -1,9 +1,15 @@
-import { Cvar, cvarDisplayNames } from '@motd-menu/common';
+import {
+  BoolCvarProps,
+  Cvar,
+  CvarType,
+  NumberCvarProps,
+  TextCvarProps,
+  cvarsInfo,
+} from '@motd-menu/common';
 import React, { FC, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useCvar } from 'src/hooks/useCvar';
 import { Switch } from '../Switch';
-import { cvarControlOptionsMap } from './cvarControlMap';
 
 export interface CvarControlProps {
   cvar: Cvar;
@@ -29,9 +35,7 @@ const useStyles = createUseStyles({
   },
 });
 
-interface SwitchControlProps {}
-
-export const CvarSwitchControl: FC<CvarControlProps & SwitchControlProps> = ({
+export const CvarBoolControl: FC<CvarControlProps & BoolCvarProps> = ({
   cvar,
   value,
   setValue,
@@ -39,7 +43,7 @@ export const CvarSwitchControl: FC<CvarControlProps & SwitchControlProps> = ({
 }) => {
   const c = useStyles();
 
-  const label = cvarDisplayNames[cvar];
+  const { description } = cvarsInfo[cvar];
 
   return (
     <div className={c.cvarControl}>
@@ -48,17 +52,12 @@ export const CvarSwitchControl: FC<CvarControlProps & SwitchControlProps> = ({
         setActive={(active) => setValue(active ? '1' : '0')}
         disabled={disabled}
       />
-      <div>{label}</div>
+      <div>{description}</div>
     </div>
   );
 };
 
-interface NumberControlProps {
-  min?: number;
-  max?: number;
-}
-
-export const CvarNumberControl: FC<CvarControlProps & NumberControlProps> = ({
+export const CvarNumberControl: FC<CvarControlProps & NumberCvarProps> = ({
   cvar,
   value,
   setValue,
@@ -68,7 +67,7 @@ export const CvarNumberControl: FC<CvarControlProps & NumberControlProps> = ({
 }) => {
   const c = useStyles();
 
-  const label = cvarDisplayNames[cvar];
+  const { description } = cvarsInfo[cvar];
 
   const [curValue, setCurValue] = useState('');
 
@@ -98,16 +97,12 @@ export const CvarNumberControl: FC<CvarControlProps & NumberControlProps> = ({
         onChange={(e) => setCurValue(e.currentTarget.value)}
         disabled={disabled}
       />
-      <div>{label}</div>
+      <div>{description}</div>
     </div>
   );
 };
 
-interface TextControlProps {
-  maxLength?: number;
-}
-
-export const CvarTextControl: FC<CvarControlProps & TextControlProps> = ({
+export const CvarTextControl: FC<CvarControlProps & TextCvarProps> = ({
   cvar,
   value,
   setValue,
@@ -124,21 +119,20 @@ export const CvarTextControl: FC<CvarControlProps & TextControlProps> = ({
 
   const onBlur = () => {
     if (curValue !== value) {
-      const clampedValue = curValue.substring(0, maxLength);
-
-      setValue(clampedValue);
-      setCurValue(clampedValue);
+      setValue(curValue);
+      setCurValue(curValue);
     }
   };
 
-  const label = cvarDisplayNames[cvar];
+  const { description } = cvarsInfo[cvar];
 
   return (
     <div className={c.cvarTextControl}>
-      <div>{label}</div>
+      <div>{description}</div>
       <input
         type="text"
         value={curValue ?? ''}
+        maxLength={maxLength}
         onBlur={onBlur}
         onChange={(e) => setCurValue(e.currentTarget.value)}
         disabled={disabled}
@@ -147,15 +141,8 @@ export const CvarTextControl: FC<CvarControlProps & TextControlProps> = ({
   );
 };
 
-export type CvarControlSettings =
-  | ({ type: 'switch' } & SwitchControlProps)
-  | ({ type: 'number' } & NumberControlProps)
-  | ({ type: 'text' } & TextControlProps);
-
-export type CvarControlType = CvarControlSettings['type'];
-
-const cvarControlMap: Record<CvarControlType, FC<CvarControlProps>> = {
-  switch: CvarSwitchControl,
+const cvarControlMap: Record<CvarType, FC<CvarControlProps>> = {
+  bool: CvarBoolControl,
   number: CvarNumberControl,
   text: CvarTextControl,
 };
@@ -166,7 +153,7 @@ export const CvarControl: FC<CvarControlProps> = ({
   setValue,
   disabled,
 }) => {
-  const { type, ...controlSettings } = cvarControlOptionsMap[cvar];
+  const { type, ...controlSettings } = cvarsInfo[cvar];
   const ControlComponent = cvarControlMap[type];
 
   return (
