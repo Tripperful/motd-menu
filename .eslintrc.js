@@ -18,5 +18,16 @@ module.exports = {
     ],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-empty-function': 'off',
+    'no-restricted-imports': [
+      'error',
+      {
+        paths: [
+          {
+            name: 'lodash',
+            message: 'Import [module] from lodash/[module] instead',
+          },
+        ],
+      },
+    ],
   },
 };

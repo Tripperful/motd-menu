@@ -1,4 +1,4 @@
-import { range } from 'lodash';
+import range from 'lodash/range';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useOnlinePlayers } from 'src/hooks/state/players';
