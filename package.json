@@ -7,15 +7,13 @@
   ],
   "scripts": {
     "start:server": "npm run start -w packages/server",
-    "build:common": "npm run build -w packages/common",
     "build:server": "npm run build -w packages/server",
     "build:client": "npm run build -w packages/client",
-    "watch:common": "npm run watch -w packages/common",
     "watch:server": "npm run watch -w packages/server",
     "watch:client": "npm run watch -w packages/client",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspaces --if-present",
     "start": "concurrently \"npm run start:server\" \"npm run build:client\"",
-    "watch": "concurrently \"npm run watch:common\" \"npm run watch:server\" \"npm run watch:client\"",
+    "watch": "concurrently \"npm run watch:server\" \"npm run watch:client\"",
     "launch": "npm run launch --prefix ./server"
   },
   "devDependencies": {
