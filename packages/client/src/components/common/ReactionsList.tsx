@@ -50,13 +50,17 @@ export const ReactionsList: FC<
   }, [reactions]);
 
   const [showAddPopup, setShowAddPopup] = useState(false);
-
-  const onAddReactionClick = async (reaction: ReactionName) => {
-    setShowAddPopup(false);
-    onAddReaction?.(reaction);
-  };
-
   const mySteamId = useMySteamId();
+
+  const onReactionClick = (reaction: ReactionName) => {
+    setShowAddPopup(false);
+
+    const iReacted = authorsByReaction[reaction]?.some(
+      (a) => a.steamId === mySteamId,
+    );
+
+    iReacted ? onRemoveReaction?.(reaction) : onAddReaction?.(reaction);
+  };
 
   return (
     <div className={classNames(c.root, className)}>
@@ -66,15 +70,11 @@ export const ReactionsList: FC<
 
         return (
           <Reaction
-            key={name}
+            key={reactionName}
             name={reactionName}
             count={authors.length}
             iReacted={iReacted}
-            onClick={
-              iReacted
-                ? () => onRemoveReaction?.(reactionName)
-                : () => onAddReaction?.(reactionName)
-            }
+            onClick={() => onReactionClick(reactionName)}
           />
         );
       })}
@@ -84,7 +84,7 @@ export const ReactionsList: FC<
       {showAddPopup && (
         <AddReactionPopup
           onClose={() => setShowAddPopup(false)}
-          onReactionClick={onAddReactionClick}
+          onReactionClick={onReactionClick}
         />
       )}
     </div>
