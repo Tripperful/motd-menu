@@ -5,8 +5,10 @@ import {
   MapPreviewData,
   MapReviewData,
   Permission,
-  SteamPlayerData,
+  ReactionData,
+  ReactionName,
   Severity,
+  SteamPlayerData,
 } from '@motd-menu/common';
 
 class MotdApi {
@@ -192,6 +194,51 @@ class MotdApi {
   public async deleteMapReview(mapName: string, authorSteamId?: string) {
     await this.delete(
       'maps/reviews/' + mapName + (authorSteamId ? '/' + authorSteamId : ''),
+    );
+  }
+
+  public async getMapReactions(mapName: string) {
+    const res = await this.get('maps/reactions/' + mapName);
+
+    return JSON.parse(res) as ReactionData[];
+  }
+
+  public async addMapReaction(mapName: string, reaction: ReactionName) {
+    await this.post(`maps/reactions/${mapName}/${reaction}`);
+  }
+
+  public async deleteMapReaction(mapName: string, reaction: ReactionName) {
+    await this.delete(`maps/reactions/${mapName}/${reaction}`);
+  }
+
+  public async getMapReviewReactions(
+    mapName: string,
+    reviewAuthorSteamId: string,
+  ) {
+    const res = await this.get(
+      `maps/reviews/reactions/${mapName}/${reviewAuthorSteamId}`,
+    );
+
+    return JSON.parse(res) as ReactionData[];
+  }
+
+  public async addMapReviewReaction(
+    mapName: string,
+    reviewAuthorSteamId: string,
+    reaction: ReactionName,
+  ) {
+    await this.post(
+      `maps/reviews/reactions/${mapName}/${reviewAuthorSteamId}/${reaction}`,
+    );
+  }
+
+  public async deleteMapReviewReaction(
+    mapName: string,
+    reviewAuthorSteamId: string,
+    reaction: ReactionName,
+  ) {
+    await this.delete(
+      `maps/reviews/reactions/${mapName}/${reviewAuthorSteamId}/${reaction}`,
     );
   }
 }

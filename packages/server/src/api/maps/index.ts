@@ -1,10 +1,12 @@
 import { Router } from 'express';
 import { db } from 'src/db';
+import { mapsReactionsApi } from './reactions';
 import { reviewsApi } from './reviews';
 
 export const mapsApi = Router();
 
 mapsApi.use('/reviews', reviewsApi);
+mapsApi.use('/reactions', mapsReactionsApi);
 
 mapsApi.get('/', async (_req, res) => {
   try {

@@ -2,8 +2,10 @@ import { MapReviewData } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
+import { mapsReviewsReactionsApi } from './reactions';
 
 export const reviewsApi = Router();
+reviewsApi.use('/reactions', mapsReviewsReactionsApi);
 
 reviewsApi.get('/:mapName', async (req, res) => {
   const { mapName } = req.params;

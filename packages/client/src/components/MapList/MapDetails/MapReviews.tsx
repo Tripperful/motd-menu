@@ -18,6 +18,7 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
+    flex: '1 1 100%',
   },
   rateHeader: {
     display: 'flex',

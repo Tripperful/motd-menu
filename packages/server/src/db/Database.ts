@@ -3,6 +3,8 @@ import {
   MapPreviewData,
   MapReviewData,
   Permission,
+  ReactionData,
+  ReactionName,
 } from '@motd-menu/common';
 
 export interface Database {
@@ -20,11 +22,42 @@ export interface Database {
       steamId: string,
       favorite: boolean,
     ): Promise<void>;
+    reactions: {
+      get(mapName: string): Promise<ReactionData[]>;
+      add(
+        mapName: string,
+        steamId: string,
+        reaction: ReactionName,
+      ): Promise<void>;
+      delete(
+        mapName: string,
+        steamId: string,
+        reaction: ReactionName,
+      ): Promise<void>;
+    };
     reviews: {
       get(mapName: string): Promise<MapReviewData[]>;
       getByAuthor(steamId: string): Promise<MapReviewData[]>;
       set(mapName: string, review: MapReviewData): Promise<string>;
       delete(mapName: string, authorSteamId: string): Promise<void>;
+      reactions: {
+        get(
+          mapName: string,
+          reviewAuthorSteamId: string,
+        ): Promise<ReactionData[]>;
+        add(
+          mapName: string,
+          reviewAuthorSteamId: string,
+          steamId: string,
+          reaction: ReactionName,
+        ): Promise<void>;
+        delete(
+          mapName: string,
+          reviewAuthorSteamId: string,
+          steamId: string,
+          reaction: ReactionName,
+        ): Promise<void>;
+      };
     };
   };
   permissions: {

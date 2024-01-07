@@ -27,6 +27,7 @@ const useStyles = createUseStyles({
     overflow: 'hidden',
   },
   content: {
+    flex: '1 1 100%',
     padding: '1em',
     display: 'flex',
     flexDirection: 'column',

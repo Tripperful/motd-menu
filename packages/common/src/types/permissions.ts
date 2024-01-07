@@ -12,3 +12,7 @@ export const permissionDescriptions = {
 };
 
 export type Permission = keyof typeof permissionDescriptions;
+
+export const allPermissions = Object.keys(
+  permissionDescriptions,
+) as Permission[];

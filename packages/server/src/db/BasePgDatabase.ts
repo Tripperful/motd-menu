@@ -1,7 +1,7 @@
 import { Client, QueryResult } from 'pg';
 import { config } from '~root/config';
 
-const sqlImportOrder = ['tables', 'migrations', 'functions'];
+const sqlImportOrder = ['migrations', 'tables', 'functions'];
 
 const getSqlFileOrder = (fileName: string) => {
   const order = sqlImportOrder.findIndex((postfix) =>

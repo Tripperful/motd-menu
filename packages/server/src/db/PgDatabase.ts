@@ -3,7 +3,10 @@ import {
   MapPreviewData,
   MapReviewData,
   Permission,
+  ReactionData,
+  ReactionName,
   allPermissions,
+  allReactionNames,
 } from '@motd-menu/common';
 import { config } from '~root/config';
 import { BasePgDatabase } from './BasePgDatabase';
@@ -29,6 +32,14 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.call('map_set_tags', mapName, tags),
     setFavorite: (mapName: string, steamId: string, favorite: boolean) =>
       this.call('map_set_favorite', mapName, steamId, favorite),
+    reactions: {
+      get: (mapName: string) =>
+        this.select<ReactionData[]>('map_reactions', mapName),
+      add: (mapName: string, steamId: string, reaction: ReactionName) =>
+        this.call('add_map_reaction', mapName, steamId, reaction),
+      delete: (mapName: string, steamId: string, reaction: ReactionName) =>
+        this.call('delete_map_reaction', mapName, steamId, reaction),
+    },
     reviews: {
       get: async (mapName: string) =>
         (await this.select<MapReviewData[]>('map_reviews', mapName)) ?? [],
@@ -41,8 +52,43 @@ export class PgDatabase extends BasePgDatabase implements Database {
         this.select<string>('set_map_review', mapName, review),
       delete: (mapName: string, authorSteamId: string) =>
         this.call('delete_map_review', mapName, authorSteamId),
+      reactions: {
+        get: (mapName: string, reviewAuthorSteamId: string) =>
+          this.select<ReactionData[]>(
+            'map_review_reactions',
+            mapName,
+            reviewAuthorSteamId,
+          ),
+        add: (
+          mapName: string,
+          reviewAuthorSteamId: string,
+          steamId: string,
+          reaction: ReactionName,
+        ) =>
+          this.call(
+            'add_map_review_reaction',
+            mapName,
+            reviewAuthorSteamId,
+            steamId,
+            reaction,
+          ),
+        delete: (
+          mapName: string,
+          reviewAuthorSteamId: string,
+          steamId: string,
+          reaction: ReactionName,
+        ) =>
+          this.call(
+            'delete_map_review_reaction',
+            mapName,
+            reviewAuthorSteamId,
+            steamId,
+            reaction,
+          ),
+      },
     },
   };
+
   permissions = {
     init: (permissions: Permission[], rootAdmins: string[]) =>
       this.call('permissions_init', permissions, rootAdmins),
@@ -56,10 +102,9 @@ export class PgDatabase extends BasePgDatabase implements Database {
 
   override async init() {
     await super.init();
-    await this.call(
-      'permissions_init',
-      allPermissions,
-      config.rootAdmins ?? [],
-    );
+    await Promise.allSettled([
+      this.call('permissions_init', allPermissions, config.rootAdmins ?? []),
+      this.call('reactions_init', allReactionNames),
+    ]);
   }
 }
