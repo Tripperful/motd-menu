@@ -39,26 +39,24 @@ const useStyles = createUseStyles({
 
 const EditButton: FC = () => {
   const c = useStyles();
-  const editable = useCheckPermission('maps_edit');
 
-  return editable ? (
+  return (
     <Link className={c.editButton} to="edit-versions">
       <PencilIcon />
       Edit versions
     </Link>
-  ) : null;
+  );
 };
 
-const OtherVersionsContent: FC<{ mapName: string }> = ({ mapName }) => {
+const OtherVersionsContent: FC<{ versions: string[] }> = ({ versions }) => {
   const c = useStyles();
-  const { otherVersions } = useMapDetails(mapName);
 
-  if (otherVersions.length === 0) return null;
+  if (versions.length === 0) return null;
 
   return (
     <div className={c.root}>
       <div className={c.header}>Other versions</div>
-      {otherVersions.map((name) => (
+      {versions.map((name) => (
         <Link key={name} to={'versions/' + name} className={c.version}>
           <ArrowRightIcon />
           {name}
@@ -70,18 +68,17 @@ const OtherVersionsContent: FC<{ mapName: string }> = ({ mapName }) => {
 
 export const OtherVersions: FC<{ mapName: string }> = ({ mapName }) => {
   const c = useStyles();
+  const editable = useCheckPermission('maps_edit');
+  const { otherVersions } = useMapDetails(mapName);
 
-  const editButton = <EditButton />;
-  const content = <OtherVersionsContent mapName={mapName} />;
+  if (!(editable || otherVersions?.length)) return null;
 
   return (
     <>
-      {editButton || content ? (
-        <div className={c.root}>
-          {content}
-          {editButton}
-        </div>
-      ) : null}
+      <div className={c.root} data-test>
+        {editable && <EditButton />}
+        {<OtherVersionsContent versions={otherVersions} />}
+      </div>
       <Routes>
         <Route
           path="/edit-versions"
