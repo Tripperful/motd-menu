@@ -2,11 +2,19 @@ import { ReactionName, reactionsAnimDataSrc } from '@motd-menu/common';
 import classNames from 'classnames';
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
-import { activeItem } from '~styles/elements';
+import { activeItem, skeletonBg } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { LazyLottie, LazyLottieProps } from './LazyLottie';
 
 const useStyles = createUseStyles({
+  '@keyframes bgShift': {
+    from: {
+      backgroundPositionX: '0vw',
+    },
+    to: {
+      backgroundPositionX: '100vw',
+    },
+  },
   root: {
     ...activeItem(),
     position: 'relative',
@@ -32,6 +40,10 @@ const useStyles = createUseStyles({
     background: theme.bgInfo,
     filter: `drop-shadow(0 0 3px ${theme.fg1})`,
   },
+  skeleton: {
+    ...skeletonBg(),
+    animation: '$bgShift 1s linear infinite',
+  },
 });
 
 export const ReactionIcon: FC<
@@ -45,6 +57,16 @@ export const ReactionIcon: FC<
       src={reactionsAnimDataSrc[name]}
       {...props}
     />
+  );
+};
+
+export const ReactionSkeleton: FC = () => {
+  const c = useStyles();
+
+  return (
+    <div className={classNames(c.root, c.skeleton)}>
+      <div className={c.lottie}></div>
+    </div>
   );
 };
 

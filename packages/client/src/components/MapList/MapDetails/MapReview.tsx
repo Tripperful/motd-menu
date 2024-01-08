@@ -1,6 +1,6 @@
 import { MapReviewData, ReactionName } from '@motd-menu/common';
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
 import { motdApi } from 'src/api';
@@ -17,7 +17,10 @@ import { dateFormat, steamProfileLink } from 'src/util';
 import { CopyOnClick } from '~components/common/CopyOnClick';
 import { MapPreviewImage } from '~components/common/MapPreviewImage';
 import { Rating } from '~components/common/Rating';
-import { ReactionsList } from '~components/common/ReactionsList';
+import {
+  ReactionsList,
+  ReactionsListSkeleton,
+} from '~components/common/ReactionsList';
 import CrossIcon from '~icons/close.svg';
 import { activeItem, outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
@@ -85,10 +88,15 @@ const useStyles = createUseStyles({
   },
 });
 
-const MapReviewReactions: FC<{
+interface MapReviewReactionsProps {
   mapName: string;
   reviewAuthorSteamId: string;
-}> = ({ mapName, reviewAuthorSteamId }) => {
+}
+
+const MapReviewReactionsContent: FC<MapReviewReactionsProps> = ({
+  mapName,
+  reviewAuthorSteamId,
+}) => {
   const c = useStyles();
 
   const reactions = useMapReviewReactions(mapName, reviewAuthorSteamId);
@@ -106,6 +114,7 @@ const MapReviewReactions: FC<{
         reviewAuthorSteamId,
         reaction,
       );
+      addNotification('error', 'Reaction added!');
     } catch {
       addNotification('error', 'Failed to add reaction!');
     }
@@ -132,6 +141,16 @@ const MapReviewReactions: FC<{
       onAddReaction={onAddReaction}
       onRemoveReaction={onRemoveReaction}
     />
+  );
+};
+
+const MapReviewReactions: FC<MapReviewReactionsProps> = (props) => {
+  const c = useStyles();
+
+  return (
+    <Suspense fallback={<ReactionsListSkeleton className={c.reactions} />}>
+      <MapReviewReactionsContent {...props} />
+    </Suspense>
   );
 };
 

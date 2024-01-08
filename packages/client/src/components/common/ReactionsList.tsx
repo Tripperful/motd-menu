@@ -7,7 +7,7 @@ import AddReactionIcon from '~icons/add-reaction.svg';
 import { activeItem } from '~styles/elements';
 import { ClassNameProps } from '~types/props';
 import { AddReactionPopup } from './AddReactionPopup';
-import { Reaction } from './Reaction';
+import { Reaction, ReactionSkeleton } from './Reaction';
 
 const useStyles = createUseStyles({
   root: {
@@ -22,6 +22,20 @@ const useStyles = createUseStyles({
     display: 'flex',
   },
 });
+
+export const ReactionsListSkeleton: FC<ClassNameProps> = ({ className }) => {
+  const c = useStyles();
+
+  return (
+    <div className={classNames(c.root, className)}>
+      <ReactionSkeleton />
+      <ReactionSkeleton />
+      <div className={c.addButton} data-disabled>
+        <AddReactionIcon />
+      </div>
+    </div>
+  );
+};
 
 export const ReactionsList: FC<
   {
