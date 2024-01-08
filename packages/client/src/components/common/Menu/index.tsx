@@ -24,10 +24,13 @@ const useStyles = createUseStyles({
     padding: '6em',
     position: 'relative',
   },
-  buildTimestamp: {
+  dev: {
     position: 'absolute',
     right: '1em',
     top: '1em',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
   },
   items: {
     position: 'absolute',
@@ -114,8 +117,11 @@ export const Menu: FC<{ items: MenuItemInfo[]; hint?: string }> = ({
   return (
     <div className={c.root}>
       {permissions.includes('dev') && (
-        <div className={c.buildTimestamp}>
-          Build timestamp: {buildTimestampFormat.format(BUILD_TIMESTAMP)}
+        <div className={c.dev}>
+          <div>
+            Build timestamp: {buildTimestampFormat.format(BUILD_TIMESTAMP)}
+          </div>
+          <a href="/report.html">Bundle analyzer</a>
         </div>
       )}
       {hoveredItem && (
