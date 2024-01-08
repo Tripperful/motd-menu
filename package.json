@@ -14,7 +14,7 @@
     "build": "npm run build --workspaces --if-present",
     "start": "concurrently \"npm run start:server\" \"npm run build:client\"",
     "watch": "concurrently \"npm run watch:server\" \"npm run watch:client\"",
-    "launch": "npm run launch --prefix ./server"
+    "launch": "npm run launch -w packages/server"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.22.20",
@@ -51,6 +51,7 @@
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "raw-loader": "^4.0.2",
+    "terser-webpack-plugin": "^5.3.10",
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "tsconfig-paths-webpack-plugin": "^4.1.0",

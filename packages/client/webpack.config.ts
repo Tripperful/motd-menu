@@ -2,6 +2,7 @@ import GzipPlugin from 'compression-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path from 'path';
+import TerserPlugin from 'terser-webpack-plugin';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { Configuration, DefinePlugin } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
@@ -79,6 +80,10 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
     },
     devtool: 'source-map',
     target: ['web'],
+    optimization: {
+      minimize: true,
+      minimizer: [new TerserPlugin()],
+    },
   };
 };
 
