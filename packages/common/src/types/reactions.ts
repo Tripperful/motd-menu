@@ -6,40 +6,35 @@ export interface ReactionData {
   author?: SteamPlayerData;
 }
 
+const gLottieLink = (uid: string) =>
+  `https://fonts.gstatic.com/s/e/notoemoji/latest/${uid}/lottie.json`;
+
 export const reactionsAnimDataSrc = {
-  rofl: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f923/lottie.json',
-  grin: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f604/lottie.json',
-  ['warm-smile']:
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/263a_fe0f/lottie.json',
-  ['hug-face']:
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f917/lottie.json',
-  ['heart-face']:
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f970/lottie.json',
-  ['partying-face']:
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f973/lottie.json',
-  wink: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f609/lottie.json',
-  drool: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f924/lottie.json',
-  melting: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1fae0/lottie.json',
-  woozy: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f974/lottie.json',
-  sad: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f61e/lottie.json',
-  rage: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f621/lottie.json',
-  ['loudly-crying']:
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f62d/lottie.json',
-  ['neutral-face']:
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f610/lottie.json',
-  ['thinking-face']:
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f914/lottie.json',
-  screaming: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f631/lottie.json',
-  cursing: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f92c/lottie.json',
-  ['mouth-open']:
-    'https://fonts.gstatic.com/s/e/notoemoji/latest/1f62e/lottie.json',
-  vomit: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f92e/lottie.json',
-  clown: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f921/lottie.json',
-  skull: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f480/lottie.json',
-  poop: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f4a9/lottie.json',
-  heart: 'https://fonts.gstatic.com/s/e/notoemoji/latest/2764_fe0f/lottie.json',
-  fire: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f525/lottie.json',
-  collision: 'https://fonts.gstatic.com/s/e/notoemoji/latest/1f4a5/lottie.json',
+  rofl: gLottieLink('1f923'),
+  grin: gLottieLink('1f604'),
+  ['warm-smile']: gLottieLink('263a_fe0f'),
+  ['hug-face']: gLottieLink('1f917'),
+  ['heart-face']: gLottieLink('1f970'),
+  ['partying-face']: gLottieLink('1f973'),
+  wink: gLottieLink('1f609'),
+  drool: gLottieLink('1f924'),
+  melting: gLottieLink('1fae0'),
+  woozy: gLottieLink('1f974'),
+  sad: gLottieLink('1f61e'),
+  rage: gLottieLink('1f621'),
+  ['loudly-crying']: gLottieLink('1f62d'),
+  ['neutral-face']: gLottieLink('1f610'),
+  ['thinking-face']: gLottieLink('1f914'),
+  screaming: gLottieLink('1f631'),
+  cursing: gLottieLink('1f92c'),
+  ['mouth-open']: gLottieLink('1f62e'),
+  vomit: gLottieLink('1f92e'),
+  clown: gLottieLink('1f921'),
+  skull: gLottieLink('1f480'),
+  poop: gLottieLink('1f4a9'),
+  heart: gLottieLink('2764_fe0f'),
+  fire: gLottieLink('1f525'),
+  collision: gLottieLink('1f4a5'),
 } as const;
 
 export type ReactionName = keyof typeof reactionsAnimDataSrc;
