@@ -114,7 +114,7 @@ const MapReviewReactionsContent: FC<MapReviewReactionsProps> = ({
         reviewAuthorSteamId,
         reaction,
       );
-      addNotification('error', 'Reaction added!');
+      addNotification('success', 'Reaction added!');
     } catch {
       addNotification('error', 'Failed to add reaction!');
     }
@@ -129,6 +129,7 @@ const MapReviewReactionsContent: FC<MapReviewReactionsProps> = ({
         reviewAuthorSteamId,
         reaction,
       );
+      addNotification('success', 'Reaction removed!');
     } catch {
       addNotification('error', 'Failed to remove reaction!');
     }

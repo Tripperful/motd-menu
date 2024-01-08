@@ -58,7 +58,7 @@ export const useAddRemoveMapReviewReaction = (
         async (cur) =>
           ((await cur) ?? []).filter(
             (reaction) =>
-              !(reaction.author.steamId === steamId && reaction.name === name),
+              !(reaction.author?.steamId === steamId && reaction.name === name),
           ),
         packKey(mapName, reviewAuthorSteamId),
       );

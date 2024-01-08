@@ -18,6 +18,7 @@ import { MapImages } from './MapImages';
 import { MapReviews } from './MapReviews';
 import { MapTags } from './MapTags';
 import { OtherVersions } from './OtherVersions';
+import { MapReactions } from './MapReactions';
 
 const useStyles = createUseStyles({
   root: {
@@ -113,6 +114,7 @@ const MapDetailsContent: FC<MapDetailsProps> = ({ mapName }) => {
         {description || 'No description'}
       </div>
       <MapTags mapName={mapName} />
+      <MapReactions mapName={mapName} />
       <OtherVersions mapName={mapName} />
       <MapReviews mapName={mapName} />
       <Routes>
