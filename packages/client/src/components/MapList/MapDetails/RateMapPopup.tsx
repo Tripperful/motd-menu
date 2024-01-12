@@ -1,6 +1,8 @@
 import { MapReviewData } from '@motd-menu/common';
-import React, { FC, MouseEventHandler, useState } from 'react';
+import React, { FC, MouseEventHandler, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
+import { useSearchParam } from 'react-use';
+import { motdApi } from 'src/api';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { Popup } from '~components/common/Popup';
 import { Rating } from '~components/common/Rating';
@@ -34,6 +36,14 @@ export const RateMapPopup: FC<{
   const [comment, setComment] = useState(initialReview?.comment ?? '');
 
   const [rate, setRate] = useState<number>(initialReview?.rate ?? null);
+
+  const rateOnce = useSearchParam('rateOnce') != null;
+
+  useEffect(() => {
+    if (rate != null && rateOnce) {
+      motdApi.closeMenu();
+    }
+  }, [rate, rateOnce]);
 
   const onSubmitClick: MouseEventHandler = () => {
     if (rate == null) return;
