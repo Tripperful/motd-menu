@@ -42,6 +42,7 @@ export type Cvar =
   | 'mp_timelimit'
   | 'mm_equalizer'
   | 'mm_esp_teammates'
+  | 'mm_show_endmatch_rate'
   | 'mm_rpg_spawn_time';
 
 export interface BoolCvarProps {}
@@ -119,6 +120,11 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     description: 'Force palyer respawn',
     type: 'bool',
     permissions: matchmakingPermissions,
+  },
+  mm_show_endmatch_rate: {
+    description: 'Show map rate menu after matches',
+    type: 'bool',
+    permissions: adminPermissions,
   },
   mp_timelimit: {
     description: 'Time limit (minutes)',
