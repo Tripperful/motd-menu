@@ -1,5 +1,6 @@
 import { Cvar, getEditableCvars, getViewableCvars } from '@motd-menu/common';
 import { Router } from 'express';
+import { sanitizeCvarValue } from 'src/util';
 
 export const cvarsApi = Router();
 
@@ -49,9 +50,7 @@ cvarsApi.post('/set/:cvar', async (req, res) => {
 
     if (!editableCvars.includes(cvar as Cvar)) return res.status(403).end();
 
-    // Surround with quites if it has spaces and isn't quoted yet.
-    const sanitizedValue =
-      value.includes(' ') && !value.startsWith('"') ? '"' + value + '"' : value;
+    const sanitizedValue = sanitizeCvarValue(value);
 
     await srcdsApi.setCvar(cvar, sanitizedValue);
 

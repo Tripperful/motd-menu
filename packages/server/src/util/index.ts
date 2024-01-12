@@ -33,3 +33,9 @@ export const dbgErr: typeof console.error = (...args) => {
 
   console.error(...args);
 };
+
+// Surround with quites if it has spaces and isn't quoted yet.
+export const sanitizeCvarValue = (value: string) =>
+  value === '' || (value.includes(' ') && !value.startsWith('"'))
+    ? '"' + value + '"'
+    : value;

@@ -29,6 +29,7 @@ const matchmakingPermissions: CvarPermissions = {
 
 export type Cvar =
   | 'hostname'
+  | 'sv_password'
   | 'sv_cheats'
   | 'sv_alltalk'
   | 'sv_gravity'
@@ -69,6 +70,12 @@ type CvarInfo = {
 export const cvarsInfo: Record<Cvar, CvarInfo> = {
   hostname: {
     description: 'Server host name',
+    type: 'text',
+    maxLength: 100,
+    permissions: adminPermissions,
+  },
+  sv_password: {
+    description: 'Server password',
     type: 'text',
     maxLength: 100,
     permissions: adminPermissions,

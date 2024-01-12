@@ -1,6 +1,6 @@
 import { Cvar } from '@motd-menu/common';
 import { RconApi, SrcdsRcon } from 'src/rcon';
-import { dbgInfo, dbgWarn, uSteamIdTo64 } from 'src/util';
+import { dbgInfo, dbgWarn, sanitizeCvarValue, uSteamIdTo64 } from 'src/util';
 import { config } from '~root/config';
 import { SrcdsApi } from './SrcdsApi';
 
@@ -80,9 +80,7 @@ export class RconSrcdsApi implements SrcdsApi {
   }
 
   async setCvar(cvar: Cvar, value: string) {
-    // Surround with quites if it has spaces and isn't quoted yet.
-    const sanitizedValue =
-      value.includes(' ') && !value.startsWith('"') ? '"' + value + '"' : value;
+    const sanitizedValue = sanitizeCvarValue(value);
 
     await this.rcon.exec(cvar + ' ' + sanitizedValue);
   }
