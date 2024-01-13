@@ -19,7 +19,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
-OR REPLACE FUNCTION map_reviews (map_name text) RETURNS json AS $$ BEGIN RETURN json_agg(json_map_review(maps_reviews))
+OR REPLACE FUNCTION map_reviews (map_name text) RETURNS json AS $$
+BEGIN
+RETURN json_agg(json_map_review(maps_reviews) ORDER BY maps_reviews.updated_on DESC)
 FROM maps_reviews
 WHERE maps_reviews.map_id = (
     SELECT id
@@ -30,7 +32,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
-OR REPLACE FUNCTION map_reviews_by_author (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(json_map_review(maps_reviews))
+OR REPLACE FUNCTION map_reviews_by_author (steam_id text) RETURNS json AS $$
+BEGIN
+RETURN json_agg(json_map_review(maps_reviews) ORDER BY maps_reviews.updated_on DESC)
 FROM maps_reviews
 WHERE maps_reviews.steam_id = map_reviews_by_author.steam_id::bigint;
 END;
