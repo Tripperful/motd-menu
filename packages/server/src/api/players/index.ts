@@ -10,11 +10,21 @@ playersApi.get('/', async (_req, res) => {
   try {
     const { srcdsApi } = res.locals;
 
-    const playersSteamIds = await srcdsApi.getOnlinePlayersSteamIds();
+    const onlinePlayers = await srcdsApi.getOnlinePlayers();
 
-    const playerProfiles = await getPlayersProfiles(playersSteamIds);
+    const playerProfiles = await getPlayersProfiles(
+      onlinePlayers.map((p) => p.steamId),
+    );
 
-    res.status(200).end(JSON.stringify(Object.values(playerProfiles)));
+    for (const [steamId, profile] of Object.entries(playerProfiles)) {
+      const player = onlinePlayers.find((p) => p.steamId === steamId);
+
+      if (player) {
+        player.steamProfile = profile;
+      }
+    }
+
+    res.status(200).end(JSON.stringify(Object.values(onlinePlayers)));
   } catch {
     res.status(500).end();
   }

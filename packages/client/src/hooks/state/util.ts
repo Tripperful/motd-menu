@@ -37,12 +37,10 @@ export const createGlobalState = <
   const set: Setter = async (valueOrSetter, key) => {
     let newValue =
       typeof valueOrSetter === 'function'
-        ? (valueOrSetter as (cur: TValOrPromise) => TValOrPromise)(
-            stateMap.get(key),
-          )
+        ? (valueOrSetter as (cur: TValOrPromise) => TValOrPromise)(getRaw(key))
         : valueOrSetter;
 
-    const oldValue = stateMap.get(key);
+    const oldValue = getRaw(key);
 
     if (newValue === emptyState) {
       stateMap.delete(key);
@@ -86,12 +84,14 @@ export const createGlobalState = <
 
   const reset = (key?: TStateKey) => set(emptyState as TValOrUpdate, key);
 
+  const getRaw = (key?: TStateKey) => stateMap.get(key);
+
   const get = (key?: TStateKey) => {
     if (!stateMap.has(key)) {
       set(getDefault(key), key);
     }
 
-    return stateMap.get(key);
+    return getRaw(key);
   };
 
   /**
@@ -138,5 +138,5 @@ export const createGlobalState = <
     return useSyncExternalStore(subscribeByKey, getSnapshotByKey);
   };
 
-  return { useExternalState, get, set, reset, subscribe, getSnapshot };
+  return { useExternalState, get, set, reset, subscribe, getSnapshot, getRaw };
 };

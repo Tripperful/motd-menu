@@ -1,12 +1,21 @@
 import { motdApi } from 'src/api';
 import { createGlobalState } from './util';
 
-const fetchPlayers = () => motdApi.getPlayers();
+const fetchOnlinePlayers = () => motdApi.getOnlinePlayers();
 
-export const { useExternalState: useOnlinePlayers, reset: resetOnlinePlayers } =
-  createGlobalState(fetchPlayers);
+const onlinePlayersState = createGlobalState(fetchOnlinePlayers);
 
-const fetchPlayer = (steamId: string) => motdApi.getPlayer(steamId);
+export const useOnlinePlayers = () => onlinePlayersState.useExternalState();
 
-export const { useExternalState: usePlayerProfile } =
-  createGlobalState(fetchPlayer);
+export const resetOnlinePlayers = () => onlinePlayersState.reset();
+
+export const getOnlinePlayers = () => onlinePlayersState.get();
+
+const fetchPlayerSteamProfile = async (steamId: string) =>
+  (await onlinePlayersState.getRaw())?.find((p) => p.steamId === steamId)
+    ?.steamProfile ?? (await motdApi.getPlayerSteamProfile(steamId));
+
+const playerSteamProfilesState = createGlobalState(fetchPlayerSteamProfile);
+
+export const usePlayerSteamProfile = (steamId: string) =>
+  playerSteamProfilesState.useExternalState(steamId);

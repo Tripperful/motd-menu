@@ -1,4 +1,4 @@
-import { Cvar } from '@motd-menu/common';
+import { Cvar, OnlinePlayerInfo } from '@motd-menu/common';
 import { RconApi, SrcdsRcon } from 'src/rcon';
 import { dbgInfo, dbgWarn, sanitizeCvarValue, uSteamIdTo64 } from 'src/util';
 import { config } from '~root/config';
@@ -99,13 +99,20 @@ export class RconSrcdsApi implements SrcdsApi {
     await this.rcon.exec(`mm_changelevel ${token} ${mapName}`);
   }
 
-  async getOnlinePlayersSteamIds() {
+  async getOnlinePlayers() {
     const rconRes = await this.rcon.exec('status');
 
     return [
       ...(rconRes.matchAll(
         /^#\s+(\d+)\s+"(.+)"\s+\[U:\d:(\d+)\]\s+[\d:]+\s+\d+\s+\d+\s+active/gm,
       ) ?? []),
-    ].map((entry) => uSteamIdTo64(entry[3]));
+    ].map(
+      (entry) =>
+        ({
+          userId: Number(entry[1]),
+          name: entry[2],
+          steamId: uSteamIdTo64(entry[3]),
+        }) as OnlinePlayerInfo,
+    );
   }
 }

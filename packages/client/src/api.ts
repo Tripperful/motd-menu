@@ -4,6 +4,7 @@ import {
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
+  OnlinePlayerInfo,
   Permission,
   ReactionData,
   ReactionName,
@@ -74,13 +75,13 @@ class MotdApi {
     this.post('menu/close');
   }
 
-  public async getPlayers() {
+  public async getOnlinePlayers() {
     const res = await this.get('players');
 
-    return JSON.parse(res) as SteamPlayerData[];
+    return JSON.parse(res) as OnlinePlayerInfo[];
   }
 
-  public async getPlayer(steamId: string) {
+  public async getPlayerSteamProfile(steamId: string) {
     const res = await this.get('players/' + steamId);
 
     return JSON.parse(res) as SteamPlayerData;
@@ -103,8 +104,8 @@ class MotdApi {
     await this.post(`players/permissions/${steamId}/withdraw/${permission}`);
   }
 
-  public async setTeam(teamIndex: number, steamId?: string) {
-    this.post('teams/set/' + (steamId ? steamId + '/' : '') + teamIndex);
+  public async setTeam(teamIndex: number, userId?: number) {
+    this.post('teams/set/' + (userId ? userId + '/' : '') + teamIndex);
   }
 
   public async getCvars<

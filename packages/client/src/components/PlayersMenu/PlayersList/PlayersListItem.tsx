@@ -1,4 +1,4 @@
-import { SteamPlayerData } from '@motd-menu/common';
+import { OnlinePlayerInfo } from '@motd-menu/common';
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
@@ -33,12 +33,12 @@ export const useStyles = createUseStyles({
   },
 });
 
-export const PlayersListItem: FC<{ data: SteamPlayerData }> = ({ data }) => {
+export const PlayersListItem: FC<{ data: OnlinePlayerInfo }> = ({ data }) => {
   const c = useStyles();
 
   return (
     <Link className={c.root} to={data.steamId}>
-      <img className={c.avatar} src={data.avatar} />
+      <img className={c.avatar} src={data.steamProfile?.avatar} />
       <div className={c.playerInfo}>
         <div>{data.name}</div>
         <div className={c.steamId}>{data.steamId}</div>

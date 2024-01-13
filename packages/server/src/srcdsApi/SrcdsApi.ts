@@ -1,13 +1,7 @@
-import { Cvar } from '@motd-menu/common';
-
-export interface SrcdsAuthRes {
-  steamId: string;
-  name: string;
-  userId: number;
-}
+import { Cvar, OnlinePlayerInfo } from '@motd-menu/common';
 
 export interface SrcdsApi {
-  auth(token: string): Promise<SrcdsAuthRes>;
+  auth(token: string): Promise<OnlinePlayerInfo>;
   closeMenu(token: string): Promise<void>;
   getCvars<TCvars extends Cvar>(
     ...cvars: TCvars[]
@@ -16,5 +10,5 @@ export interface SrcdsApi {
   setPlayerTeam(userId: number, teamIndex: number): Promise<void>;
   getMaps(): Promise<string[]>;
   changelevel(token: string, mapName: string): Promise<void>;
-  getOnlinePlayersSteamIds(): Promise<string[]>;
+  getOnlinePlayers(): Promise<OnlinePlayerInfo[]>;
 }

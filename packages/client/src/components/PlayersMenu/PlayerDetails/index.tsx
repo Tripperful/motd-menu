@@ -2,7 +2,10 @@ import classNames from 'classnames';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
-import { usePlayerProfile } from 'src/hooks/state/players';
+import {
+  getOnlinePlayers,
+  usePlayerSteamProfile,
+} from 'src/hooks/state/players';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { steamProfileLink } from 'src/util';
 import { MapDetails } from '~components/MapList/MapDetails';
@@ -10,10 +13,13 @@ import { CopyOnClick } from '~components/common/CopyOnClick';
 import { SidePanel } from '~components/common/SidePanel';
 import CopyIcon from '~icons/copy.svg';
 import OpenIcon from '~icons/open-in-browser.svg';
+import SpecIcon from '~icons/eye.svg';
 import { activeItem, outlineButton } from '~styles/elements';
 import { ChildrenProps, ClassNameProps } from '~types/props';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
+import { motdApi } from 'src/api';
+import { addNotification } from 'src/hooks/state/notifications';
 
 const useStyles = createUseStyles({
   root: {
@@ -83,9 +89,23 @@ const PlayerDetailsContent: FC = () => {
   const c = useStyles();
 
   const { steamId } = useParams();
-  const player = usePlayerProfile(steamId);
+  const player = usePlayerSteamProfile(steamId);
   const profileLink = steamProfileLink(player.steamId);
   const canViewPermissions = useCheckPermission('permissions_view');
+  const isDev = useCheckPermission('dev');
+
+  const onMoveToSpecClick = async () => {
+    const player = (await getOnlinePlayers())?.find(
+      (p) => p.steamId === steamId,
+    );
+
+    if (!player) {
+      addNotification('error', 'Player is offline!');
+      return;
+    }
+
+    await motdApi.setTeam(1, player.userId);
+  };
 
   return (
     <>
@@ -120,6 +140,14 @@ const PlayerDetailsContent: FC = () => {
           </div>
         </div>
       </div>
+      {isDev && (
+        <div>
+          <div className={c.profileButton} onClick={onMoveToSpecClick}>
+            <SpecIcon />
+            Move to spectators
+          </div>
+        </div>
+      )}
       {canViewPermissions && <PlayerPermissions />}
       <PlayerReviews steamId={steamId} />
     </>

@@ -2,7 +2,7 @@ import { ReactionName } from '@motd-menu/common';
 import { useCallback } from 'react';
 import { motdApi } from 'src/api';
 import { useMySteamId } from '../useMySteamId';
-import { usePlayerProfile } from './players';
+import { usePlayerSteamProfile } from './players';
 import { createGlobalState } from './util';
 
 const packKey = (mapName: string, reviewAuthorSteamId: string) =>
@@ -33,7 +33,7 @@ export const useAddRemoveMapReviewReaction = (
   reviewAuthorSteamId: string,
 ) => {
   const steamId = useMySteamId();
-  const author = usePlayerProfile(steamId);
+  const author = usePlayerSteamProfile(steamId);
 
   const add = useCallback(
     (name: ReactionName) => {
