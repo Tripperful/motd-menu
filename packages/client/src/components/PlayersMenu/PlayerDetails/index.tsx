@@ -2,6 +2,8 @@ import classNames from 'classnames';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
+import { motdApi } from 'src/api';
+import { addNotification } from 'src/hooks/state/notifications';
 import {
   getOnlinePlayers,
   usePlayerSteamProfile,
@@ -11,15 +13,15 @@ import { steamProfileLink } from 'src/util';
 import { MapDetails } from '~components/MapList/MapDetails';
 import { CopyOnClick } from '~components/common/CopyOnClick';
 import { SidePanel } from '~components/common/SidePanel';
+import CombineIcon from '~icons/combine.svg';
 import CopyIcon from '~icons/copy.svg';
-import OpenIcon from '~icons/open-in-browser.svg';
 import SpecIcon from '~icons/eye.svg';
+import OpenIcon from '~icons/open-in-browser.svg';
+import RebelIcon from '~icons/lambda.svg';
 import { activeItem, outlineButton } from '~styles/elements';
 import { ChildrenProps, ClassNameProps } from '~types/props';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
-import { motdApi } from 'src/api';
-import { addNotification } from 'src/hooks/state/notifications';
 
 const useStyles = createUseStyles({
   root: {
@@ -92,9 +94,9 @@ const PlayerDetailsContent: FC = () => {
   const player = usePlayerSteamProfile(steamId);
   const profileLink = steamProfileLink(player.steamId);
   const canViewPermissions = useCheckPermission('permissions_view');
-  const isDev = useCheckPermission('dev');
+  const canEditTeam = useCheckPermission('teams_others_edit');
 
-  const onMoveToSpecClick = async () => {
+  const setTeam = async (teamIndex: 1 | 2 | 3) => {
     const player = (await getOnlinePlayers())?.find(
       (p) => p.steamId === steamId,
     );
@@ -104,7 +106,7 @@ const PlayerDetailsContent: FC = () => {
       return;
     }
 
-    await motdApi.setTeam(1, player.userId);
+    await motdApi.setTeam(teamIndex, player.userId);
   };
 
   return (
@@ -140,13 +142,24 @@ const PlayerDetailsContent: FC = () => {
           </div>
         </div>
       </div>
-      {isDev && (
-        <div>
-          <div className={c.profileButton} onClick={onMoveToSpecClick}>
-            <SpecIcon />
-            Move to spectators
+      {canEditTeam && (
+        <>
+          <div>Change player team</div>
+          <div className={c.profileButtons}>
+            <div className={c.profileButton} onClick={() => setTeam(1)}>
+              <SpecIcon />
+              Spectator
+            </div>
+            <div className={c.profileButton} onClick={() => setTeam(2)}>
+              <CombineIcon />
+              Combine
+            </div>
+            <div className={c.profileButton} onClick={() => setTeam(3)}>
+              <RebelIcon />
+              Rebel
+            </div>
           </div>
-        </div>
+        </>
       )}
       {canViewPermissions && <PlayerPermissions />}
       <PlayerReviews steamId={steamId} />
