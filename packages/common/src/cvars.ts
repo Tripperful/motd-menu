@@ -17,13 +17,18 @@ interface CvarPermissions {
   edit?: Permission[];
 }
 
-const adminPermissions: CvarPermissions = {
+const adminOnlyPermissions: CvarPermissions = {
   view: ['cvars_admin_view'],
   edit: ['cvars_admin_edit'],
 };
 
+const adminEditPermissions: CvarPermissions = {
+  view: [],
+  edit: ['cvars_admin_edit'],
+};
+
 const matchmakingPermissions: CvarPermissions = {
-  view: ['cvars_matchmaking_view'],
+  view: [],
   edit: ['cvars_matchmaking_edit'],
 };
 
@@ -35,6 +40,7 @@ export type Cvar =
   | 'sv_gravity'
   | 'sv_hl2mp_item_respawn_time'
   | 'sv_hl2mp_weapon_respawn_time'
+  | 'mp_teamplay'
   | 'mp_friendlyfire'
   | 'mp_flashlight'
   | 'mp_footsteps'
@@ -73,18 +79,18 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     description: 'Server host name',
     type: 'text',
     maxLength: 100,
-    permissions: adminPermissions,
+    permissions: adminEditPermissions,
   },
   sv_password: {
     description: 'Server password',
     type: 'text',
     maxLength: 100,
-    permissions: adminPermissions,
+    permissions: adminOnlyPermissions,
   },
   sv_cheats: {
     description: 'Cheats',
     type: 'bool',
-    permissions: adminPermissions,
+    permissions: adminEditPermissions,
   },
   mm_equalizer: {
     description: 'Equalizer',
@@ -95,6 +101,11 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     description: 'Allow teammates ESP',
     type: 'bool',
     permissions: matchmakingPermissions,
+  },
+  mp_teamplay: {
+    description: 'Team play',
+    type: 'bool',
+    permissions: adminEditPermissions,
   },
   mp_friendlyfire: {
     description: 'Friendly fire',
@@ -124,7 +135,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
   mm_show_endmatch_rate: {
     description: 'Show map rate menu after matches',
     type: 'bool',
-    permissions: adminPermissions,
+    permissions: adminOnlyPermissions,
   },
   mp_timelimit: {
     description: 'Time limit (minutes)',
@@ -138,7 +149,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     type: 'number',
     min: -1000,
     max: 1000,
-    permissions: adminPermissions,
+    permissions: adminEditPermissions,
   },
   sv_hl2mp_item_respawn_time: {
     description: 'Items respawn time (seconds)',
@@ -170,8 +181,19 @@ const getAccessibleCvars = (
   const res = [] as Cvar[];
 
   for (const [cvar, cvarInfo] of Object.entries(cvarsInfo)) {
-    for (const cvarPermission of cvarInfo.permissions[accessType]) {
-      if (permissions.includes(cvarPermission)) res.push(cvar as Cvar);
+    const requiredPermissions = cvarInfo.permissions[accessType];
+
+    if (requiredPermissions?.length === 0) {
+      // If cvar requires no permissions, allow
+      res.push(cvar as Cvar);
+    } else {
+      // Check if the user has any of the permissions
+      // required to access the cvar
+      for (const cvarPermission of requiredPermissions) {
+        if (permissions.includes(cvarPermission)) {
+          res.push(cvar as Cvar);
+        }
+      }
     }
   }
 
