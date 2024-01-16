@@ -23,6 +23,7 @@ const useStyles = createUseStyles({
     gap: '3em',
     padding: '6em',
     position: 'relative',
+    fontSize: '3vh',
   },
   dev: {
     position: 'absolute',
@@ -41,17 +42,17 @@ const useStyles = createUseStyles({
   activeItemTitle: {
     ...filterShadow(1),
     fontSize: '2em',
-    color: theme.fg1,
     position: 'absolute',
     left: '50%',
-    top: '10%',
+    bottom: '1em',
     transform: 'translateX(-50%)',
   },
-  hint: {
+  title: {
     ...filterShadow(1),
     position: 'absolute',
+    fontSize: '2em',
     left: '50%',
-    top: '90%',
+    top: '1em',
     transform: 'translateX(-50%)',
   },
 });
@@ -88,9 +89,9 @@ const buildTimestampFormat = Intl.DateTimeFormat(navigator.language, {
   second: '2-digit',
 });
 
-export const Menu: FC<{ items: MenuItemInfo[]; hint?: string }> = ({
+export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   items,
-  hint,
+  title,
 }) => {
   const c = useStyles();
   const [hoveredItem, setHoveredItem] = useState<MenuItemInfo>();
@@ -107,7 +108,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; hint?: string }> = ({
   );
 
   const totalItems = visibleItems.length;
-  const radius = Math.max(4, totalItems);
+  const radius = Math.max(6.5, totalItems * 1.5);
 
   const setHoveredItemDebounced = debounce(setHoveredItem, 50);
   const { pathname } = useLocation();
@@ -124,8 +125,14 @@ export const Menu: FC<{ items: MenuItemInfo[]; hint?: string }> = ({
           <a href="/report.html">Bundle analyzer</a>
         </div>
       )}
+      {title && <div className={c.title}>{title}</div>}
       {hoveredItem && (
-        <div className={c.activeItemTitle}>{hoveredItem.title}</div>
+        <div
+          className={c.activeItemTitle}
+          style={{ color: hoveredItem.color ?? theme.fg1 }}
+        >
+          {hoveredItem.title}
+        </div>
       )}
       <div className={c.items}>
         <MenuItem
@@ -150,7 +157,6 @@ export const Menu: FC<{ items: MenuItemInfo[]; hint?: string }> = ({
           />
         ))}
       </div>
-      {hint && <div className={c.hint}>{hint}</div>}
     </div>
   );
 };

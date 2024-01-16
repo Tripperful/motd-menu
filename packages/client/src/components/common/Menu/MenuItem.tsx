@@ -10,6 +10,7 @@ const useStyles = createUseStyles({
   root: {
     position: 'absolute',
     transform: 'translate(-50%, -50%)',
+    borderRadius: '100em',
   },
   '@keyframes popin': popin,
   button: {
@@ -17,7 +18,7 @@ const useStyles = createUseStyles({
     backgroundColor: theme.bg1,
     borderRadius: '100em',
     padding: '0.5em',
-    fontSize: '1.5em',
+    fontSize: '2.5em',
     animation: '$popin 0.1s ease-in',
   },
 });

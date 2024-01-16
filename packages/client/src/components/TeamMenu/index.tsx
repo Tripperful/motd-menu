@@ -39,5 +39,5 @@ export const TeamMenu: FC = () => {
     }
   }, [nav, teamIndex]);
 
-  return <Menu items={menuItems} hint="Select your team" />;
+  return <Menu items={menuItems} title="Select your team" />;
 };

@@ -30,6 +30,6 @@ const menuItems: MenuItemInfo[] = [
 
 export const MainMenu: FC = () => (
   <Suspense>
-    <Menu items={menuItems} hint="Main menu" />
+    <Menu items={menuItems} title="Main menu" />
   </Suspense>
 );
