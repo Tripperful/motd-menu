@@ -34,8 +34,12 @@ export const dbgErr: typeof console.error = (...args) => {
   console.error(...args);
 };
 
+// Remove semicolons to prevent command injection.
 // Surround with quites if it has spaces and isn't quoted yet.
-export const sanitizeCvarValue = (value: string) =>
-  value === '' || (value.includes(' ') && !value.startsWith('"'))
+export const sanitizeCvarValue = (value: string) => {
+  value = value.replace(/;/g, '');
+
+  return value === '' || (value.includes(' ') && !value.startsWith('"'))
     ? '"' + value + '"'
     : value;
+};

@@ -69,7 +69,7 @@ export type CvarProps =
 
 export type CvarType = CvarProps['type'];
 
-type CvarInfo = {
+export type CvarInfo = {
   description: string;
   permissions: CvarPermissions;
 } & CvarProps;

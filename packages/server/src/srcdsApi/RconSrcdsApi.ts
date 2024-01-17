@@ -1,8 +1,14 @@
-import { Cvar, OnlinePlayerInfo } from '@motd-menu/common';
+import {
+  Cvar,
+  OnlinePlayerInfo,
+  StartMatchSettings,
+  matchCvars,
+} from '@motd-menu/common';
 import { RconApi, SrcdsRcon } from 'src/rcon';
 import { dbgInfo, dbgWarn, sanitizeCvarValue, uSteamIdTo64 } from 'src/util';
 import { config } from '~root/config';
 import { SrcdsApi } from './SrcdsApi';
+import { getPlayersProfiles } from 'src/steam';
 
 export class RconSrcdsApi implements SrcdsApi {
   private connections: Record<string, RconApi> = {};
@@ -114,5 +120,40 @@ export class RconSrcdsApi implements SrcdsApi {
           steamId: uSteamIdTo64(entry[3]),
         }) as OnlinePlayerInfo,
     );
+  }
+
+  /**
+   * @throws the reason why the match couldn't be started.
+   */
+  async startMatch(token: string, settings: StartMatchSettings): Promise<void> {
+    const onlinePlayers = await this.getOnlinePlayers();
+    const setTeamCommands: string[] = [];
+
+    if (!settings.players || Object.keys(settings.players).length < 2) {
+      throw 'At least 2 players are required to start a match';
+    }
+
+    for (const [steamId, teamIndex] of Object.entries(settings.players)) {
+      const player = onlinePlayers.find((p) => p.steamId === steamId);
+
+      if (!player) {
+        const disconnectedPlayer = (await getPlayersProfiles([steamId]))[
+          steamId
+        ];
+        const disconnectedPlayerName = disconnectedPlayer?.name ?? steamId;
+
+        throw `Failed to start the match (${disconnectedPlayerName} left the game)`;
+      }
+
+      setTeamCommands.push(`motd_team_change ${player.userId} ${teamIndex}`);
+    }
+
+    await this.rcon.exec(setTeamCommands.join(';'));
+
+    const cvars = (Object.entries(settings.cvars ?? {}) as [Cvar, string][])
+      .filter(([cvar]) => matchCvars.includes(cvar))
+      .map(([cvar, value]) => `${cvar} ${sanitizeCvarValue(value)}`);
+
+    await this.rcon.exec(`motd_match_start ${token} ${btoa(cvars.join(';'))}`);
   }
 }

@@ -2,6 +2,7 @@ export * from './cvars';
 export * from './types/config';
 export * from './types/log';
 export * from './types/maps';
+export * from './types/match';
 export * from './types/permissions';
 export * from './types/players';
 export * from './types/reactions';

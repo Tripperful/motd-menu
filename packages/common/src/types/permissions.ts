@@ -1,6 +1,5 @@
 export const permissionDescriptions = {
-  permissions_view: "View players' permissions",
-  permissions_edit: "Edit players' permissions",
+  match_organizer: 'Organize matches',
   maps_edit: 'Edit maps images, descriptions, etc',
   comments_edit: "Delete other players' comments/reviews",
   teams_others_edit: "Change other players' teams",
@@ -8,6 +7,8 @@ export const permissionDescriptions = {
   cvars_matchmaking_edit: 'Edit matchmaking cvars',
   cvars_admin_view: 'View admin cvars',
   cvars_admin_edit: 'Edit admin cvars',
+  permissions_view: "View players' permissions",
+  permissions_edit: "Edit players' permissions",
   dev: 'Developer',
 };
 

@@ -9,6 +9,7 @@ import {
   ReactionData,
   ReactionName,
   Severity,
+  StartMatchSettings,
   SteamPlayerData,
 } from '@motd-menu/common';
 
@@ -241,6 +242,10 @@ class MotdApi {
     await this.delete(
       `maps/reviews/reactions/${mapName}/${reviewAuthorSteamId}/${reaction}`,
     );
+  }
+
+  public async startMatch(settings: StartMatchSettings) {
+    await this.post(`match/start`, JSON.stringify(settings));
   }
 }
 

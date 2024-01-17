@@ -24,7 +24,7 @@ const menuItems: MenuItemInfo[] = [
     title: 'Match menu',
     link: 'match',
     Icon: PlayIcon,
-    permissions: ['dev'],
+    permissions: ['match_organizer'],
   },
 ];
 

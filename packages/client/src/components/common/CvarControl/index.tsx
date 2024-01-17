@@ -14,7 +14,7 @@ import { Switch } from '../Switch';
 export interface CvarControlProps {
   cvar: Cvar;
   value: string;
-  setValue: (value: string) => void;
+  setValue: (value: string, cvar: Cvar) => void;
   disabled?: boolean;
 }
 
@@ -49,7 +49,7 @@ export const CvarBoolControl: FC<CvarControlProps & BoolCvarProps> = ({
     <div className={c.cvarControl}>
       <Switch
         active={value && value != '0'}
-        setActive={(active) => setValue(active ? '1' : '0')}
+        setActive={(active) => setValue(active ? '1' : '0', cvar)}
         disabled={disabled}
       />
       <div>{description}</div>
@@ -81,7 +81,7 @@ export const CvarNumberControl: FC<CvarControlProps & NumberCvarProps> = ({
         Math.min(max, Math.max(min, Number(curValue))),
       );
 
-      setValue(clampedValue);
+      setValue(clampedValue, cvar);
       setCurValue(clampedValue);
     }
   };
@@ -119,7 +119,7 @@ export const CvarTextControl: FC<CvarControlProps & TextCvarProps> = ({
 
   const onBlur = () => {
     if (curValue !== value) {
-      setValue(curValue);
+      setValue(curValue, cvar);
       setCurValue(curValue);
     }
   };

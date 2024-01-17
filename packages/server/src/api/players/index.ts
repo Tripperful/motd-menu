@@ -16,12 +16,8 @@ playersApi.get('/', async (_req, res) => {
       onlinePlayers.map((p) => p.steamId),
     );
 
-    for (const [steamId, profile] of Object.entries(playerProfiles)) {
-      const player = onlinePlayers.find((p) => p.steamId === steamId);
-
-      if (player) {
-        player.steamProfile = profile;
-      }
+    for (const player of onlinePlayers) {
+      player.steamProfile = playerProfiles[player.steamId];
     }
 
     res.status(200).end(JSON.stringify(Object.values(onlinePlayers)));
