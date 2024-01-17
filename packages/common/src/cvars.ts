@@ -72,6 +72,7 @@ export type CvarType = CvarProps['type'];
 export type CvarInfo = {
   description: string;
   permissions: CvarPermissions;
+  executeBeforeMatch?: boolean;
 } & CvarProps;
 
 export const cvarsInfo: Record<Cvar, CvarInfo> = {
@@ -80,12 +81,14 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     type: 'text',
     maxLength: 100,
     permissions: adminEditPermissions,
+    executeBeforeMatch: true,
   },
   sv_password: {
     description: 'Server password',
     type: 'text',
     maxLength: 100,
     permissions: adminOnlyPermissions,
+    executeBeforeMatch: true,
   },
   sv_cheats: {
     description: 'Cheats',
@@ -96,16 +99,19 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     description: 'Equalizer',
     type: 'bool',
     permissions: matchmakingPermissions,
+    executeBeforeMatch: true,
   },
   mm_esp_teammates: {
     description: 'Allow teammates ESP',
     type: 'bool',
     permissions: matchmakingPermissions,
+    executeBeforeMatch: true,
   },
   mp_teamplay: {
     description: 'Team play',
     type: 'bool',
     permissions: adminEditPermissions,
+    executeBeforeMatch: true,
   },
   mp_friendlyfire: {
     description: 'Friendly fire',

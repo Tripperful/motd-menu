@@ -1,4 +1,4 @@
-import { Cvar, OnlinePlayerInfo, StartMatchSettings } from '@motd-menu/common';
+import { Cvar, OnlinePlayerInfo } from '@motd-menu/common';
 
 export interface SrcdsApi {
   auth(token: string): Promise<OnlinePlayerInfo>;
@@ -11,5 +11,9 @@ export interface SrcdsApi {
   getMaps(): Promise<string[]>;
   changelevel(token: string, mapName: string): Promise<void>;
   getOnlinePlayers(): Promise<OnlinePlayerInfo[]>;
-  startMatch(token: string, settings: StartMatchSettings): Promise<void>;
+  startMatch(
+    token: string,
+    preTimerCommands?: string[],
+    postTimerCommands?: string[],
+  ): Promise<void>;
 }
