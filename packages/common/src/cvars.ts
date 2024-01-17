@@ -47,6 +47,7 @@ export type Cvar =
   | 'mp_forcerespawn'
   | 'mp_timelimit'
   | 'mm_equalizer'
+  | 'mm_overtime'
   | 'mm_esp_teammates'
   | 'mm_show_endmatch_rate'
   | 'mm_rpg_spawn_time';
@@ -148,6 +149,13 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     type: 'number',
     min: 0,
     max: 240,
+    permissions: matchmakingPermissions,
+  },
+  mm_overtime: {
+    description: 'Overtime in case of draw (seconds)',
+    type: 'number',
+    min: 0,
+    max: 300,
     permissions: matchmakingPermissions,
   },
   sv_gravity: {

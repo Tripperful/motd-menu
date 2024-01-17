@@ -9,6 +9,7 @@ export interface StartMatchSettings {
 
 export const matchCvarDefaults: Partial<Record<Cvar, string>> = {
   mp_timelimit: '15',
+  mm_overtime: '60',
   mp_teamplay: '1',
   mm_equalizer: '1',
   mp_friendlyfire: '1',
