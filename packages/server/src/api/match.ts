@@ -22,7 +22,10 @@ matchApi.post('/start', async (req, res) => {
     try {
       const { cvars, players } = req.body as StartMatchSettings;
 
-      if (!players || Object.keys(players).length < 2) {
+      if (
+        !players ||
+        Object.values(players).filter((teamIndex) => teamIndex !== 1).length < 2
+      ) {
         throw 'At least 2 players are required to start a match';
       }
 
