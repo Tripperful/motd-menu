@@ -5,7 +5,7 @@ import { config } from '~root/config';
 import { SrcdsApi } from './SrcdsApi';
 
 export class RconSrcdsApi implements SrcdsApi {
-  private connections: Record<string, RconApi> = {};
+  private _rcon: RconApi = null;
 
   constructor(
     private ip: string,
@@ -14,13 +14,12 @@ export class RconSrcdsApi implements SrcdsApi {
 
   private get rcon() {
     const { ip, port } = this;
-    const host = ip + ':' + port;
 
-    if (!this.connections[host]) {
-      this.connections[host] = new SrcdsRcon(ip, port, config.rconPassword);
+    if (!this._rcon) {
+      this._rcon = new SrcdsRcon(ip, port, config.rconPassword);
     }
 
-    return this.connections[host];
+    return this._rcon;
   }
 
   async auth(token: string) {

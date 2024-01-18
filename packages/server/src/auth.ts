@@ -1,10 +1,11 @@
-import { Permission } from '@motd-menu/common';
+import { Permission, SrcdsProtocol } from '@motd-menu/common';
 import { RequestHandler } from 'express';
 import { db } from './db';
 import { getSrcdsApi } from './srcdsApi';
 import { dbgInfo, dbgWarn } from './util';
 
 export interface MotdSessionData {
+  protocol: SrcdsProtocol;
   ip: string;
   port: number;
   token: string;
@@ -21,9 +22,12 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     const reqAuthVersion = req.cookies.version ?? authVersion;
     const cookie = reqAuthVersion === authVersion ? req.cookies : null;
 
-    const ip = (req.query?.ip as string) ?? cookie?.ip;
-    const port = Number((req.query?.port as string) ?? cookie?.port);
-    const token = (req.query?.token as string) ?? cookie?.token;
+    const protocol: SrcdsProtocol =
+      (req.query?.protocol as string) ?? cookie?.protocol ?? 'rcon';
+
+    const ip: string = (req.query?.ip as string) ?? cookie?.ip;
+    const port: number = Number((req.query?.port as string) ?? cookie?.port);
+    const token: string = (req.query?.token as string) ?? cookie?.token;
 
     dbgInfo(
       `Auth-protected request to ${ip}:${port} is received with token ${token}`,
@@ -35,7 +39,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       throw 'Unauthorized';
     }
 
-    const srcdsApi = getSrcdsApi(ip as string, port);
+    const srcdsApi = getSrcdsApi(protocol, ip, port);
     res.locals.srcdsApi = srcdsApi;
 
     const { steamId, name, userId } = await srcdsApi.auth(token);
@@ -47,6 +51,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     const permissions = await db.permissions.get(steamId);
 
     res.locals.sessionData = {
+      protocol,
       ip,
       port,
       token,
@@ -58,6 +63,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
     res.cookie('version', authVersion);
     res.cookie('token', token, { httpOnly: true });
+    res.cookie('protocol', protocol);
     res.cookie('ip', ip);
     res.cookie('port', port);
     res.cookie('name', name);
@@ -69,6 +75,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   } catch {
     res.clearCookie('version');
     res.clearCookie('token');
+    res.clearCookie('protocol');
     res.clearCookie('ip');
     res.clearCookie('port');
     res.clearCookie('name');

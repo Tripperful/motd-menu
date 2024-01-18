@@ -8,6 +8,8 @@ import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
 import { logDbgInfo } from './util';
+import { JsonUdp } from './udp';
+import { MockUdpServer } from './mock/MockUdpServer';
 
 const app = express();
 
@@ -30,8 +32,26 @@ app.use((_req, res) =>
   res.sendFile(path.resolve(__dirname, staticDir + '/index.html')),
 );
 
+export const jsonUdp = new JsonUdp(
+  Number(process.env.MOTD_UDP_PORT),
+  process.env.MOTD_AES_PASSWORD,
+);
+
 db.init().then(() => {
   app.listen(config.port, () => {
-    console.log(`MOTD-menu server listening at port ${config.port}`);
+    console.log(`MOTD-menu web server listening at port ${config.port}`);
   });
+  jsonUdp.connect();
+
+  if (process.env.MOTD_MOCK_UDP_SERVER_PORT) {
+    const mockServer = new MockUdpServer(
+      new JsonUdp(
+        Number(process.env.MOTD_MOCK_UDP_SERVER_PORT),
+        process.env.MOTD_AES_PASSWORD,
+        'MOCK UDP SERVER',
+      ),
+    );
+
+    mockServer.start();
+  }
 });
