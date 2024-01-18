@@ -18,7 +18,7 @@ export const enum JsonUdpMessageType {
   CvarsResponse,
   SetCvar,
   SetPlayerTeam,
-  Changelevel,
+  ChangeLevel,
   StartMatch,
   MotdAuthRequest,
   MotdAuthResponse,

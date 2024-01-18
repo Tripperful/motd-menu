@@ -63,7 +63,7 @@ export class UdpSrcdsApi implements SrcdsApi {
   }
 
   async changelevel(token: string, mapName: string): Promise<void> {
-    await this.send(JsonUdpMessageType.Changelevel, { token, mapName });
+    await this.send(JsonUdpMessageType.ChangeLevel, { token, mapName });
   }
 
   async getOnlinePlayers(): Promise<OnlinePlayerInfo[]> {
