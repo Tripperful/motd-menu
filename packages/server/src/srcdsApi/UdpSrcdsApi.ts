@@ -69,7 +69,7 @@ export class UdpSrcdsApi implements SrcdsApi {
   async getOnlinePlayers(): Promise<OnlinePlayerInfo[]> {
     return (
       await this.request<never, OnlinePlayerInfo[]>(
-        JsonUdpMessageType.MotdOnlinePlayersRequest,
+        JsonUdpMessageType.OnlinePlayersRequest,
       )
     ).data;
   }

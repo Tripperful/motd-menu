@@ -19,9 +19,9 @@ export class MockUdpServer {
         };
       }
 
-      case JsonUdpMessageType.MotdOnlinePlayersRequest: {
+      case JsonUdpMessageType.OnlinePlayersRequest: {
         return {
-          type: JsonUdpMessageType.MotdOnlinePlayersResponse,
+          type: JsonUdpMessageType.OnlinePlayersResponse,
           data: [players.Tripperful],
         };
       }

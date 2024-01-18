@@ -16,6 +16,8 @@ export const enum JsonUdpMessageType {
   MapsResponse,
   CvarsRequest,
   CvarsResponse,
+  OnlinePlayersRequest,
+  OnlinePlayersResponse,
   SetCvar,
   SetPlayerTeam,
   ChangeLevel,
@@ -23,8 +25,6 @@ export const enum JsonUdpMessageType {
   MotdAuthRequest,
   MotdAuthResponse,
   MotdMenuClose,
-  MotdOnlinePlayersRequest,
-  MotdOnlinePlayersResponse,
   RequestTypeUpperBound,
   RequestTypeLowerBound = GetSettingsRequest,
 }
