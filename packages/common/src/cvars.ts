@@ -38,6 +38,7 @@ export type Cvar =
   | 'sv_cheats'
   | 'sv_alltalk'
   | 'sv_gravity'
+  | 'sv_infinite_aux_power'
   | 'sv_hl2mp_item_respawn_time'
   | 'sv_hl2mp_weapon_respawn_time'
   | 'mp_teamplay'
@@ -128,6 +129,11 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     description: 'Allow flashlight',
     type: 'bool',
     permissions: matchmakingPermissions,
+  },
+  sv_infinite_aux_power: {
+    description: 'Infinite suit power',
+    type: 'bool',
+    permissions: adminEditPermissions,
   },
   mp_footsteps: {
     description: 'Foot steps',
