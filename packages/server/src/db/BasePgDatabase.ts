@@ -43,8 +43,6 @@ export class BasePgDatabase {
     for (const sql of sqlScripts) {
       await this.pg.query(sql);
     }
-
-    console.log('Database initialized');
   }
 
   private esc(arg: unknown) {

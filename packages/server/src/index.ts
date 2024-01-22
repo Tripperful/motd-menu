@@ -38,6 +38,8 @@ export const jsonUdp = new JsonUdp(
 );
 
 db.init().then(() => {
+  console.log('Database initialized');
+
   app.listen(config.port, () => {
     console.log(`MOTD-menu web server listening at port ${config.port}`);
   });

@@ -6,3 +6,11 @@ export interface OnlinePlayerInfo {
   userId: number;
   steamProfile?: SteamPlayerData;
 }
+
+export interface PlayerClientSettings {
+  hitSound: boolean;
+  killSound: boolean;
+  fov: number;
+  esp: boolean;
+  drawViewmodel: boolean;
+}

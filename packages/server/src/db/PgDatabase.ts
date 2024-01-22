@@ -3,6 +3,7 @@ import {
   MapPreviewData,
   MapReviewData,
   Permission,
+  PlayerClientSettings,
   ReactionData,
   ReactionName,
   allPermissions,
@@ -98,6 +99,63 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.call('grant_permission', userSteamId, permission),
     withdraw: (userSteamId: string, permission: Permission) =>
       this.call('withdraw_permission', userSteamId, permission),
+  };
+
+  client = {
+    connected: (
+      token: string,
+      steamId: string,
+      ip: string,
+      port: number,
+      name: string,
+    ) => this.call('client_connected', token, steamId, ip, port, name),
+    disconnected: (
+      token: string,
+      inAvgLatency: number,
+      inAvgLoss: number,
+      inAvgChoke: number,
+      inAvgPackets: number,
+      inTotalData: number,
+      outAvgLatency: number,
+      outAvgLoss: number,
+      outAvgChoke: number,
+      outAvgPackets: number,
+      outTotalData: number,
+    ) =>
+      this.call(
+        'client_disconnected',
+        token,
+        inAvgLatency,
+        inAvgLoss,
+        inAvgChoke,
+        inAvgPackets,
+        inTotalData,
+        outAvgLatency,
+        outAvgLoss,
+        outAvgChoke,
+        outAvgPackets,
+        outTotalData,
+      ),
+    addName: (steamId: string, name: string) =>
+      this.call('client_add_name', steamId, name),
+
+    settings: {
+      get: (steamId: string) =>
+        this.select<PlayerClientSettings>('get_client_settings', steamId),
+      set: (
+        steamId: string,
+        { hitSound, killSound, fov, esp, drawViewmodel }: PlayerClientSettings,
+      ) =>
+        this.call(
+          'set_client_settings',
+          steamId,
+          hitSound,
+          killSound,
+          fov,
+          esp,
+          drawViewmodel,
+        ),
+    },
   };
 
   override async init() {

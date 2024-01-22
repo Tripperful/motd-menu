@@ -3,6 +3,7 @@ import {
   MapPreviewData,
   MapReviewData,
   Permission,
+  PlayerClientSettings,
   ReactionData,
   ReactionName,
 } from '@motd-menu/common';
@@ -65,5 +66,32 @@ export interface Database {
     get(userSteamId: string): Promise<Permission[]>;
     grant(userSteamId: string, permission: Permission): Promise<void>;
     withdraw(userSteamId: string, permission: Permission): Promise<void>;
+  };
+  client: {
+    connected(
+      token: string,
+      steamId: string,
+      ip: string,
+      port: number,
+      name: string,
+    ): Promise<void>;
+    disconnected(
+      token: string,
+      inAvgLatency: number,
+      inAvgLoss: number,
+      inAvgChoke: number,
+      inAvgPackets: number,
+      inTotalData: number,
+      outAvgLatency: number,
+      outAvgLoss: number,
+      outAvgChoke: number,
+      outAvgPackets: number,
+      outTotalData: number,
+    ): Promise<void>;
+    addName(steamId: string, name: string): Promise<void>;
+    settings: {
+      get: (steamId: string) => Promise<PlayerClientSettings>;
+      set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;
+    };
   };
 }
