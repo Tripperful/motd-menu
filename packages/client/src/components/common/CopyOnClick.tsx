@@ -16,7 +16,10 @@ export const CopyOnClick: FC<
 > = ({ copyText, what, children }) => {
   const c = useStyles();
 
-  const onClick: MouseEventHandler = () => {
+  const onClick: MouseEventHandler = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     copyToClipboard(copyText);
 
     if (what) {

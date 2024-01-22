@@ -1,3 +1,4 @@
+import { steamId64ToLegacy } from '@motd-menu/common';
 import classNames from 'classnames';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
@@ -16,8 +17,9 @@ import { SidePanel } from '~components/common/SidePanel';
 import CombineIcon from '~icons/combine.svg';
 import CopyIcon from '~icons/copy.svg';
 import SpecIcon from '~icons/eye.svg';
-import OpenIcon from '~icons/open-in-browser.svg';
 import RebelIcon from '~icons/lambda.svg';
+import OpenIcon from '~icons/open-in-browser.svg';
+import EfpsIcon from '~icons/efps.svg';
 import { activeItem, outlineButton } from '~styles/elements';
 import { ChildrenProps, ClassNameProps } from '~types/props';
 import { PlayerPermissions } from './PlayerPermissions';
@@ -138,6 +140,15 @@ const PlayerDetailsContent: FC = () => {
             <Link className={c.profileButton} to={profileLink}>
               <OpenIcon />
               View profile
+            </Link>
+            <Link
+              className={c.profileButton}
+              to={`https://hl2dm.everythingfps.com/profile.php?id=${steamId64ToLegacy(
+                player.steamId,
+              )}`}
+            >
+              <EfpsIcon />
+              eFPS stats
             </Link>
           </div>
         </div>

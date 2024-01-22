@@ -1,6 +1,10 @@
-import { Cvar, OnlinePlayerInfo } from '@motd-menu/common';
+import {
+  Cvar,
+  OnlinePlayerInfo,
+  accountNumberToSteamId64,
+} from '@motd-menu/common';
 import { RconApi, SrcdsRcon } from 'src/rcon';
-import { dbgInfo, dbgWarn, sanitizeCvarValue, uSteamIdTo64 } from 'src/util';
+import { dbgInfo, dbgWarn, sanitizeCvarValue } from 'src/util';
 import { config } from '~root/config';
 import { SrcdsApi } from './SrcdsApi';
 
@@ -32,7 +36,7 @@ export class RconSrcdsApi implements SrcdsApi {
     const credentials = res.split('\n');
 
     const [prefixAndName, userIdStr] = credentials;
-    const steamId = uSteamIdTo64(credentials[2]);
+    const steamId = accountNumberToSteamId64(credentials[2]);
     const name = prefixAndName.substring(25);
 
     dbgInfo(
@@ -110,7 +114,7 @@ export class RconSrcdsApi implements SrcdsApi {
         ({
           userId: Number(entry[1]),
           name: entry[2],
-          steamId: uSteamIdTo64(entry[3]),
+          steamId: accountNumberToSteamId64(entry[3]),
         }) as OnlinePlayerInfo,
     );
   }
