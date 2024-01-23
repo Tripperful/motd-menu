@@ -19,3 +19,18 @@ const playerSteamProfilesState = createGlobalState(fetchPlayerSteamProfile);
 
 export const usePlayerSteamProfile = (steamId: string) =>
   playerSteamProfilesState.useExternalState(steamId);
+
+const fetchPlayerNames = (steamId: string) => motdApi.getPlayerNames(steamId);
+
+const playerNamesState = createGlobalState(fetchPlayerNames);
+
+export const usePlayerNames = (steamId: string) =>
+  playerNamesState.useExternalState(steamId);
+
+const fetchPlayerSmurfSteamIds = (steamId: string) =>
+  motdApi.getPlayerSmurfSteamIds(steamId);
+
+const playerSmurfSteamIdsState = createGlobalState(fetchPlayerSmurfSteamIds);
+
+export const usePlayerSmurfSteamIds = (steamId: string) =>
+  playerSmurfSteamIdsState.useExternalState(steamId);

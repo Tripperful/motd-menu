@@ -1,5 +1,4 @@
 import { steamId64ToLegacy } from '@motd-menu/common';
-import classNames from 'classnames';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
@@ -12,18 +11,17 @@ import {
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { steamProfileLink } from 'src/util';
 import { MapDetails } from '~components/MapList/MapDetails';
-import { CopyOnClick } from '~components/common/CopyOnClick';
+import { LineWithCopy } from '~components/common/LineWithCopy';
 import { SidePanel } from '~components/common/SidePanel';
 import CombineIcon from '~icons/combine.svg';
-import CopyIcon from '~icons/copy.svg';
+import EfpsIcon from '~icons/efps.svg';
 import SpecIcon from '~icons/eye.svg';
 import RebelIcon from '~icons/lambda.svg';
-import OpenIcon from '~icons/open-in-browser.svg';
-import EfpsIcon from '~icons/efps.svg';
-import { activeItem, outlineButton } from '~styles/elements';
-import { ChildrenProps, ClassNameProps } from '~types/props';
+import UserInspectIcon from '~icons/user-inspect.svg';
+import { outlineButton } from '~styles/elements';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
+import { SmurfsPopup } from './SmurfsPopup';
 
 const useStyles = createUseStyles({
   root: {
@@ -43,19 +41,9 @@ const useStyles = createUseStyles({
     gap: '0.5em',
   },
   avatar: {
-    width: '6em',
-    height: '6em',
+    width: '6.5em',
+    height: '6.5em',
     borderRadius: '0.5em',
-  },
-  lineWithCopy: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5em',
-  },
-  copyButton: {
-    display: 'inline-flex',
-    fontSize: '0.5em',
-    ...activeItem(),
   },
   playerName: {
     fontSize: '1.5em',
@@ -66,28 +54,13 @@ const useStyles = createUseStyles({
   profileButtons: {
     display: 'flex',
     gap: '0.5em',
+    whiteSpace: 'nowrap',
+    flexWrap: 'wrap',
   },
   profileButton: {
     ...outlineButton(),
   },
 });
-
-const LineWithCopy: FC<
-  { copyText: string; what?: string } & ChildrenProps & ClassNameProps
-> = ({ copyText, what, children, className }) => {
-  const c = useStyles();
-
-  return (
-    <div className={classNames(c.lineWithCopy, className)}>
-      {children}
-      <CopyOnClick copyText={copyText} what={what}>
-        <div className={c.copyButton}>
-          <CopyIcon />
-        </div>
-      </CopyOnClick>
-    </div>
-  );
-};
 
 const PlayerDetailsContent: FC = () => {
   const c = useStyles();
@@ -121,25 +94,20 @@ const PlayerDetailsContent: FC = () => {
             copyText={player.name}
             what="Player's name"
           >
-            {player.name}
+            Name: {player.name}
           </LineWithCopy>
           <LineWithCopy
             className={c.steamId}
             copyText={player.steamId}
             what="Player's Steam ID"
+            link={{ url: profileLink, copy: true, open: true }}
           >
             Steam ID: {player.steamId}
           </LineWithCopy>
           <div className={c.profileButtons}>
-            <CopyOnClick copyText={profileLink} what="Player's profile link">
-              <div className={c.profileButton}>
-                <CopyIcon />
-                Copy profile link
-              </div>
-            </CopyOnClick>
-            <Link className={c.profileButton} to={profileLink}>
-              <OpenIcon />
-              View profile
+            <Link className={c.profileButton} to="smurfs">
+              <UserInspectIcon />
+              Who is..?
             </Link>
             <Link
               className={c.profileButton}
@@ -195,6 +163,7 @@ export const PlayerDetails: FC = () => {
         </Suspense>
       </div>
       <Routes>
+        <Route path="/smurfs/*" element={<SmurfsPopup />} />
         <Route path="/:mapName/*" element={<RatedMapDetails />} />
       </Routes>
     </SidePanel>

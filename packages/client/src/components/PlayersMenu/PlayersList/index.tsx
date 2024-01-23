@@ -5,7 +5,7 @@ import { useOnlinePlayers } from 'src/hooks/state/players';
 import { skeletonBg } from '~styles/elements';
 import { PlayersListItem } from './PlayersListItem';
 
-export const useStyles = createUseStyles({
+const useStyles = createUseStyles({
   '@keyframes bgShift': {
     from: {
       backgroundPositionX: '0vw',

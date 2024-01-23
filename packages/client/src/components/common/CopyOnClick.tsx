@@ -23,7 +23,7 @@ export const CopyOnClick: FC<
     copyToClipboard(copyText);
 
     if (what) {
-      addNotification('info', what + ' copied to clipboard!');
+      addNotification('success', what + ' copied to clipboard!');
     }
   };
 
