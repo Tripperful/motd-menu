@@ -40,7 +40,7 @@ export const PlayersListItem: FC<{ data: OnlinePlayerInfo }> = ({ data }) => {
     <Link className={c.root} to={data.steamId}>
       <img className={c.avatar} src={data.steamProfile?.avatar} />
       <div className={c.playerInfo}>
-        <div>{data.name}</div>
+        <div>{data.steamProfile?.name ?? data.name}</div>
         <div className={c.steamId}>{data.steamId}</div>
       </div>
     </Link>
