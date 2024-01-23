@@ -9,8 +9,10 @@ import {
   usePlayerSteamProfile,
 } from 'src/hooks/state/players';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
+import { useGoBack } from 'src/hooks/useGoBack';
 import { steamProfileLink } from 'src/util';
 import { MapDetails } from '~components/MapList/MapDetails';
+import { IFramePopup } from '~components/common/IFramePopup';
 import { LineWithCopy } from '~components/common/LineWithCopy';
 import { SidePanel } from '~components/common/SidePanel';
 import CombineIcon from '~icons/combine.svg';
@@ -62,6 +64,21 @@ const useStyles = createUseStyles({
   },
 });
 
+const EfpsStatsPopup: FC = () => {
+  const { steamId } = useParams();
+  const goBack = useGoBack();
+
+  return (
+    <IFramePopup
+      title="eFPS stats"
+      url={`https://hl2dm.everythingfps.com/profile.php?id=${steamId64ToLegacy(
+        steamId,
+      )}`}
+      onClose={goBack}
+    />
+  );
+};
+
 const PlayerDetailsContent: FC = () => {
   const c = useStyles();
 
@@ -109,12 +126,7 @@ const PlayerDetailsContent: FC = () => {
               <UserInspectIcon />
               Who is..?
             </Link>
-            <Link
-              className={c.profileButton}
-              to={`https://hl2dm.everythingfps.com/profile.php?id=${steamId64ToLegacy(
-                player.steamId,
-              )}`}
-            >
+            <Link className={c.profileButton} to="efps">
               <EfpsIcon />
               eFPS stats
             </Link>
@@ -164,6 +176,7 @@ export const PlayerDetails: FC = () => {
       </div>
       <Routes>
         <Route path="/smurfs/*" element={<SmurfsPopup />} />
+        <Route path="/efps/*" element={<EfpsStatsPopup />} />
         <Route path="/:mapName/*" element={<RatedMapDetails />} />
       </Routes>
     </SidePanel>
