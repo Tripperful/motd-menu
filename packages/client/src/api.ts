@@ -82,6 +82,18 @@ class MotdApi {
     return JSON.parse(res) as OnlinePlayerInfo[];
   }
 
+  public async getPlayerNames(steamId: string) {
+    const res = await this.get('players/names/' + steamId);
+
+    return JSON.parse(res) as string[];
+  }
+
+  public async getPlayerSmurfSteamIds(steamId: string) {
+    const res = await this.get('players/smurfs/' + steamId);
+
+    return JSON.parse(res) as string[];
+  }
+
   public async getPlayerSteamProfile(steamId: string) {
     const res = await this.get('players/' + steamId);
 

@@ -1,13 +1,17 @@
 CREATE
-OR REPLACE PROCEDURE client_add_name (
-  steam_id text,
-  name text
-) AS $$ BEGIN
+OR REPLACE PROCEDURE client_add_name (steam_id text, name text) AS $$ BEGIN
 INSERT INTO client_names (steam_id, name)
 VALUES (
   client_add_name.steam_id::bigint,
   client_add_name.name
 ) ON CONFLICT DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION client_get_names (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(client_names.name)
+FROM client_names
+WHERE client_names.steam_id = client_get_names.steam_id::bigint;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -159,5 +163,11 @@ BEGIN
   END LOOP;
 
   RETURN QUERY SELECT * FROM client_connections WHERE client_connections.id IN (SELECT smurf_ids.id FROM smurf_ids);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION client_get_smurf_steam_ids (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(DISTINCT a.steam_id::text)
+FROM get_smurf_connections(client_get_smurf_steam_ids.steam_id) a;
 END;
 $$ LANGUAGE plpgsql;

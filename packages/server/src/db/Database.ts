@@ -89,6 +89,8 @@ export interface Database {
       outTotalData: number,
     ): Promise<void>;
     addName(steamId: string, name: string): Promise<void>;
+    getNames(steamId: string): Promise<string[]>;
+    getSmurfSteamIds(steamId: string): Promise<string[]>;
     settings: {
       get: (steamId: string) => Promise<PlayerClientSettings>;
       set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;

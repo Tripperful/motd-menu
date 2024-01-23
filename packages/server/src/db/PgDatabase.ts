@@ -138,6 +138,10 @@ export class PgDatabase extends BasePgDatabase implements Database {
       ),
     addName: (steamId: string, name: string) =>
       this.call('client_add_name', steamId, name),
+    getNames: (steamId: string) =>
+      this.select<string[]>('client_get_names', steamId),
+    getSmurfSteamIds: (steamId: string) =>
+      this.select<string[]>('client_get_smurf_steam_ids', steamId),
 
     settings: {
       get: (steamId: string) =>

@@ -22,7 +22,7 @@ export class MockUdpServer {
       case JsonUdpMessageType.OnlinePlayersRequest: {
         return {
           type: JsonUdpMessageType.OnlinePlayersResponse,
-          data: [players.Tripperful],
+          data: [players.Tripperful, players.tsmc],
         };
       }
 
