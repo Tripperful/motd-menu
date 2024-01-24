@@ -117,7 +117,9 @@ const MatchPlayerItem: FC<{
 
   return (
     <div className={c.playerItem}>
-      <span className={c.teamColor}>{player.name}</span>
+      <span className={c.teamColor}>
+        {player.steamProfile?.name ?? player.name}
+      </span>
       <span className={c.playerTeamButtons}>
         {teams
           .filter((t) => t !== teamIndex)
