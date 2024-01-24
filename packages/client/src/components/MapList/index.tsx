@@ -21,6 +21,7 @@ import { FiltersContext } from './FiltersContext';
 import { MapDetails } from './MapDetails';
 import { MapTile } from './MapTile';
 import { Search } from './Search';
+import { MapSorting, mapComparators } from './Sorting';
 
 const useStyles = createUseStyles({
   '@keyframes bgShift': {
@@ -70,34 +71,40 @@ const MapListContent: FC = () => {
   const c = useStyles();
 
   const maps = useMapsPreviews();
-  const { search, favs, tags } = useContext(FiltersContext);
+  const { search, favs, tags, sorting } = useContext(FiltersContext);
 
-  const filteredMaps = useMemo(
+  const filteredSortedMaps = useMemo(
     () =>
-      maps.filter((m) => {
-        let show = true;
+      maps
+        .filter((m) => {
+          let show = true;
 
-        show &&= !m.parentMap;
+          show &&= !m.parentMap;
 
-        if (search) {
-          show &&= m.name.toLowerCase().includes(search.toLowerCase());
-        }
+          if (search) {
+            show &&= m.name.toLowerCase().includes(search.toLowerCase());
+          }
 
-        if (favs) {
-          show &&= m.isFavorite;
-        }
+          if (favs) {
+            show &&= m.isFavorite;
+          }
 
-        if (tags?.length) {
-          show &&= m.tags.some((tag) => tags.includes(tag));
-        }
+          if (tags?.length) {
+            show &&= m.tags.some((tag) => tags.includes(tag));
+          }
 
-        return show;
-      }),
-    [favs, maps, search, tags],
+          return show;
+        })
+        .sort(
+          (a, b) =>
+            mapComparators[sorting.type](a, b) *
+            (sorting.dir === 'asc' ? 1 : -1),
+        ),
+    [favs, maps, search, tags, sorting],
   );
 
-  return filteredMaps.length ? (
-    filteredMaps.map((preview) => (
+  return filteredSortedMaps.length ? (
+    filteredSortedMaps.map((preview) => (
       <Link key={preview.name} to={preview.name}>
         <MapTile preview={preview} />
       </Link>
@@ -125,6 +132,9 @@ export const MapList: FC = () => {
   const [search, setSearch] = useState('');
   const [tags, setTags] = useState(() => lsGet('tagFilters'));
   const [favs, setFavs] = useState(() => lsGet('favsOnly'));
+  const [sorting, setSorting] = useState(
+    () => lsGet('mapSorting') ?? ({ type: 'name', dir: 'asc' } as MapSorting),
+  );
 
   const clearFilters = useCallback(() => {
     setSearch('');
@@ -140,6 +150,10 @@ export const MapList: FC = () => {
     lsSet('tagFilters', tags);
   }, [tags]);
 
+  useEffect(() => {
+    lsSet('mapSorting', sorting);
+  }, [sorting]);
+
   const { mapName } = useParams();
 
   const c = useStyles();
@@ -154,6 +168,8 @@ export const MapList: FC = () => {
         setSearch,
         tags,
         setTags,
+        sorting,
+        setSorting,
       }}
     >
       <Page

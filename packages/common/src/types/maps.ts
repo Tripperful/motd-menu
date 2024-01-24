@@ -3,6 +3,7 @@ export interface MapPreviewData {
   parentMap?: string;
   name: string;
   rate?: number;
+  numRates: number;
   image?: string;
   tags: string[];
   isFavorite?: boolean;

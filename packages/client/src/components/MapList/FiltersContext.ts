@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import { MapSorting } from './Sorting';
 
 type FiltersContextData = {
   favs: boolean;
@@ -7,6 +8,8 @@ type FiltersContextData = {
   setTags: (tags: string[]) => void;
   search: string;
   setSearch: (search: string) => void;
+  sorting: MapSorting;
+  setSorting: (sorting: MapSorting) => void;
 };
 
 export const FiltersContext = createContext<FiltersContextData>(null);

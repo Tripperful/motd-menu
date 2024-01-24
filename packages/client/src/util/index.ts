@@ -1,3 +1,5 @@
+import { MapSorting } from '~components/MapList/Sorting';
+
 export const copyToClipboard = async (text: string) => {
   try {
     if (navigator.clipboard?.writeText) {
@@ -50,18 +52,15 @@ export const dateFormat = (ts: number | string | Date) => {
   return dFormat.format(d);
 };
 
-type LocalStorageKey = 'favsOnly' | 'tagFilters';
-
 const lsDefaults = {
   favsOnly: false as boolean,
   tagFilters: [] as string[],
+  mapSorting: { type: 'name', dir: 'asc' } as MapSorting,
 } as const;
 
-type StoredDefaultsType = typeof lsDefaults;
+type LocalStorageKey = keyof typeof lsDefaults;
 
-// Used to assert the completeness of lsDefaults.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const validLsDefaults: Record<LocalStorageKey, unknown> = lsDefaults;
+type StoredDefaultsType = typeof lsDefaults;
 
 export const lsGet = <TKey extends LocalStorageKey>(
   key: TKey,

@@ -43,6 +43,12 @@ OR REPLACE FUNCTION maps_previews (steam_id text) RETURNS json AS $$ BEGIN RETUR
         FROM maps_reviews
         WHERE maps_reviews.map_id = maps.id
       ),
+      'numRates',
+      (
+        SELECT COUNT(*)
+        FROM maps_reviews
+        WHERE maps_reviews.map_id = maps.id
+      ),
       'isFavorite',
       EXISTS(
         SELECT *

@@ -5,6 +5,7 @@ import { Toggle } from '~components/common/Toggle';
 import FavoritesIcon from '~icons/heart-outline.svg';
 import FavoritesActiveIcon from '~icons/heart.svg';
 import { FiltersContext } from './FiltersContext';
+import { Sorting } from './Sorting';
 
 const useStyles = createUseStyles({
   favs: {
@@ -86,6 +87,7 @@ export const Filters: FC = () => {
       <Suspense>
         <TagsContent />
       </Suspense>
+      <Sorting />
       <Toggle active={favs} setActive={setFavs} className={c.favs}>
         {favs ? <FavoritesActiveIcon /> : <FavoritesIcon />}
       </Toggle>
