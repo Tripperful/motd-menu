@@ -21,6 +21,10 @@ export interface MapSorting {
   dir: SortDirection;
 }
 
+const sortByNumRates = (a: MapPreviewData, b: MapPreviewData) => {
+  return (a.numRates ?? 0) - (b.numRates ?? 0);
+};
+
 export const mapComparators: Record<
   MapSortingType,
   (a: MapPreviewData, b: MapPreviewData) => number
@@ -29,11 +33,11 @@ export const mapComparators: Record<
     return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
   },
   rating: (a: MapPreviewData, b: MapPreviewData) => {
-    return (a.rate ?? 0) - (b.rate ?? 0);
+    const diff = (a.rate ?? 0) - (b.rate ?? 0);
+
+    return diff === 0 ? sortByNumRates(a, b) : diff;
   },
-  numRates: (a: MapPreviewData, b: MapPreviewData) => {
-    return (a.numRates ?? 0) - (b.numRates ?? 0);
-  },
+  numRates: sortByNumRates,
 };
 
 const useStyles = createUseStyles({
