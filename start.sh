@@ -30,6 +30,10 @@ while :; do
     npm run build
     echo "Restarting node.js server"
     pkill node
+  fi
+
+  if ! pgrep -x "node" > /dev/null
+  then
     node ./packages/server/dist/index.js &
   fi
 done
