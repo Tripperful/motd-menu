@@ -46,6 +46,7 @@ db.init().then(() => {
 
     const wsServer = new WebSocketServer({
       server,
+      verifyClient: () => true,
     });
 
     wsServer.on('listening', () => {
