@@ -2,7 +2,7 @@ import { Permission, SrcdsProtocol } from '@motd-menu/common';
 import { RequestHandler } from 'express';
 import { db } from './db';
 import { getSrcdsApi } from './srcdsApi';
-import { dbgInfo, dbgWarn } from './util';
+import { dbgWarn } from './util';
 
 export interface MotdSessionData {
   protocol: SrcdsProtocol;
@@ -28,10 +28,6 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     const ip: string = (req.query?.ip as string) ?? cookie?.ip;
     const port: number = Number((req.query?.port as string) ?? cookie?.port);
     const token: string = (req.query?.token as string) ?? cookie?.token;
-
-    dbgInfo(
-      `Auth-protected request to ${ip}:${port} is received with token ${token}`,
-    );
 
     if (!(ip && port && token)) {
       dbgWarn(`Missing required auth request parameters`);

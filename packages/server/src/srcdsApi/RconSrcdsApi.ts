@@ -4,7 +4,7 @@ import {
   accountNumberToSteamId64,
 } from '@motd-menu/common';
 import { RconApi, SrcdsRcon } from 'src/rcon';
-import { dbgInfo, dbgWarn, sanitizeCvarValue } from 'src/util';
+import { dbgWarn, sanitizeCvarValue } from 'src/util';
 import { config } from '~root/config';
 import { SrcdsApi } from './SrcdsApi';
 
@@ -27,25 +27,13 @@ export class RconSrcdsApi implements SrcdsApi {
   }
 
   async auth(token: string) {
-    dbgInfo(`Received auth request for token ${token}`);
-
     const res = await this.rcon.exec('motd_menu_auth ' + token);
-
-    dbgInfo(`Auth response: ${res}`);
 
     const credentials = res.split('\n');
 
     const [prefixAndName, userIdStr] = credentials;
     const steamId = accountNumberToSteamId64(credentials[2]);
     const name = prefixAndName.substring(25);
-
-    dbgInfo(
-      `Parsed response credentials: ${JSON.stringify({
-        name,
-        userIdStr,
-        steamId,
-      })}}`,
-    );
 
     if (!(name && userIdStr && steamId)) {
       dbgWarn(
@@ -56,14 +44,6 @@ export class RconSrcdsApi implements SrcdsApi {
     }
 
     const userId = Number(userIdStr);
-
-    dbgInfo(
-      `Authenticated token ${token}, credentials: ${JSON.stringify({
-        name,
-        userId,
-        steamId,
-      })}`,
-    );
 
     return { steamId, name, userId };
   }
