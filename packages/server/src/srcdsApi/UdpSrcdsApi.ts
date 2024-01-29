@@ -1,7 +1,28 @@
 import { Cvar, OnlinePlayerInfo } from '@motd-menu/common';
-import { jsonUdp } from 'src';
-import { JsonUdpMessageType } from 'src/udp';
+import { MockUdpServer } from 'src/mock/MockUdpServer';
+import { JsonUdp, JsonUdpMessageType } from 'src/udp';
 import { SrcdsApi } from './SrcdsApi';
+
+let jsonUdp: JsonUdp;
+
+if (process.env.MOTD_UDP_PORT) {
+  jsonUdp = new JsonUdp(
+    Number(process.env.MOTD_UDP_PORT),
+    process.env.MOTD_AES_PASSWORD,
+  );
+}
+
+if (process.env.MOTD_MOCK_UDP_SERVER_PORT) {
+  const mockServer = new MockUdpServer(
+    new JsonUdp(
+      Number(process.env.MOTD_MOCK_UDP_SERVER_PORT),
+      process.env.MOTD_AES_PASSWORD,
+      'MOCK UDP SERVER',
+    ),
+  );
+
+  mockServer.start();
+}
 
 export class UdpSrcdsApi implements SrcdsApi {
   constructor(

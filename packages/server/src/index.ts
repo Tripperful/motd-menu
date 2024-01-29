@@ -2,15 +2,14 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
 import expressStaticGzip from 'express-static-gzip';
+import http from 'http';
+import https from 'https';
 import path from 'path';
-import { WebSocketServer } from 'ws';
-import { config } from '~root/config';
 import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
-import { MockUdpServer } from './mock/MockUdpServer';
-import { JsonUdp } from './udp';
 import { logDbgInfo } from './util';
+import { bindWsDummy } from './wsDummy';
 
 const app = express();
 
@@ -33,87 +32,57 @@ app.use((_req, res) =>
   res.sendFile(path.resolve(__dirname, staticDir + '/index.html')),
 );
 
-export const jsonUdp = new JsonUdp(
-  Number(process.env.MOTD_UDP_PORT),
-  process.env.MOTD_AES_PASSWORD,
-);
+interface ServerInfo {
+  server: http.Server;
+  port: number;
+  protocol: 'http' | 'https';
+}
+
+const servers: ServerInfo[] = [];
+
+if (process.env.MOTD_WEB_PORT) {
+  servers.push({
+    server: http.createServer(app),
+    port: Number(process.env.MOTD_WEB_PORT),
+    protocol: 'http',
+  });
+}
+
+if (process.env.MOTD_WEB_PORT_HTTPS) {
+  const cert = process.env.MOTD_SSL_CERT;
+  const key = process.env.MOTD_SSL_PRIVATE_KEY;
+
+  if (!cert) {
+    throw new Error(
+      'Trying to start HTTPS server without supplying a certificate',
+    );
+  }
+
+  if (!key) {
+    throw new Error(
+      'Trying to start HTTPS server without supplying a private key',
+    );
+  }
+
+  servers.push({
+    server: https.createServer({ cert, key }, app),
+    port: Number(process.env.MOTD_WEB_PORT_HTTPS),
+    protocol: 'https',
+  });
+}
 
 db.init().then(() => {
   console.log('Database initialized');
 
-  const server = app.listen(config.port, () => {
-    console.log(`MOTD-menu web server listening at port ${config.port}`);
+  for (const serverInfo of servers) {
+    const { server, port, protocol } = serverInfo;
 
-    const wsServer = new WebSocketServer({
-      server,
-      verifyClient: () => true,
+    server.listen(port, () => {
+      console.log(
+        `${protocol.toUpperCase()} server is listening on port ${port}`,
+      );
+
+      bindWsDummy(server);
     });
-
-    wsServer.on('listening', () => {
-      `WebSocket server listening at port ${config.port}`;
-    });
-
-    wsServer.on('connection', (ws, req) => {
-      const { remoteAddress, remotePort } = req.socket;
-      const remoteHost = `${remoteAddress}:${remotePort}`;
-
-      console.log(`New WS connection: ${remoteHost}`);
-
-      ws.on('message', async (data) => {
-        try {
-          const txtData = data.toString('utf-8');
-
-          console.log(`Incoming WS message from ${remoteHost}: ${txtData}`);
-
-          await new Promise((res) => setTimeout(res, 1000));
-
-          console.log(`Sending data back to ${remoteHost} after 1 second`);
-
-          ws.send(txtData);
-        } catch (e) {
-          let dataAscii = 'ERROR';
-          let dataUtf8 = 'ERROR';
-          let dataBase64 = 'ERROR';
-
-          try {
-            dataAscii = data.toString('ascii');
-          } catch {}
-
-          try {
-            dataUtf8 = data.toString('utf-8');
-          } catch {}
-
-          try {
-            dataBase64 = data.toString('base64');
-          } catch {}
-
-          ws.send(
-            JSON.stringify({
-              type: 'wsError',
-              error: e,
-              errorMsg: e?.message,
-              errorStack: e?.stack,
-              dataAscii,
-              dataUtf8,
-              dataBase64,
-            }),
-          );
-        }
-      });
-    });
-  });
-
-  jsonUdp.connect();
-
-  if (process.env.MOTD_MOCK_UDP_SERVER_PORT) {
-    const mockServer = new MockUdpServer(
-      new JsonUdp(
-        Number(process.env.MOTD_MOCK_UDP_SERVER_PORT),
-        process.env.MOTD_AES_PASSWORD,
-        'MOCK UDP SERVER',
-      ),
-    );
-
-    mockServer.start();
   }
 });
