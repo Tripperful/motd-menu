@@ -25,7 +25,9 @@ export const bindWsDummy = (server: http.Server) => {
       const ip = req.socket.remoteAddress;
       const port = req.socket.remotePort;
 
-      console.warn(`Unauthorized WS upgrade request from ${ip}:${port}`);
+      console.warn(
+        `Unauthorized WS upgrade request from ${ip}:${port}, request URL: ${req.url}`,
+      );
       return socket.destroy();
     }
 
