@@ -71,6 +71,7 @@ if (process.env.MOTD_WEB_PORT_HTTPS) {
   });
 }
 
+console.log('Connecting to database...');
 db.init().then(() => {
   console.log('Database initialized');
 

@@ -1,16 +1,37 @@
+import { createHash } from 'crypto';
 import type http from 'http';
-import { AddressInfo, WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 
 export const bindWsDummy = (server: http.Server) => {
+  if (!process.env.MOTD_WS_AUTH_PASSWORD) {
+    throw new Error(
+      'MOTD_WS_AUTH_PASSWORD env variable must be set to establish a secure WS connection',
+    );
+  }
+
   const wsServer = new WebSocketServer({
-    server,
-    verifyClient: () => true,
+    noServer: true,
   });
 
-  wsServer.on('listening', () => {
-    `WebSocket server listening on port ${
-      (server.address() as AddressInfo).port
-    }`;
+  server.on('upgrade', (req, socket, head) => {
+    const pwHash = createHash('md5')
+      .update(process.env.MOTD_WS_AUTH_PASSWORD)
+      .digest('hex');
+
+    const searchParams = new URL(req.url, `http://${req.headers.host}`)
+      ?.searchParams;
+
+    if (searchParams?.get('auth')?.toLowerCase() !== pwHash.toLowerCase()) {
+      const ip = req.socket.remoteAddress;
+      const port = req.socket.remotePort;
+
+      console.warn(`Unauthorized WS upgrade request from ${ip}:${port}`);
+      return socket.destroy();
+    }
+
+    wsServer.handleUpgrade(req, socket, head, (ws) => {
+      wsServer.emit('connection', ws, req);
+    });
   });
 
   wsServer.on('connection', (ws, req) => {
