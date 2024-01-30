@@ -71,9 +71,7 @@ const TagsContent: FC = () => {
         });
       }}
     >
-      {tags.map((t) => (
-        <TagToggle key={t} tag={t} />
-      ))}
+      {tags?.map((t) => <TagToggle key={t} tag={t} />)}
     </div>
   );
 };

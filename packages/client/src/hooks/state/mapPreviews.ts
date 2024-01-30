@@ -46,11 +46,11 @@ export const useAllMapsTags = () => {
     }
 
     return tagsWithCount
-      .sort((t1, t2) => {
+      ?.sort((t1, t2) => {
         const c = t2.count - t1.count;
 
         return c === 0 ? (t1.tag > t2.tag ? 1 : t1.tag < t2.tag ? -1 : 0) : c;
       })
-      .map((t) => t.tag);
+      ?.map((t) => t.tag);
   }, [previews]);
 };

@@ -156,7 +156,7 @@ const TeamList: FC<{
       <div className={classNames(c.playerListHeader, c.teamColor)}>
         {teamNames[teamIndex]}
       </div>
-      {teamPlayers.map((player) => (
+      {teamPlayers?.map((player) => (
         <MatchPlayerItem
           key={player.steamId}
           player={player}
@@ -174,8 +174,8 @@ const MatchPlayersContent: FC = () => {
   const c = useStyles();
 
   const onlinePlayers = useOnlinePlayers();
-  const [players, setPlayers] = useState<MatchPlayerInfo[]>(() =>
-    onlinePlayers.map((p) => ({ ...p, teamIndex: 1 })),
+  const [players, setPlayers] = useState<MatchPlayerInfo[]>(
+    () => onlinePlayers?.map((p) => ({ ...p, teamIndex: 1 })),
   );
 
   const setPlayerTeam = useCallback((steamId: string, teamIndex: number) => {

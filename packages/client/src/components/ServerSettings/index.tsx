@@ -25,7 +25,7 @@ export const ServerSettings: FC = () => {
   return (
     <Page title="Server settings">
       <div className={c.root}>
-        {viewableCvars.map((cvar) => (
+        {viewableCvars?.map((cvar) => (
           <ServerCvarControl
             key={cvar}
             cvar={cvar}

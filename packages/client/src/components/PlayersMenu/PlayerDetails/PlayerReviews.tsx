@@ -23,7 +23,7 @@ const PlayerReviewsContent: FC<PlayerReviewsProps> = ({ steamId }) => {
 
   return (
     <div className={c.list}>
-      {reviews.map((r) => (
+      {reviews?.map((r) => (
         <MapReview key={r.mapName} review={r} mapDetailsMode />
       ))}
     </div>

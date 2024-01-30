@@ -27,7 +27,7 @@ const flushFetchCvarsDebounced = debounce(async () => {
   let cvars: Record<Cvar, string>;
 
   try {
-    cvars = await motdApi.getCvars(...cvarFetchQueue.map(([cvar]) => cvar));
+    cvars = await motdApi.getCvars(...cvarFetchQueue?.map(([cvar]) => cvar));
   } finally {
     for (const [cvar, res] of cvarFetchQueue) {
       res(cvars?.[cvar]);

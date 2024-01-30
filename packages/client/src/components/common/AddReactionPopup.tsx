@@ -79,7 +79,7 @@ export const AddReactionPopup: FC<
           </div>
         )}
         <div className={c.grid}>
-          {curReactions.map((name) => (
+          {curReactions?.map((name) => (
             <ReactionIcon
               key={name}
               name={name}

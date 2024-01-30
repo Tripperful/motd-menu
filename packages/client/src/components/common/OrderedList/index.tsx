@@ -152,7 +152,7 @@ export const OrderedList = <TItem,>({
       });
   };
 
-  const renderedItems = items.map((item, idx) => (
+  const renderedItems = items?.map((item, idx) => (
     <Fragment key={getItemKey(item)}>
       <div className={classNames(c.item, idx === srcIdx && c.grabbed)}>
         <div className={c.grip} data-idx={idx}>

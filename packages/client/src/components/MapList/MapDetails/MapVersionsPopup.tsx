@@ -45,15 +45,16 @@ const MapVersionItem: FC<{ mapName: string; parentMapName: string }> = ({
 
       await motdApi.setMapParent(mapName, parentMap);
 
-      setMapsPreviews(async (cur) =>
-        (await cur).map((p) => {
-          if (p.name !== mapName) return p;
+      setMapsPreviews(
+        async (cur) =>
+          (await cur)?.map((p) => {
+            if (p.name !== mapName) return p;
 
-          return {
-            ...p,
-            parentMap,
-          };
-        }),
+            return {
+              ...p,
+              parentMap,
+            };
+          }),
       );
 
       setMapDetails(parentMapName, async (cur) => {
@@ -118,7 +119,7 @@ export const MapVersionsPopup: FC<{ mapName: string }> = ({ mapName }) => {
         value={filter}
         onChange={(e) => setFilter(e.currentTarget.value)}
       />
-      {filteredMaps.length ? (
+      {filteredMaps?.length ? (
         <div className={c.mapsList}>
           {filteredMaps.map(({ name }) => (
             <MapVersionItem key={name} mapName={name} parentMapName={mapName} />

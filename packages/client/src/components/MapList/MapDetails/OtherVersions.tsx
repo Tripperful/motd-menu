@@ -51,7 +51,7 @@ const EditButton: FC = () => {
 const OtherVersionsContent: FC<{ versions: string[] }> = ({ versions }) => {
   const c = useStyles();
 
-  if (versions.length === 0) return null;
+  if (versions?.length === 0) return null;
 
   return (
     <div className={c.root}>

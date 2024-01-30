@@ -167,7 +167,7 @@ const AddTagDialog: FC<MapTagsProps> = ({ mapName }) => {
     <Popup title="Add map tag" onClose={goBack} className={c.tagsDialog}>
       <small>Existing tags</small>
       <div className={c.allTags}>
-        {allMapsTags.map((tag) => (
+        {allMapsTags?.map((tag) => (
           <Toggle
             className={c.tag}
             active={mapTags.includes(tag)}
@@ -243,7 +243,7 @@ const MapTagsContent: FC<MapTagsProps> = ({ mapName }) => {
 
   return (
     <>
-      {tags.length ? (
+      {tags?.length ? (
         <>
           Tags:
           {tags.map((t) => (

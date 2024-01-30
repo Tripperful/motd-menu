@@ -18,13 +18,7 @@ const useStyles = createUseStyles({
 const NotificationsList: FC = () => {
   const notifications = useNotifications();
 
-  return (
-    <>
-      {notifications.map((n) => (
-        <Notification key={n.id} data={n} />
-      ))}
-    </>
-  );
+  return <>{notifications?.map((n) => <Notification key={n.id} data={n} />)}</>;
 };
 
 export const Notifications: FC = () => {

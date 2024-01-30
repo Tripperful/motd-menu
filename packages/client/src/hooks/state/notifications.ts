@@ -24,10 +24,11 @@ export const addNotification = (
   setNotifications(async (cur) => [newNotif, ...(await cur)]);
 
   setTimeout(() => {
-    setNotifications(async (cur) =>
-      (await cur).map((n) =>
-        n.id === newNotif.id ? { ...n, expired: true } : n,
-      ),
+    setNotifications(
+      async (cur) =>
+        (await cur)?.map((n) =>
+          n.id === newNotif.id ? { ...n, expired: true } : n,
+        ),
     );
   }, duration);
 

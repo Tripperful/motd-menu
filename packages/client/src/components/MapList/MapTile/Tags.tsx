@@ -15,7 +15,7 @@ export const Tags: FC<{ tags: string[] }> = ({ tags }) => {
 
   return (
     <>
-      {tags.map((tag) => (
+      {tags?.map((tag) => (
         <div key={tag} className={c.tag}>
           {tag}
         </div>
