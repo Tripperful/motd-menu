@@ -21,7 +21,9 @@ class MotdApi {
     endpoint: string,
     body?: string,
   ): Promise<string> {
-    const url = new URL('http://' + location.host + '/api/' + endpoint);
+    const url = new URL(
+      `${location.protocol}//${location.host}/api/${endpoint}`,
+    );
 
     const cacheKey = method + url + (body ?? '');
 
