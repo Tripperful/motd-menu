@@ -1,36 +1,40 @@
-import { SrcdsProtocol } from '@motd-menu/common';
 import { dbgInfo } from 'src/util';
 import { RconSrcdsApi } from './RconSrcdsApi';
 import { SrcdsApi } from './SrcdsApi';
-import { UdpSrcdsApi } from './UdpSrcdsApi';
+import { WsSrcdsApi } from './WsSrcdsApi';
 
 const srcdsApis: Record<string, SrcdsApi> = {};
 
-const createSrcdsApi = (
-  protocol: SrcdsProtocol,
-  ip: string,
-  port: number,
-): SrcdsApi => {
-  switch (protocol) {
+export type SrcdsIdentity =
+  | {
+      protocol: 'rcon';
+      ip: string;
+      port: number;
+    }
+  | {
+      protocol: 'ws';
+      remoteId: string;
+    };
+
+const createSrcdsApi = (srcdsIdentity: SrcdsIdentity): SrcdsApi => {
+  switch (srcdsIdentity.protocol) {
     case 'rcon':
-      return new RconSrcdsApi(ip, port);
-    case 'udp':
-      return new UdpSrcdsApi(ip, port);
+      return new RconSrcdsApi(srcdsIdentity.ip, srcdsIdentity.port);
+    case 'ws':
+      return new WsSrcdsApi(srcdsIdentity.remoteId);
   }
 };
 
-export const getSrcdsApi: (
-  protocol: SrcdsProtocol,
-  ip: string,
-  port: number,
-) => SrcdsApi = (protocol, ip, port) => {
-  const apiHost = `${protocol}:${ip}:${port}`;
+export const getSrcdsApi: (srcdsIdentity: SrcdsIdentity) => SrcdsApi = (
+  srcdsIdentity,
+) => {
+  const apiHost = JSON.stringify(srcdsIdentity);
   let api = srcdsApis[apiHost];
 
   if (!api) {
     dbgInfo(`Creating a new SRCDS API instance for ${apiHost}`);
 
-    api = createSrcdsApi(protocol, ip, port);
+    api = createSrcdsApi(srcdsIdentity);
     srcdsApis[apiHost] = api;
   }
 

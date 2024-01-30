@@ -42,4 +42,4 @@ export interface Config {
   steamWebApiKey: string;
 }
 
-export type SrcdsProtocol = 'rcon' | 'udp';
+export type SrcdsProtocol = 'rcon' | 'ws';

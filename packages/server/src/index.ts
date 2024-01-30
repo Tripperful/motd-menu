@@ -9,7 +9,9 @@ import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
 import { logDbgInfo } from './util';
-import { bindWsDummy } from './wsDummy';
+import { WsApi } from './ws';
+import { WsMessageType } from './ws/WsMessageType';
+import { wsHandlers } from './ws/handlers';
 
 const app = express();
 
@@ -32,21 +34,13 @@ app.use((_req, res) =>
   res.sendFile(path.resolve(__dirname, staticDir + '/index.html')),
 );
 
-interface ServerInfo {
+export interface HttpServerInfo {
   server: http.Server;
   port: number;
   protocol: 'http' | 'https';
 }
 
-const servers: ServerInfo[] = [];
-
-if (process.env.MOTD_WEB_PORT) {
-  servers.push({
-    server: http.createServer(app),
-    port: Number(process.env.MOTD_WEB_PORT),
-    protocol: 'http',
-  });
-}
+export let httpServerInfo: HttpServerInfo = null;
 
 if (process.env.MOTD_WEB_PORT_HTTPS) {
   const cert = process.env.MOTD_SSL_CERT;
@@ -64,26 +58,35 @@ if (process.env.MOTD_WEB_PORT_HTTPS) {
     );
   }
 
-  servers.push({
+  httpServerInfo = {
     server: https.createServer({ cert, key }, app),
     port: Number(process.env.MOTD_WEB_PORT_HTTPS),
     protocol: 'https',
-  });
+  };
+} else if (process.env.MOTD_WEB_PORT) {
+  httpServerInfo = {
+    server: http.createServer(app),
+    port: Number(process.env.MOTD_WEB_PORT),
+    protocol: 'http',
+  };
 }
 
 console.log('Connecting to database...');
+
 db.init().then(() => {
   console.log('Database initialized');
 
-  for (const serverInfo of servers) {
-    const { server, port, protocol } = serverInfo;
+  const { server, port, protocol } = httpServerInfo;
 
-    server.listen(port, () => {
-      console.log(
-        `${protocol.toUpperCase()} server is listening on port ${port}`,
-      );
+  server.listen(port, () => {
+    console.log(
+      `${protocol.toUpperCase()} server is listening on port ${port}`,
+    );
 
-      bindWsDummy(server);
-    });
-  }
+    const wsApi = WsApi.init(server);
+
+    for (const [msgType, handler] of Object.entries(wsHandlers)) {
+      wsApi.subscribe(msgType as WsMessageType, handler);
+    }
+  });
 });

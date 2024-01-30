@@ -8,6 +8,7 @@ export interface MotdSessionData {
   protocol: SrcdsProtocol;
   ip: string;
   port: number;
+  remoteId: string;
   token: string;
   name: string;
   userId: number;
@@ -22,20 +23,20 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     const reqAuthVersion = req.cookies.version ?? authVersion;
     const cookie = reqAuthVersion === authVersion ? req.cookies : null;
 
-    const protocol: SrcdsProtocol =
-      (req.query?.protocol as string) ?? cookie?.protocol ?? 'rcon';
-
     const ip: string = (req.query?.ip as string) ?? cookie?.ip;
     const port: number = Number((req.query?.port as string) ?? cookie?.port);
     const token: string = (req.query?.token as string) ?? cookie?.token;
+    const remoteId: string = (req.query?.guid as string) ?? cookie?.remoteId;
 
-    if (!(ip && port && token)) {
+    if (!(token && ((ip && port) || remoteId))) {
       dbgWarn(`Missing required auth request parameters`);
 
       throw 'Unauthorized';
     }
 
-    const srcdsApi = getSrcdsApi(protocol, ip, port);
+    const protocol = remoteId ? 'ws' : 'rcon';
+
+    const srcdsApi = getSrcdsApi({ protocol, ip, port, remoteId });
     res.locals.srcdsApi = srcdsApi;
 
     const { steamId, name, userId } = await srcdsApi.auth(token);
@@ -50,6 +51,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       protocol,
       ip,
       port,
+      remoteId,
       token,
       name,
       userId,
@@ -58,10 +60,18 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     };
 
     res.cookie('version', authVersion);
-    res.cookie('token', token, { httpOnly: true });
     res.cookie('protocol', protocol);
-    res.cookie('ip', ip);
-    res.cookie('port', port);
+
+    if (remoteId) {
+      res.cookie('remoteId', remoteId);
+      res.clearCookie('ip');
+    } else {
+      res.cookie('ip', ip);
+      res.cookie('port', port);
+      res.clearCookie('remoteId');
+    }
+
+    res.cookie('token', token, { httpOnly: true });
     res.cookie('name', name);
     res.cookie('userId', userId);
     res.cookie('steamId', steamId);
@@ -74,6 +84,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     res.clearCookie('protocol');
     res.clearCookie('ip');
     res.clearCookie('port');
+    res.clearCookie('remoteId');
     res.clearCookie('name');
     res.clearCookie('userId');
     res.clearCookie('steamId');
