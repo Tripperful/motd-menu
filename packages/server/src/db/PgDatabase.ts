@@ -144,21 +144,36 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.select<string[]>('client_get_smurf_steam_ids', steamId),
 
     settings: {
-      get: (steamId: string) =>
-        this.select<PlayerClientSettings>('get_client_settings', steamId),
-      set: (
+      get: async (steamId: string) => {
+        const settings = await this.select<PlayerClientSettings>(
+          'get_client_settings',
+          steamId,
+        );
+
+        settings.fov ??= 90;
+        settings.drawViewmodel ??= true;
+        settings.esp ??= false;
+        settings.hitSound ??= true;
+        settings.killSound ??= true;
+
+        return settings;
+      },
+      set: async (
         steamId: string,
         { hitSound, killSound, fov, esp, drawViewmodel }: PlayerClientSettings,
-      ) =>
+      ) => {
+        const curSettings = await this.client.settings.get(steamId);
+
         this.call(
           'set_client_settings',
           steamId,
-          hitSound,
-          killSound,
-          fov,
-          esp,
-          drawViewmodel,
-        ),
+          hitSound ?? curSettings.hitSound,
+          killSound ?? curSettings.killSound,
+          fov ?? curSettings.fov,
+          esp ?? curSettings.esp,
+          drawViewmodel ?? curSettings.drawViewmodel,
+        );
+      },
     },
   };
 
