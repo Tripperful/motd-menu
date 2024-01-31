@@ -2,10 +2,12 @@ import { uuid } from 'src/util';
 import { wsApi } from '.';
 
 export const onWsConnectionDummy = (remoteId: string) => {
-  wsApi.request(remoteId, 'get_maps_request');
-  wsApi.request(remoteId, 'get_cvars_request', ['sv_cheats', 'mp_teamplay']);
-  wsApi.request(remoteId, 'get_players_request');
-  wsApi.request(remoteId, 'motd_auth_request', uuid());
+  wsApi.request(remoteId, 'get_maps_request').catch(() => null);
+  wsApi
+    .request(remoteId, 'get_cvars_request', ['sv_cheats', 'mp_teamplay'])
+    .catch(() => null);
+  wsApi.request(remoteId, 'get_players_request').catch(() => null);
+  wsApi.request(remoteId, 'motd_auth_request', uuid()).catch(() => null);
 
   wsApi.send(remoteId, 'set_cvar', {
     cvar: 'sv_cheats',
