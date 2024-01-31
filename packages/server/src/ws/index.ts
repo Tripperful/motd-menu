@@ -3,6 +3,7 @@ import type http from 'http';
 import { dbgErr, dbgWarn, uuid } from 'src/util';
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 import { WsMessage, WsMessageType } from './WsMessageType';
+import { onWsConnectionDummy } from './dummy';
 
 export type WsMessageCallback<TData = unknown> = (
   msg: WsMessage<TData>,
@@ -61,9 +62,9 @@ export class WsApi {
         ?.searchParams;
 
       const auth = searchParams?.get('auth')?.toLowerCase();
-      const clientId = searchParams?.get('guid');
+      const remoteId = searchParams?.get('guid');
 
-      if (auth !== this.authMd5 || !clientId) {
+      if (auth !== this.authMd5 || !remoteId) {
         const ip = req.socket.remoteAddress;
         const port = req.socket.remotePort;
 
@@ -75,8 +76,8 @@ export class WsApi {
       }
 
       this.wsServer.handleUpgrade(req, socket, head, (ws) => {
-        this.remotesById[clientId] = ws;
-        this.wsServer.emit('connection', ws, req);
+        this.remotesById[remoteId] = ws;
+        this.wsServer.emit('connection', ws, req, remoteId);
       });
     });
 
@@ -85,6 +86,8 @@ export class WsApi {
       const remoteHost = `${remoteAddress}:${remotePort}`;
 
       console.log(`New WS connection: ${remoteHost}`);
+
+      onWsConnectionDummy(this.getRemoteId(remoteWs));
 
       remoteWs.on('message', (data, isBinary) => {
         try {
