@@ -67,8 +67,8 @@ export class WsSrcdsApi implements SrcdsApi {
   ): Promise<void> {
     await this.send('start_match', {
       token,
-      preTimerCommands,
-      postTimerCommands,
+      preTimerCommands: preTimerCommands.join(';'),
+      postTimerCommands: postTimerCommands.join(';'),
     });
   }
 }
