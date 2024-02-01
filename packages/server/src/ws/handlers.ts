@@ -43,10 +43,10 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
         type: 'get_settings_response',
         data: {
           fov,
-          drawViewmodel: drawViewmodel ? 1 : 0,
+          drawviewmodel: drawViewmodel ? 1 : 0,
           esp: esp ? 1 : 0,
-          hitSound: hitSound ? 1 : 0,
-          killSound: killSound ? 1 : 0,
+          hitsound: hitSound ? 1 : 0,
+          killsound: killSound ? 1 : 0,
         },
       };
     },
