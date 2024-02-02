@@ -1,4 +1,5 @@
 import { PlayerClientSettings } from '@motd-menu/common';
+import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { WsSubscriberCallback } from '.';
 import {
@@ -19,6 +20,8 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
 
     player_disconnected: (msg: WsMessage<PlayerDisconnectedReq>) => {
       const { token, connectionStats: s } = msg.data;
+
+      dropAuthCache(token);
 
       db.client.disconnected(
         token,

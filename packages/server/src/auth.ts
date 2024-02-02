@@ -1,7 +1,8 @@
-import { Permission, SrcdsProtocol } from '@motd-menu/common';
+import { OnlinePlayerInfo, Permission, SrcdsProtocol } from '@motd-menu/common';
 import { RequestHandler } from 'express';
 import { db } from './db';
 import { getSrcdsApi } from './srcdsApi';
+import { SrcdsApi } from './srcdsApi/SrcdsApi';
 import { dbgWarn } from './util';
 
 export interface MotdSessionData {
@@ -17,6 +18,23 @@ export interface MotdSessionData {
 }
 
 const authVersion = '1';
+
+const authCache: Record<string, OnlinePlayerInfo> = {};
+
+const getUserCredentials = async (
+  token: string,
+  srcdsApi: SrcdsApi,
+): Promise<OnlinePlayerInfo> => {
+  if (!authCache[token]) {
+    authCache[token] = await srcdsApi.auth(token);
+  }
+
+  return authCache[token];
+};
+
+export const dropAuthCache = (token: string) => {
+  delete authCache[token];
+};
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   try {
@@ -39,7 +57,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     const srcdsApi = getSrcdsApi({ protocol, ip, port, remoteId });
     res.locals.srcdsApi = srcdsApi;
 
-    const { steamId, name, userId } = await srcdsApi.auth(token);
+    const { steamId, name, userId } = await getUserCredentials(token, srcdsApi);
 
     if (!(name && userId && steamId)) {
       throw 'Unauthorized';
