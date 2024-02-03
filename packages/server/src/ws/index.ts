@@ -24,13 +24,12 @@ export class WsApi {
       );
     }
 
-    const authMd5 = createHash('md5')
-      .update(authPw)
-      .digest('hex')
-      .toLowerCase();
+    const authMd5Hashes = authPw
+      .split('\n')
+      .map((pw) => createHash('md5').update(pw).digest('hex').toLowerCase());
 
     if (!wsApi) {
-      wsApi = new WsApi(httpServer, authMd5);
+      wsApi = new WsApi(httpServer, authMd5Hashes);
     }
 
     return wsApi;
@@ -48,10 +47,7 @@ export class WsApi {
     return null;
   }
 
-  private constructor(
-    httpServer: http.Server,
-    private authMd5: string,
-  ) {
+  private constructor(httpServer: http.Server, authMd5Hashes: string[]) {
     this.wsServer = new WebSocketServer({ noServer: true });
 
     httpServer.on('upgrade', (req, socket, head) => {
@@ -61,7 +57,7 @@ export class WsApi {
       const auth = searchParams?.get('auth')?.toLowerCase();
       const remoteId = searchParams?.get('guid');
 
-      if (auth !== this.authMd5 || !remoteId) {
+      if (!authMd5Hashes.includes(auth) || !remoteId) {
         const ip = req.socket.remoteAddress;
         const port = req.socket.remotePort;
 
