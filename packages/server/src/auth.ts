@@ -38,6 +38,13 @@ export const dropAuthCache = (token: string) => {
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   try {
+    if (
+      req.url.includes('srcds-mock.html') ||
+      req.headers.referer?.includes('srcds-mock.html')
+    ) {
+      return next();
+    }
+
     const reqAuthVersion = req.cookies.version ?? authVersion;
     const cookie = reqAuthVersion === authVersion ? req.cookies : null;
 

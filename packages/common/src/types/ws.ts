@@ -28,6 +28,14 @@ export interface WsMessage<TData = unknown> {
   data?: TData;
 }
 
+export type WsMessageCallback<TData = unknown> = (
+  msg: WsMessage<TData>,
+) => void;
+
+export type WsSubscriberCallback<TData = unknown> = (
+  msg: WsMessage<TData>,
+) => Promise<WsMessage | void> | void;
+
 export interface PlayerConnectedReq {
   token: string;
   steamId: string;
@@ -44,7 +52,7 @@ interface ConnectionStats {
   totaldata: number;
 }
 
-export interface PlayerDisconnectedReq {
+export interface PlayerDisconnectedReqest {
   token: string;
   connectionStats: {
     in: ConnectionStats;
@@ -52,7 +60,7 @@ export interface PlayerDisconnectedReq {
   };
 }
 
-export interface SetSettingsAct {
+export interface SetSettingsAction {
   steamId: string;
   settings: {
     drawviewmodel: 0 | 1;

@@ -1,7 +1,3 @@
-import { v4 } from 'uuid';
-
-export const uuid = v4;
-
 export const sql = (query: string) => query.replaceAll("'", "''");
 
 export const logDbgInfo = !!JSON.parse(process.env.MOTD_DEBUG_LOG ?? 'false');

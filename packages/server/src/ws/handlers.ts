@@ -1,14 +1,14 @@
-import { PlayerClientSettings } from '@motd-menu/common';
-import { dropAuthCache } from 'src/auth';
-import { db } from 'src/db';
-import { WsSubscriberCallback } from '.';
 import {
+  PlayerClientSettings,
   PlayerConnectedReq,
-  PlayerDisconnectedReq,
-  SetSettingsAct,
+  PlayerDisconnectedReqest,
+  SetSettingsAction,
   WsMessage,
   WsMessageType,
-} from './WsMessageType';
+  WsSubscriberCallback,
+} from '@motd-menu/common';
+import { dropAuthCache } from 'src/auth';
+import { db } from 'src/db';
 
 export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
   {
@@ -18,7 +18,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       db.client.connected(token, steamId, ip, port, name);
     },
 
-    player_disconnected: (msg: WsMessage<PlayerDisconnectedReq>) => {
+    player_disconnected: (msg: WsMessage<PlayerDisconnectedReqest>) => {
       const { token, connectionStats: s } = msg.data;
 
       dropAuthCache(token);
@@ -54,7 +54,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       };
     },
 
-    set_settings: async (msg: WsMessage<SetSettingsAct>) => {
+    set_settings: async (msg: WsMessage<SetSettingsAction>) => {
       const { steamId, settings: s } = msg.data;
 
       const settings: PlayerClientSettings = {

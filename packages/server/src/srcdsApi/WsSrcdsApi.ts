@@ -1,6 +1,5 @@
-import { Cvar, OnlinePlayerInfo } from '@motd-menu/common';
+import { Cvar, OnlinePlayerInfo, WsMessageType } from '@motd-menu/common';
 import { wsApi } from 'src/ws';
-import { WsMessageType } from 'src/ws/WsMessageType';
 import { SrcdsApi } from './SrcdsApi';
 
 export class WsSrcdsApi implements SrcdsApi {

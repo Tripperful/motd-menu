@@ -1,3 +1,4 @@
+import { WsMessageType } from '@motd-menu/common';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
@@ -10,7 +11,6 @@ import { authMiddleware } from './auth';
 import { db } from './db';
 import { logDbgInfo } from './util';
 import { WsApi } from './ws';
-import { WsMessageType } from './ws/WsMessageType';
 import { wsHandlers } from './ws/handlers';
 
 const app = express();

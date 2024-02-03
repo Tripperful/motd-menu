@@ -1,16 +1,14 @@
+import {
+  WsMessage,
+  WsMessageCallback,
+  WsMessageType,
+  WsSubscriberCallback,
+  uuid,
+} from '@motd-menu/common';
 import { createHash } from 'crypto';
 import type http from 'http';
-import { dbgErr, dbgWarn, uuid } from 'src/util';
+import { dbgErr, dbgWarn } from 'src/util';
 import { RawData, WebSocket, WebSocketServer } from 'ws';
-import { WsMessage, WsMessageType } from './WsMessageType';
-
-export type WsMessageCallback<TData = unknown> = (
-  msg: WsMessage<TData>,
-) => void;
-
-export type WsSubscriberCallback<TData = unknown> = (
-  msg: WsMessage<TData>,
-) => Promise<WsMessage | void> | void;
 
 export let wsApi: WsApi = null;
 
@@ -119,7 +117,7 @@ export class WsApi {
   /**
    * @returns A function to unsubscribe.
    */
-  public async subscribe<TData>(
+  public subscribe<TData>(
     action: WsMessageType,
     callback: WsSubscriberCallback<TData>,
   ) {
@@ -132,7 +130,7 @@ export class WsApi {
     };
   }
 
-  async send<TData>(
+  send<TData>(
     remoteId: string,
     type: WsMessageType,
     data?: TData,
@@ -175,7 +173,7 @@ export class WsApi {
 
         this.responseHandlers[guid] = res as (msg: WsMessage<TResData>) => void;
 
-        await this.send(remoteId, type, data, guid);
+        this.send(remoteId, type, data, guid);
       } catch (e) {
         rej(e);
       }
