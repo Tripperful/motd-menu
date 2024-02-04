@@ -13,6 +13,14 @@ import { config } from '~root/config';
 import { BasePgDatabase } from './BasePgDatabase';
 import { Database } from './Database';
 
+const defaultSettings: PlayerClientSettings = {
+  fov: 90,
+  drawViewmodel: true,
+  esp: false,
+  hitSound: true,
+  killSound: true,
+};
+
 export class PgDatabase extends BasePgDatabase implements Database {
   maps = {
     init: (mapNames: string[]) => this.call('maps_init', mapNames),
@@ -145,16 +153,15 @@ export class PgDatabase extends BasePgDatabase implements Database {
 
     settings: {
       get: async (steamId: string) => {
-        const settings = await this.select<PlayerClientSettings>(
+        const storedSettings = await this.select<PlayerClientSettings>(
           'get_client_settings',
           steamId,
         );
 
-        settings.fov ??= 90;
-        settings.drawViewmodel ??= true;
-        settings.esp ??= false;
-        settings.hitSound ??= true;
-        settings.killSound ??= true;
+        const settings: PlayerClientSettings = {
+          ...defaultSettings,
+          ...storedSettings,
+        };
 
         return settings;
       },
