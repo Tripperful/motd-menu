@@ -1,15 +1,16 @@
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
-import { useParams } from 'react-router-dom';
+import { Route, Routes, useParams } from 'react-router-dom';
 import {
   usePlayerNames,
   usePlayerSmurfSteamIds,
 } from 'src/hooks/state/players';
 import { useGoBack } from 'src/hooks/useGoBack';
-import { steamProfileLink } from 'src/util';
 import { LineWithCopy } from '~components/common/LineWithCopy';
 import { Popup } from '~components/common/Popup';
 import { theme } from '~styles/theme';
+import { PlayerDetails } from '.';
+import { PlayersListItem } from '../PlayersList/PlayersListItem';
 
 const useStyles = createUseStyles({
   root: {
@@ -28,6 +29,12 @@ const useStyles = createUseStyles({
       marginTop: '0.5em',
     },
   },
+  list: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.5em',
+    padding: '0 1em',
+  },
 });
 
 export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
@@ -38,26 +45,19 @@ export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
   return (
     <>
       <div className={c.header}>Names</div>
-      {names?.map((name) => (
-        <LineWithCopy key={name} copyText={name} what="Nickname">
-          {name}
-        </LineWithCopy>
-      ))}
+      <div className={c.list}>
+        {names?.map((name) => (
+          <LineWithCopy key={name} copyText={name} what="Nickname">
+            {name}
+          </LineWithCopy>
+        ))}
+      </div>
       <div className={c.header}>Related accounts</div>
-      {smurfSteamIds?.map((steamId) => (
-        <LineWithCopy
-          key={steamId}
-          copyText={steamId}
-          what="Steam ID"
-          link={{
-            url: steamProfileLink(steamId),
-            copy: true,
-            open: true,
-          }}
-        >
-          {steamId}
-        </LineWithCopy>
-      ))}
+      <div className={c.list}>
+        {smurfSteamIds?.map((steamId) => (
+          <PlayersListItem key={steamId} steamId={steamId} />
+        ))}
+      </div>
     </>
   );
 };
@@ -74,6 +74,9 @@ export const SmurfsPopup: FC = () => {
           <SmurfsPopupContent steamId={steamId} />
         </Suspense>
       </div>
+      <Routes>
+        <Route path=":steamId" element={<PlayerDetails />} />
+      </Routes>
     </Popup>
   );
 };
