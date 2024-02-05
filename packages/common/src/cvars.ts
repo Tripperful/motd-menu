@@ -49,6 +49,7 @@ export type Cvar =
   | 'mp_timelimit'
   | 'mm_equalizer'
   | 'mm_overtime'
+  | 'mm_hotbolt_fix'
   | 'mm_esp_teammates'
   | 'mm_show_endmatch_rate'
   | 'mm_rpg_spawn_time';
@@ -149,6 +150,13 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     description: 'Show map rate menu after matches',
     type: 'bool',
     permissions: adminOnlyPermissions,
+  },
+  mm_hotbolt_fix: {
+    description: 'Crossbow boost fix',
+    type: 'number',
+    min: 0,
+    max: 2,
+    permissions: matchmakingPermissions,
   },
   mp_timelimit: {
     description: 'Time limit (minutes)',
