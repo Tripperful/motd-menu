@@ -171,3 +171,19 @@ OR REPLACE FUNCTION client_get_smurf_steam_ids (steam_id text) RETURNS json AS $
 FROM get_smurf_connections(client_get_smurf_steam_ids.steam_id) a;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION client_get_time_played (steam_id text, token text) RETURNS float AS $$ BEGIN
+RETURN COALESCE(EXTRACT(epoch FROM SUM(COALESCE(disconnected, NOW()) - connected)), 0)
+  FROM client_connections
+  WHERE client_connections.steam_id = client_get_time_played.steam_id::bigint
+    AND connected IS NOT NULL
+    AND (
+      disconnected IS NOT NULL
+      OR
+      id = token::uuid
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT 

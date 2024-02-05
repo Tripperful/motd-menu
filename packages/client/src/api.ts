@@ -84,6 +84,10 @@ class MotdApi {
     return JSON.parse(res) as OnlinePlayerInfo[];
   }
 
+  public async getTotalTimePlayed(steamId: string) {
+    return Number(await this.get('players/timeplayed/' + steamId));
+  }
+
   public async getPlayerNames(steamId: string) {
     const res = await this.get('players/names/' + steamId);
 

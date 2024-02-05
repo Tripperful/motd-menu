@@ -23,6 +23,7 @@ import UserInspectIcon from '~icons/user-inspect.svg';
 import { outlineButton } from '~styles/elements';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
+import { PlayerTimePlayed } from './PlayerTimePlayed';
 import { SmurfsPopup } from './SmurfsPopup';
 
 const useStyles = createUseStyles({
@@ -133,6 +134,7 @@ const PlayerDetailsContent: FC = () => {
           </div>
         </div>
       </div>
+      <PlayerTimePlayed steamId={steamId} />
       {canEditTeam && (
         <>
           <div>Change player team</div>
