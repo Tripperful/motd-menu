@@ -65,10 +65,18 @@ export interface TextCvarProps {
   maxLength?: number;
 }
 
+export interface OptionCvarProps {
+  options: {
+    title: string;
+    value: string;
+  }[];
+}
+
 export type CvarProps =
   | ({ type: 'bool' } & BoolCvarProps)
   | ({ type: 'number' } & NumberCvarProps)
-  | ({ type: 'text' } & TextCvarProps);
+  | ({ type: 'text' } & TextCvarProps)
+  | ({ type: 'option' } & OptionCvarProps);
 
 export type CvarType = CvarProps['type'];
 
@@ -152,10 +160,13 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     permissions: adminOnlyPermissions,
   },
   mm_hotbolt_fix: {
-    description: 'Crossbow boost fix',
-    type: 'number',
-    min: 0,
-    max: 2,
+    description: 'Crossbow bolt boosting',
+    type: 'option',
+    options: [
+      { title: 'Default', value: '0' },
+      { title: 'Disabled', value: '1' },
+      { title: 'Enhanced', value: '2' },
+    ],
     permissions: matchmakingPermissions,
   },
   mp_timelimit: {

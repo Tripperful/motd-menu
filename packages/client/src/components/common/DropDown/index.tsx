@@ -1,9 +1,11 @@
+import classNames from 'classnames';
 import React, { useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import ArrowDownIcon from '~icons/chevron-down.svg';
 import ArrowUpIcon from '~icons/chevron-up.svg';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
+import { ClassNameProps } from '~types/props';
 
 const useStyles = createUseStyles({
   root: {
@@ -53,11 +55,12 @@ export interface DropDownOptionProps<TValue = unknown> {
   title?: string;
 }
 
-interface DropDownProps<TValue = unknown> {
+type DropDownProps<TValue = unknown> = ClassNameProps & {
   value: TValue;
   setValue: (value: TValue) => void;
   options: DropDownOptionProps<TValue>[];
-}
+  disabled?: boolean;
+};
 
 const DropDownOption = <TValue,>(
   option: DropDownOptionProps<TValue> & {
@@ -77,6 +80,8 @@ export const DropDown = <TValue,>({
   value,
   setValue,
   options,
+  disabled,
+  className,
 }: DropDownProps<TValue>) => {
   const c = useStyles();
   const [open, setOpen] = useState(false);
@@ -98,19 +103,26 @@ export const DropDown = <TValue,>({
     [options, selectedOption],
   );
 
+  const onClick = () => {
+    if (disabled) return;
+
+    setOpen((c) => !c);
+  };
+
   return (
     <div
-      className={c.root}
+      className={classNames(c.root, className)}
       tabIndex={0}
       onBlur={() => setOpen(false)}
-      onClick={() => setOpen((c) => !c)}
+      onClick={onClick}
       data-open={open}
+      data-disabled={disabled ?? false}
     >
       {open && <div className={c.backdrop}></div>}
       {selectedOption ? (
         <DropDownOption {...selectedOption} onClick={null} />
       ) : (
-        'INVALID'
+        'Unknown'
       )}
       {open ? (
         <ArrowUpIcon className={c.arrow} />

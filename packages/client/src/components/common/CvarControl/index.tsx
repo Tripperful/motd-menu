@@ -3,6 +3,7 @@ import {
   Cvar,
   CvarType,
   NumberCvarProps,
+  OptionCvarProps,
   TextCvarProps,
   cvarsInfo,
 } from '@motd-menu/common';
@@ -10,6 +11,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useCvar } from 'src/hooks/useCvar';
 import { Switch } from '../Switch';
+import { DropDown } from '../DropDown';
 
 export interface CvarControlProps {
   cvar: Cvar;
@@ -32,6 +34,13 @@ const useStyles = createUseStyles({
     '& > div': {
       marginLeft: '0.2em',
     },
+  },
+  cvarDropDownControl: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '0.5em',
+    margin: '0.5em 0',
   },
 });
 
@@ -141,10 +150,35 @@ export const CvarTextControl: FC<CvarControlProps & TextCvarProps> = ({
   );
 };
 
+export const CvarOptionControl: FC<CvarControlProps & OptionCvarProps> = ({
+  cvar,
+  value,
+  setValue,
+  disabled,
+  options,
+}) => {
+  const c = useStyles();
+
+  const { description } = cvarsInfo[cvar];
+
+  return (
+    <div className={c.cvarDropDownControl}>
+      <div>{description}</div>
+      <DropDown
+        value={value}
+        setValue={(v) => setValue(v, cvar)}
+        options={options}
+        disabled={disabled}
+      />
+    </div>
+  );
+};
+
 const cvarControlMap: Record<CvarType, FC<CvarControlProps>> = {
   bool: CvarBoolControl,
   number: CvarNumberControl,
   text: CvarTextControl,
+  option: CvarOptionControl,
 };
 
 export const CvarControl: FC<CvarControlProps> = ({
