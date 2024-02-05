@@ -186,4 +186,28 @@ RETURN COALESCE(EXTRACT(epoch FROM SUM(COALESCE(disconnected, NOW()) - connected
 END;
 $$ LANGUAGE plpgsql;
 
-SELECT 
+CREATE
+OR REPLACE PROCEDURE client_set_aka (steam_id text, name text) AS $$ BEGIN
+INSERT INTO client_aka (steam_id, name)
+VALUES (
+  client_set_aka.steam_id::bigint,
+  client_set_aka.name
+) ON CONFLICT ON CONSTRAINT client_aka_pkey DO
+  UPDATE SET name = EXCLUDED.name;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION client_get_aka (steam_id text) RETURNS text AS $$ BEGIN
+RETURN name
+FROM client_aka
+WHERE client_aka.steam_id = client_get_aka.steam_id::bigint;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE client_delete_aka (steam_id text) AS $$ BEGIN
+DELETE FROM client_aka
+WHERE client_aka.steam_id = client_delete_aka.steam_id::bigint;
+END;
+$$ LANGUAGE plpgsql;

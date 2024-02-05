@@ -94,6 +94,10 @@ const App: FC = () => {
     });
   }, []);
 
+  const onGetSettings = (steamId: string) => {
+    wsClient.request('get_settings_request', steamId);
+  };
+
   return (
     <div>
       <button onClick={onAddPlayer}>Add player</button>
@@ -109,6 +113,9 @@ const App: FC = () => {
             </a>
             &nbsp;
             <button onClick={() => onDeletePlayer(p.token)}>X</button>
+            <button onClick={() => onGetSettings(p.steamId)}>
+              get_settings
+            </button>
           </div>
         ))}
       </div>

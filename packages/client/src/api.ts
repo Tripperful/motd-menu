@@ -71,11 +71,11 @@ class MotdApi {
   }
 
   public async sendLog(severity: Severity, log: string) {
-    this.post('log/' + severity, log);
+    await this.post('log/' + severity, log);
   }
 
   public async closeMenu() {
-    this.post('menu/close');
+    await this.post('menu/close');
   }
 
   public async getOnlinePlayers() {
@@ -124,7 +124,19 @@ class MotdApi {
   }
 
   public async setTeam(teamIndex: number, userId?: number) {
-    this.post('teams/set/' + (userId ? userId + '/' : '') + teamIndex);
+    await this.post('teams/set/' + (userId ? userId + '/' : '') + teamIndex);
+  }
+
+  public async setPlayerAka(steamId: string, name: string) {
+    if (name) {
+      await this.post(`players/aka/${steamId}/${name}`);
+    } else {
+      await this.delete(`players/aka/${steamId}`);
+    }
+  }
+
+  public async getPlayerAka(steamId: string) {
+    return (await this.get(`players/aka/${steamId}`)) || null;
   }
 
   public async getCvars<

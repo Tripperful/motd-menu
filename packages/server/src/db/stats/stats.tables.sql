@@ -35,3 +35,6 @@ CREATE TABLE IF NOT EXISTS
     esp boolean,
     draw_viewmodel boolean
   );
+
+CREATE TABLE IF NOT EXISTS
+  client_aka (steam_id bigint PRIMARY KEY, name text);

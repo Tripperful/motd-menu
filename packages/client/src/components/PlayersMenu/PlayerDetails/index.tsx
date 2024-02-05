@@ -21,9 +21,11 @@ import SpecIcon from '~icons/eye.svg';
 import RebelIcon from '~icons/lambda.svg';
 import UserInspectIcon from '~icons/user-inspect.svg';
 import { outlineButton } from '~styles/elements';
+import { PlayerAka } from './PlayerAka';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
 import { PlayerTimePlayed } from './PlayerTimePlayed';
+import { SetAkaPopup } from './SetAkaPopup';
 import { SmurfsPopup } from './SmurfsPopup';
 
 const useStyles = createUseStyles({
@@ -112,7 +114,8 @@ const PlayerDetailsContent: FC = () => {
             copyText={player.name}
             what="Player's name"
           >
-            Name: {player.name}
+            {player.name}
+            <PlayerAka steamId={steamId} />
           </LineWithCopy>
           <LineWithCopy
             className={c.steamId}
@@ -168,6 +171,7 @@ const RatedMapDetails: FC = () => {
 
 export const PlayerDetails: FC = () => {
   const c = useStyles();
+  const { steamId } = useParams();
 
   return (
     <SidePanel title="Player details">
@@ -180,6 +184,7 @@ export const PlayerDetails: FC = () => {
         <Route path="/smurfs/*" element={<SmurfsPopup />} />
         <Route path="/efps/*" element={<EfpsStatsPopup />} />
         <Route path="/:mapName/*" element={<RatedMapDetails />} />
+        <Route path="/setAka/*" element={<SetAkaPopup steamId={steamId} />} />
       </Routes>
     </SidePanel>
   );

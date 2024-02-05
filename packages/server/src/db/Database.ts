@@ -92,6 +92,8 @@ export interface Database {
     getNames(steamId: string): Promise<string[]>;
     getSmurfSteamIds(steamId: string): Promise<string[]>;
     getTotalTimePlayed(steamId: string, token: string): Promise<number>;
+    setAka(steamId: string, name: string): Promise<void>;
+    getAka(steamId: string): Promise<string>;
     settings: {
       get: (steamId: string) => Promise<PlayerClientSettings>;
       set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;

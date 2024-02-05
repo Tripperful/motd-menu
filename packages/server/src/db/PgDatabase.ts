@@ -152,6 +152,14 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.select<string[]>('client_get_smurf_steam_ids', steamId),
     getTotalTimePlayed: (steamId: string, token: string) =>
       this.select<number>('client_get_time_played', steamId, token),
+    setAka: async (steamId: string, name: string) => {
+      if (name) {
+        await this.call('client_set_aka', steamId, name);
+      } else {
+        await this.call('client_delete_aka', steamId);
+      }
+    },
+    getAka: (steamId: string) => this.select<string>('client_get_aka', steamId),
 
     settings: {
       get: async (steamId: string) => {

@@ -2,6 +2,7 @@ export const permissionDescriptions = {
   match_organizer: 'Organize matches',
   maps_edit: 'Edit maps images, descriptions, etc',
   comments_edit: "Delete other players' comments/reviews",
+  aka_edit: "Set players' A. K. A. names",
   teams_others_edit: "Change other players' teams",
   cvars_matchmaking_view: 'View matchmaking cvars',
   cvars_matchmaking_edit: 'Edit matchmaking cvars',
