@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
+import { akaApi } from './aka';
 import { permissionsApi } from './permissions';
 
 export const playersApi = Router();
 
 playersApi.use('/permissions', permissionsApi);
+playersApi.use('/aka', akaApi);
 
 playersApi.get('/', async (_req, res) => {
   try {
@@ -73,48 +75,6 @@ playersApi.get('/names/:steamId', async (req, res) => {
     const names = await db.client.getNames(steamId);
 
     res.status(200).end(JSON.stringify(names));
-  } catch {
-    res.status(500).end();
-  }
-});
-
-playersApi.post('/aka/:steamId/:name', async (req, res) => {
-  try {
-    if (!res.locals.sessionData.permissions.includes('aka_edit')) {
-      return res.status(403).end();
-    }
-
-    const { steamId, name } = req.params;
-
-    await db.client.setAka(steamId, name);
-
-    res.status(200).end();
-  } catch {
-    res.status(500).end();
-  }
-});
-
-playersApi.delete('/aka/:steamId', async (req, res) => {
-  try {
-    if (!res.locals.sessionData.permissions.includes('aka_edit')) {
-      return res.status(403).end();
-    }
-
-    const { steamId } = req.params;
-
-    await db.client.setAka(steamId, null);
-
-    res.status(200).end();
-  } catch {
-    res.status(500).end();
-  }
-});
-
-playersApi.get('/aka/:steamId', async (req, res) => {
-  try {
-    const { steamId } = req.params;
-
-    res.status(200).end(await db.client.getAka(steamId));
   } catch {
     res.status(500).end();
   }
