@@ -58,7 +58,7 @@ export const playTimeFormat = (playtimeSec: number) => {
   const hours = Math.floor(playtimeSec / 3600);
   const playtimeMin = Math.ceil(playtimeSec / 60 - hours * 60);
 
-  [hours ? hours + 'h' : null, playtimeMin ? playtimeMin + 'm' : null]
+  return [hours ? hours + 'h' : null, playtimeMin ? playtimeMin + 'm' : null]
     .filter(Boolean)
     .join(' ');
 };
