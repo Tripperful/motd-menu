@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, Suspense } from 'react';
 import { useMySteamId } from 'src/hooks/useMySteamId';
 import { Page } from '~components/common/Page';
 import { PlayerSettings } from '~components/common/PlayerSettings';
@@ -16,7 +16,9 @@ export const ClientSettings: FC = () => {
 
   return (
     <Page title="Client settings">
-      <PlayerSettings steamId={steamId} className={c.root} />
+      <Suspense>
+        <PlayerSettings steamId={steamId} className={c.root} />
+      </Suspense>
     </Page>
   );
 };
