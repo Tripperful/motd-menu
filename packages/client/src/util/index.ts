@@ -63,8 +63,6 @@ export const playTimeFormat = (playtimeSec: number) => {
     .join(' ');
 };
 
-console.log();
-
 const lsDefaults = {
   favsOnly: false as boolean,
   tagFilters: [] as string[],
