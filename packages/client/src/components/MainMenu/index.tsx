@@ -5,6 +5,7 @@ import KnobsIcon from '~icons/knobs.svg';
 import PlayersIcon from '~icons/people.svg';
 import PlayIcon from '~icons/play.svg';
 import TerrainIcon from '~icons/terrain.svg';
+import SettingsIcon from '~icons/settings.svg';
 
 const menuItems: MenuItemInfo[] = [
   { title: 'Maps', link: 'maps', Icon: TerrainIcon },
@@ -13,6 +14,11 @@ const menuItems: MenuItemInfo[] = [
     title: 'Players',
     link: 'players',
     Icon: PlayersIcon,
+  },
+  {
+    title: 'Client settings',
+    link: 'clientSettings',
+    Icon: SettingsIcon,
   },
   {
     title: 'Server settings',

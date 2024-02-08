@@ -3,11 +3,13 @@ import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
 import { akaApi } from './aka';
 import { permissionsApi } from './permissions';
+import { playerSettingsApi } from './settings';
 
 export const playersApi = Router();
 
 playersApi.use('/permissions', permissionsApi);
 playersApi.use('/aka', akaApi);
+playersApi.use('/settings', playerSettingsApi);
 
 playersApi.get('/', async (_req, res) => {
   try {

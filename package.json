@@ -65,7 +65,6 @@
   },
   "dependencies": {
     "@babel/plugin-transform-class-properties": "^7.22.5",
-    "@fabricio-191/valve-server-query": "^4.1.9",
     "@types/pg": "^8.10.3",
     "body-parser": "^1.20.2",
     "classnames": "^2.3.2",

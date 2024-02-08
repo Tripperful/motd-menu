@@ -2,12 +2,7 @@ import { steamId64ToLegacy } from '@motd-menu/common';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
-import { motdApi } from 'src/api';
-import { addNotification } from 'src/hooks/state/notifications';
-import {
-  getOnlinePlayers,
-  usePlayerSteamProfile,
-} from 'src/hooks/state/players';
+import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { steamProfileLink } from 'src/util';
@@ -15,17 +10,16 @@ import { MapDetails } from '~components/MapList/MapDetails';
 import { IFramePopup } from '~components/common/IFramePopup';
 import { LineWithCopy } from '~components/common/LineWithCopy';
 import { SidePanel } from '~components/common/SidePanel';
-import CombineIcon from '~icons/combine.svg';
 import EfpsIcon from '~icons/efps.svg';
-import SpecIcon from '~icons/eye.svg';
-import RebelIcon from '~icons/lambda.svg';
 import UserInspectIcon from '~icons/user-inspect.svg';
 import { outlineButton } from '~styles/elements';
+import { PlayerSettings } from '~components/common/PlayerSettings';
 import { PlayerAka } from './PlayerAka';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
 import { PlayerTimePlayed } from './PlayerTimePlayed';
 import { SetAkaPopup } from './SetAkaPopup';
+import { SetPlayerTeam } from './SetPlayerTeam';
 import { SmurfsPopup } from './SmurfsPopup';
 
 const useStyles = createUseStyles({
@@ -51,7 +45,7 @@ const useStyles = createUseStyles({
     borderRadius: '0.5em',
   },
   playerName: {
-    fontSize: '1.5em',
+    fontSize: '1.2em',
   },
   steamId: {
     fontSize: '1em',
@@ -91,19 +85,6 @@ const PlayerDetailsContent: FC = () => {
   const canViewPermissions = useCheckPermission('permissions_view');
   const canEditTeam = useCheckPermission('teams_others_edit');
 
-  const setTeam = async (teamIndex: 1 | 2 | 3) => {
-    const player = (await getOnlinePlayers())?.find(
-      (p) => p.steamId === steamId,
-    );
-
-    if (!player) {
-      addNotification('error', 'Player is offline!');
-      return;
-    }
-
-    await motdApi.setTeam(teamIndex, player.userId);
-  };
-
   return (
     <>
       <div className={c.playerInfo}>
@@ -138,25 +119,11 @@ const PlayerDetailsContent: FC = () => {
         </div>
       </div>
       <PlayerTimePlayed steamId={steamId} />
-      {canEditTeam && (
-        <>
-          <div>Change player team</div>
-          <div className={c.profileButtons}>
-            <div className={c.profileButton} onClick={() => setTeam(1)}>
-              <SpecIcon />
-              Spectator
-            </div>
-            <div className={c.profileButton} onClick={() => setTeam(2)}>
-              <CombineIcon />
-              Combine
-            </div>
-            <div className={c.profileButton} onClick={() => setTeam(3)}>
-              <RebelIcon />
-              Rebel
-            </div>
-          </div>
-        </>
-      )}
+      {canEditTeam && <SetPlayerTeam steamId={steamId} />}
+      <div className={c.playerInfoList}>
+        <div>Client settings</div>
+        <PlayerSettings steamId={steamId} />
+      </div>
       {canViewPermissions && <PlayerPermissions />}
       <PlayerReviews steamId={steamId} />
     </>

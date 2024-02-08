@@ -7,8 +7,6 @@ import { dbgWarn } from './util';
 
 export interface MotdSessionData {
   protocol: SrcdsProtocol;
-  ip: string;
-  port: number;
   remoteId: string;
   token: string;
   name: string;
@@ -59,9 +57,9 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       throw 'Unauthorized';
     }
 
-    const protocol = remoteId ? 'ws' : 'rcon';
+    const protocol = 'ws';
 
-    const srcdsApi = getSrcdsApi({ protocol, ip, port, remoteId });
+    const srcdsApi = getSrcdsApi({ protocol, remoteId });
     res.locals.srcdsApi = srcdsApi;
 
     const { steamId, name, userId } = await getUserCredentials(token, srcdsApi);
@@ -74,8 +72,6 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
     res.locals.sessionData = {
       protocol,
-      ip,
-      port,
       remoteId,
       token,
       name,
@@ -86,16 +82,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
     res.cookie('version', authVersion);
     res.cookie('protocol', protocol);
-
-    if (remoteId) {
-      res.cookie('remoteId', remoteId);
-      res.clearCookie('ip');
-    } else {
-      res.cookie('ip', ip);
-      res.cookie('port', port);
-      res.clearCookie('remoteId');
-    }
-
+    res.cookie('remoteId', remoteId);
     res.cookie('token', token, { httpOnly: true });
     res.cookie('name', name);
     res.cookie('userId', userId);
@@ -107,8 +94,6 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     res.clearCookie('version');
     res.clearCookie('token');
     res.clearCookie('protocol');
-    res.clearCookie('ip');
-    res.clearCookie('port');
     res.clearCookie('remoteId');
     res.clearCookie('name');
     res.clearCookie('userId');

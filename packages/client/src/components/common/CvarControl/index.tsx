@@ -10,8 +10,9 @@ import {
 import React, { FC, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useCvar } from 'src/hooks/useCvar';
-import { Switch } from '../Switch';
 import { DropDown } from '../DropDown';
+import { LabeledInput } from '../LabeledInput';
+import { LabeledSwitch } from '../LabeledSwitch';
 
 export interface CvarControlProps {
   cvar: Cvar;
@@ -50,19 +51,15 @@ export const CvarBoolControl: FC<CvarControlProps & BoolCvarProps> = ({
   setValue,
   disabled,
 }) => {
-  const c = useStyles();
-
   const { description } = cvarsInfo[cvar];
 
   return (
-    <div className={c.cvarControl}>
-      <Switch
-        active={value && value != '0'}
-        setActive={(active) => setValue(active ? '1' : '0', cvar)}
-        disabled={disabled}
-      />
-      <div>{description}</div>
-    </div>
+    <LabeledSwitch
+      active={value && value != '0'}
+      setActive={(active) => setValue(active ? '1' : '0', cvar)}
+      disabled={disabled}
+      label={description}
+    />
   );
 };
 
@@ -74,8 +71,6 @@ export const CvarNumberControl: FC<CvarControlProps & NumberCvarProps> = ({
   min = -Infinity,
   max = Infinity,
 }) => {
-  const c = useStyles();
-
   const { description } = cvarsInfo[cvar];
 
   const [curValue, setCurValue] = useState('');
@@ -96,18 +91,16 @@ export const CvarNumberControl: FC<CvarControlProps & NumberCvarProps> = ({
   };
 
   return (
-    <div className={c.cvarControl}>
-      <input
-        type="number"
-        min={min}
-        max={max}
-        value={curValue ?? ''}
-        onBlur={onBlur}
-        onChange={(e) => setCurValue(e.currentTarget.value)}
-        disabled={disabled}
-      />
-      <div>{description}</div>
-    </div>
+    <LabeledInput
+      type="number"
+      min={min}
+      max={max}
+      value={curValue ?? ''}
+      onBlur={onBlur}
+      onChange={(e) => setCurValue(e.currentTarget.value)}
+      disabled={disabled}
+      label={description}
+    />
   );
 };
 

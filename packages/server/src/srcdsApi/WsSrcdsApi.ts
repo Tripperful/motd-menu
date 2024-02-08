@@ -1,4 +1,10 @@
-import { Cvar, OnlinePlayerInfo, WsMessageType } from '@motd-menu/common';
+import {
+  Cvar,
+  OnlinePlayerInfo,
+  PlayerClientSettings,
+  SetSettingsAction,
+  WsMessageType,
+} from '@motd-menu/common';
 import { wsApi } from 'src/ws';
 import { SrcdsApi } from './SrcdsApi';
 
@@ -12,8 +18,8 @@ export class WsSrcdsApi implements SrcdsApi {
     return await wsApi.request<TReqData, TResData>(this.remoteId, type, data);
   }
 
-  private async send<TData>(type: WsMessageType, data?: TData) {
-    return await wsApi.send(this.remoteId, type, data);
+  private send<TData>(type: WsMessageType, data?: TData) {
+    return wsApi.send(this.remoteId, type, data);
   }
 
   async auth(token: string): Promise<OnlinePlayerInfo> {
@@ -22,8 +28,8 @@ export class WsSrcdsApi implements SrcdsApi {
     ).data;
   }
 
-  async closeMenu(token: string): Promise<void> {
-    await this.send('motd_close', token);
+  closeMenu(token: string): void {
+    this.send('motd_close', token);
   }
 
   async getCvars<TCvars extends Cvar>(
@@ -37,20 +43,20 @@ export class WsSrcdsApi implements SrcdsApi {
     ).data;
   }
 
-  async setCvar(cvar: Cvar, value: string): Promise<void> {
-    await this.send('set_cvar', { cvar, value });
+  setCvar(cvar: Cvar, value: string): void {
+    this.send('set_cvar', { cvar, value });
   }
 
-  async setPlayerTeam(userId: number, teamIndex: number): Promise<void> {
-    await this.send('set_player_team', { userId, teamIndex });
+  setPlayerTeam(userId: number, teamIndex: number): void {
+    this.send('set_player_team', { userId, teamIndex });
   }
 
   async getMaps(): Promise<string[]> {
     return (await this.request<never, string[]>('get_maps_request')).data;
   }
 
-  async changelevel(token: string, mapName: string): Promise<void> {
-    await this.send('changelevel', { token, mapName });
+  changelevel(token: string, mapName: string): void {
+    this.send('changelevel', { token, mapName });
   }
 
   async getOnlinePlayers(): Promise<OnlinePlayerInfo[]> {
@@ -59,15 +65,31 @@ export class WsSrcdsApi implements SrcdsApi {
     ).data;
   }
 
-  async startMatch(
+  startMatch(
     token: string,
     preTimerCommands?: string[],
     postTimerCommands?: string[],
-  ): Promise<void> {
-    await this.send('start_match', {
+  ): void {
+    this.send('start_match', {
       token,
       preTimerCommands: preTimerCommands.join(';'),
       postTimerCommands: postTimerCommands.join(';'),
     });
+  }
+
+  applySettings(
+    steamId: string,
+    { drawViewmodel, esp, fov, hitSound, killSound }: PlayerClientSettings,
+  ): void {
+    this.send('apply_settings', {
+      steamId,
+      settings: {
+        drawviewmodel: drawViewmodel ? 1 : 0,
+        esp: esp ? 1 : 0,
+        fov,
+        hitsound: hitSound ? 1 : 0,
+        killsound: killSound ? 1 : 0,
+      },
+    } as SetSettingsAction);
   }
 }

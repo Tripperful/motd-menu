@@ -13,7 +13,7 @@ import {
   usePlayerPermissions,
 } from 'src/hooks/state/permissions';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
-import { Switch } from '~components/common/Switch';
+import { LabeledSwitch } from '~components/common/LabeledSwitch';
 
 const useStyles = createUseStyles({
   root: {
@@ -21,17 +21,11 @@ const useStyles = createUseStyles({
     flexDirection: 'column',
     gap: '0.5em',
   },
-  permissionItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5em',
-  },
 });
 
 const PermissionItem: FC<{
   permission: Permission;
 }> = ({ permission }) => {
-  const c = useStyles();
   const { steamId } = useParams();
 
   const canEdit = useCheckPermission('permissions_edit');
@@ -52,19 +46,18 @@ const PermissionItem: FC<{
   };
 
   return (
-    <div className={c.permissionItem}>
-      <Switch
-        active={granted}
-        setActive={(grant) => setGranted(permission, grant)}
-        disabled={!canEdit}
-      />
-      <div>{permissionDescriptions[permission]}</div>
-    </div>
+    <LabeledSwitch
+      active={granted}
+      setActive={(grant) => setGranted(permission, grant)}
+      disabled={!canEdit}
+      label={permissionDescriptions[permission]}
+    />
   );
 };
 
 export const PlayerPermissions: FC = () => {
   const c = useStyles();
+
   return (
     <div className={c.root}>
       <div>Permissions</div>

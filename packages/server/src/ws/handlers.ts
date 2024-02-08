@@ -1,6 +1,6 @@
 import {
   PlayerClientSettings,
-  PlayerConnectedReq,
+  PlayerConnectedReqest,
   PlayerDisconnectedReqest,
   SetSettingsAction,
   WsMessage,
@@ -12,7 +12,7 @@ import { db } from 'src/db';
 
 export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
   {
-    player_connected: (msg: WsMessage<PlayerConnectedReq>) => {
+    player_connected: (msg: WsMessage<PlayerConnectedReqest>) => {
       const { token, steamId, name, ip, port } = msg.data;
 
       db.client.connected(token, steamId, ip, port, name);

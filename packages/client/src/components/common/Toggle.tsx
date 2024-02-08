@@ -14,14 +14,17 @@ export const Toggle: FC<
   ChildrenProps &
     ClassNameProps & {
       active: boolean;
-      setActive: (active: boolean) => void;
+      setActive?: (active: boolean) => void;
       disabled?: boolean;
     }
 > = ({ active, setActive, disabled, children, className }) => {
   const c = useStyles();
   className = classNames(c.root, className);
 
+  disabled ||= !setActive;
+
   const onClick = () => {
+    if (disabled) return;
     setActive(!active);
   };
 

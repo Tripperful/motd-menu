@@ -6,6 +6,7 @@ import {
   MapReviewData,
   OnlinePlayerInfo,
   Permission,
+  PlayerClientSettings,
   ReactionData,
   ReactionName,
   Severity,
@@ -137,6 +138,16 @@ class MotdApi {
 
   public async getPlayerAka(steamId: string) {
     return (await this.get(`players/aka/${steamId}`)) || null;
+  }
+
+  public async getPlayerSettings(steamId: string) {
+    return JSON.parse(
+      await this.get(`players/settings/${steamId}`),
+    ) as PlayerClientSettings;
+  }
+
+  public async setPlayerSettings(settings: PlayerClientSettings) {
+    await this.post(`players/settings`, JSON.stringify(settings));
   }
 
   public async getCvars<

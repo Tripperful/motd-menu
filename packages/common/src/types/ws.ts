@@ -20,6 +20,7 @@ export type WsMessageType =
   | 'start_match'
   | 'motd_auth_request'
   | 'motd_auth_response'
+  | 'apply_settings'
   | 'motd_close';
 
 export interface WsMessage<TData = unknown> {
@@ -36,7 +37,7 @@ export type WsSubscriberCallback<TData = unknown> = (
   msg: WsMessage<TData>,
 ) => Promise<WsMessage | void> | void;
 
-export interface PlayerConnectedReq {
+export interface PlayerConnectedReqest {
   token: string;
   steamId: string;
   name: string;

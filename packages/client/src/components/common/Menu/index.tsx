@@ -43,17 +43,17 @@ const useStyles = createUseStyles({
     ...filterShadow(1),
     fontSize: '2em',
     position: 'absolute',
-    left: '50%',
-    bottom: '1em',
-    transform: 'translateX(-50%)',
+    right: '1em',
+    bottom: '50%',
+    transform: 'translateY(50%)',
   },
   title: {
     ...filterShadow(1),
     position: 'absolute',
     fontSize: '2em',
-    left: '50%',
-    top: '1em',
-    transform: 'translateX(-50%)',
+    left: '1em',
+    bottom: '50%',
+    transform: 'translateY(50%)',
   },
 });
 

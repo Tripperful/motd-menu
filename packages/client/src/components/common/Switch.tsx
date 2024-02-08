@@ -37,7 +37,7 @@ const useStyles = createUseStyles({
 
 export const Switch: FC<{
   active: boolean | null;
-  setActive: (active: boolean) => void;
+  setActive?: (active: boolean) => void;
   disabled?: boolean;
 }> = ({ active, setActive, disabled }) => {
   const c = useStyles();
