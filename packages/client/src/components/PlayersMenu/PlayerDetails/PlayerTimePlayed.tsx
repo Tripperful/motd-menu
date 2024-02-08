@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from 'react';
 import { motdApi } from 'src/api';
+import { playTimeFormat } from 'src/util';
 
 export const PlayerTimePlayed: FC<{ steamId: string }> = ({ steamId }) => {
   const [timePlayed, setTimePlayed] = useState<string>('Loading...');
@@ -8,7 +9,7 @@ export const PlayerTimePlayed: FC<{ steamId: string }> = ({ steamId }) => {
     motdApi
       .getTotalTimePlayed(steamId)
       .then((v) => {
-        setTimePlayed((v / 3600).toFixed(2) + ' hours');
+        setTimePlayed(playTimeFormat(v));
       })
       .catch(() => {
         setTimePlayed('unknown');

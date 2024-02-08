@@ -52,6 +52,19 @@ export const dateFormat = (ts: number | string | Date) => {
   return dFormat.format(d);
 };
 
+export const playTimeFormat = (playtimeSec: number) => {
+  if (!playtimeSec) return '0h';
+
+  const hours = Math.floor(playtimeSec / 3600);
+  const playtimeMin = Math.ceil(playtimeSec / 60 - hours * 60);
+
+  [hours ? hours + 'h' : null, playtimeMin ? playtimeMin + 'm' : null]
+    .filter(Boolean)
+    .join(' ');
+};
+
+console.log();
+
 const lsDefaults = {
   favsOnly: false as boolean,
   tagFilters: [] as string[],
