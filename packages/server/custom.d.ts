@@ -14,7 +14,6 @@ declare module '*.sql' {
 
 declare namespace NodeJS {
   interface ProcessEnv {
-    MOTD_RCON_PASSWORD: string;
     MOTD_ROOT_ADMINS: string;
     MOTD_STEAM_API_KEY: string;
     MOTD_WEB_PORT: string;

@@ -45,13 +45,10 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
     const reqAuthVersion = req.cookies.version ?? authVersion;
     const cookie = reqAuthVersion === authVersion ? req.cookies : null;
-
-    const ip: string = (req.query?.ip as string) ?? cookie?.ip;
-    const port: number = Number((req.query?.port as string) ?? cookie?.port);
     const token: string = (req.query?.token as string) ?? cookie?.token;
     const remoteId: string = (req.query?.guid as string) ?? cookie?.remoteId;
 
-    if (!(token && ((ip && port) || remoteId))) {
+    if (!(token && remoteId)) {
       dbgWarn(`Missing required auth request parameters`);
 
       throw 'Unauthorized';

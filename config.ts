@@ -10,8 +10,6 @@ if (!process.env.MOTD_WEB_PORT) {
 
 export const config: Config = {
   port: Number(process.env.MOTD_WEB_PORT),
-  rconPassword: process.env.MOTD_RCON_PASSWORD,
-  rconKeepAlive: 60 * 10,
   db: {
     host: '0.0.0.0',
     user: 'motd-menu',

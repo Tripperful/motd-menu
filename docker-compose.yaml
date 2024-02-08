@@ -25,7 +25,6 @@ services:
       db:
         condition: service_healthy
     environment:
-      - MOTD_RCON_PASSWORD=${MOTD_RCON_PASSWORD}
       - MOTD_ROOT_ADMINS=${MOTD_ROOT_ADMINS}
       - MOTD_STEAM_API_KEY=${MOTD_STEAM_API_KEY}
       - MOTD_WEB_PORT=${MOTD_WEB_PORT}
