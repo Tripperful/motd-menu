@@ -65,7 +65,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   const firstMount = useFirstMountState();
 
   useEffect(() => {
-    if (firstMount) return;
+    if (firstMount || disabled) return;
 
     const settings: PlayerClientSettings = {
       hitSound,
@@ -83,7 +83,16 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
       .catch(() => {
         addNotification('error', 'Failed to save settings');
       });
-  }, [drawViewmodel, esp, firstMount, fov, hitSound, killSound, steamId]);
+  }, [
+    disabled,
+    drawViewmodel,
+    esp,
+    firstMount,
+    fov,
+    hitSound,
+    killSound,
+    steamId,
+  ]);
 
   return (
     <div className={classNames(c.root, className)}>
