@@ -196,3 +196,5 @@ export const MapList: FC = () => {
     </FiltersContext.Provider>
   );
 };
+
+export default MapList;

@@ -36,3 +36,5 @@ export const ServerSettings: FC = () => {
     </Page>
   );
 };
+
+export default ServerSettings;

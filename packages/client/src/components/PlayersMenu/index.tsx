@@ -48,3 +48,5 @@ export const PlayersMenu: FC = () => {
     </Page>
   );
 };
+
+export default PlayersMenu;

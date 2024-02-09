@@ -22,3 +22,5 @@ export const ClientSettings: FC = () => {
     </Page>
   );
 };
+
+export default ClientSettings;

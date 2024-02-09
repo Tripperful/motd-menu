@@ -112,3 +112,5 @@ export const MatchMenu: FC = () => {
     </Page>
   );
 };
+
+export default MatchMenu;
