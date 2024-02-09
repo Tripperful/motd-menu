@@ -1,4 +1,4 @@
-import React, { FC, Suspense } from 'react';
+import React, { FC, Suspense, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Routes, useParams } from 'react-router-dom';
 import {
@@ -40,7 +40,12 @@ const useStyles = createUseStyles({
 export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
   const c = useStyles();
   const names = usePlayerNames(steamId);
-  const smurfSteamIds = usePlayerSmurfSteamIds(steamId);
+  const steamIds = usePlayerSmurfSteamIds(steamId);
+
+  const relatedSteamIds = useMemo(
+    () => steamIds.filter((id) => id !== steamId),
+    [steamId, steamIds],
+  );
 
   return (
     <>
@@ -52,12 +57,16 @@ export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
           </LineWithCopy>
         ))}
       </div>
-      <div className={c.header}>Related accounts</div>
-      <div className={c.list}>
-        {smurfSteamIds?.map((steamId) => (
-          <PlayersListItem key={steamId} steamId={steamId} />
-        ))}
-      </div>
+      {(relatedSteamIds?.length ?? 0) > 0 && (
+        <>
+          <div className={c.header}>Other related accounts</div>
+          <div className={c.list}>
+            {relatedSteamIds?.map((steamId) => (
+              <PlayersListItem key={steamId} steamId={steamId} />
+            ))}
+          </div>
+        </>
+      )}
     </>
   );
 };
