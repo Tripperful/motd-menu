@@ -24,7 +24,15 @@ const getUserCredentials = async (
   srcdsApi: SrcdsApi,
 ): Promise<OnlinePlayerInfo> => {
   if (!authCache[token]) {
-    authCache[token] = await srcdsApi.auth(token);
+    const auth = await srcdsApi.auth(token);
+
+    if (!(auth.name && auth.userId && auth.steamId)) {
+      delete authCache[token];
+
+      throw 'Unauthorized';
+    }
+
+    authCache[token] = auth;
   }
 
   return authCache[token];
@@ -70,11 +78,6 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     res.locals.srcdsApi = srcdsApi;
 
     const { steamId, name, userId } = await getUserCredentials(token, srcdsApi);
-
-    if (!(name && userId && steamId)) {
-      throw 'Unauthorized';
-    }
-
     const permissions = await db.permissions.get(steamId);
 
     res.locals.sessionData = {
