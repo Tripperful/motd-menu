@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { db } from './db';
 import { getSrcdsApi } from './srcdsApi';
 import { SrcdsApi } from './srcdsApi/SrcdsApi';
-import { dbgWarn } from './util';
+import { dbgInfo, dbgWarn } from './util';
 
 export interface MotdSessionData {
   protocol: SrcdsProtocol;
@@ -25,6 +25,13 @@ const getUserCredentials = async (
 ): Promise<OnlinePlayerInfo> => {
   if (!authCache[token]) {
     const auth = await srcdsApi.auth(token);
+
+    dbgInfo(
+      `auth: ${JSON.stringify({
+        token,
+        auth,
+      })}`,
+    );
 
     if (!(auth.name && auth.userId && auth.steamId)) {
       delete authCache[token];
