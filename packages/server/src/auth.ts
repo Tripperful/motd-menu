@@ -65,6 +65,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
             token,
             remoteId,
             query: req.query,
+            url: req.url,
           },
         )}`,
       );
