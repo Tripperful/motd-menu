@@ -23,11 +23,11 @@ export const getSrcdsApi: (srcdsIdentity: SrcdsIdentity) => SrcdsApi = (
   let api = srcdsApis[apiHost];
 
   if (!api) {
-    dbgInfo(`Creating a new SRCDS API instance for ${apiHost}`);
-
     api = createSrcdsApi(srcdsIdentity);
     srcdsApis[apiHost] = api;
   }
+
+  dbgInfo(`SRCDS API instance for ${apiHost} created`);
 
   return api;
 };

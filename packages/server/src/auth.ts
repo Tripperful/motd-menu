@@ -26,13 +26,6 @@ const getUserCredentials = async (
   if (!authCache[token]) {
     const auth = await srcdsApi.auth(token);
 
-    dbgInfo(
-      `auth: ${JSON.stringify({
-        token,
-        auth,
-      })}`,
-    );
-
     if (!(auth.name && auth.userId && auth.steamId)) {
       delete authCache[token];
 
@@ -53,12 +46,12 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
   try {
     if (
       req.url.includes('srcds-mock.html') ||
-      req.headers.referer?.includes('srcds-mock.html')
+      req.headers?.referer?.includes('srcds-mock.html')
     ) {
       return next();
     }
 
-    const reqAuthVersion = req.cookies.version ?? authVersion;
+    const reqAuthVersion = req.cookies?.version ?? authVersion;
     const cookie = reqAuthVersion === authVersion ? req.cookies : null;
     const token: string = (req.query?.token as string) ?? cookie?.token;
     const remoteId: string = (req.query?.guid as string) ?? cookie?.remoteId;
