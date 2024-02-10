@@ -23,6 +23,12 @@ mapsApi.get('/', async (_req, res) => {
       mapNames.includes(p.name),
     );
 
+    for (const preview of mapPreviews) {
+      if (preview.parentMap && !mapNames.includes(preview.parentMap)) {
+        delete preview.parentMap;
+      }
+    }
+
     res.status(200).end(JSON.stringify(mapPreviews));
   } catch {
     res.status(500).end();
