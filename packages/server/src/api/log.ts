@@ -14,7 +14,7 @@ logApi.post('/:severity', async (req, res) => {
   try {
     const { sessionData } = res.locals;
 
-    const { token, name, steamId } = sessionData ?? {};
+    const { token, steamId } = sessionData ?? {};
 
     const severity = req.params.severity as Severity;
     const log = req.body;
@@ -22,7 +22,7 @@ logApi.post('/:severity', async (req, res) => {
     const logFunc = logFuncMap[severity];
 
     logFunc?.(
-      `@@@ Client ${severity} from player ${name} (token: ${token}, steamid: ${steamId}):`,
+      `@@@ Client ${severity} from player (token: ${token}, steamid: ${steamId}):`,
       '\n' + log,
     );
 

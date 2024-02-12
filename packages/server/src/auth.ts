@@ -3,13 +3,12 @@ import { RequestHandler } from 'express';
 import { db } from './db';
 import { getSrcdsApi } from './srcdsApi';
 import { SrcdsApi } from './srcdsApi/SrcdsApi';
-import { dbgInfo, dbgWarn } from './util';
+import { dbgWarn } from './util';
 
 export interface MotdSessionData {
   protocol: SrcdsProtocol;
   remoteId: string;
   token: string;
-  name: string;
   userId: number;
   steamId: string;
   permissions: Permission[];
@@ -26,7 +25,7 @@ const getUserCredentials = async (
   if (!authCache[token]) {
     const auth = await srcdsApi.auth(token);
 
-    if (!(auth.name && auth.userId && auth.steamId)) {
+    if (!(auth.userId && auth.steamId)) {
       delete authCache[token];
 
       throw 'Unauthorized';
@@ -78,14 +77,13 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     const srcdsApi = getSrcdsApi({ protocol, remoteId });
     res.locals.srcdsApi = srcdsApi;
 
-    const { steamId, name, userId } = await getUserCredentials(token, srcdsApi);
+    const { steamId, userId } = await getUserCredentials(token, srcdsApi);
     const permissions = await db.permissions.get(steamId);
 
     res.locals.sessionData = {
       protocol,
       remoteId,
       token,
-      name,
       userId,
       steamId,
       permissions,
@@ -95,7 +93,6 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     res.cookie('protocol', protocol);
     res.cookie('remoteId', remoteId);
     res.cookie('token', token, { httpOnly: true });
-    res.cookie('name', name);
     res.cookie('userId', userId);
     res.cookie('steamId', steamId);
     res.cookie('permissions', JSON.stringify(permissions));
@@ -106,7 +103,6 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     res.clearCookie('token');
     res.clearCookie('protocol');
     res.clearCookie('remoteId');
-    res.clearCookie('name');
     res.clearCookie('userId');
     res.clearCookie('steamId');
     res.clearCookie('permissions');

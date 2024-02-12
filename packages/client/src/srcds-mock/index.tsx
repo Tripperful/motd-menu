@@ -56,7 +56,6 @@ const App: FC = () => {
       token,
       userId,
       steamId,
-      name,
     };
 
     setPlayers((cur) => [...cur, newPlayer]);
@@ -109,7 +108,7 @@ const App: FC = () => {
               rel="noreferrer"
               href={`${location.protocol}//${location.host}?guid=test&token=${p.token}`}
             >
-              {p.name}
+              {p.steamId}
             </a>
             &nbsp;
             <button onClick={() => onDeletePlayer(p.token)}>X</button>

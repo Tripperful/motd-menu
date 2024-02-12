@@ -118,7 +118,7 @@ const MatchPlayerItem: FC<{
   return (
     <div className={c.playerItem}>
       <span className={c.teamColor}>
-        {player.steamProfile?.name ?? player.name}
+        {player.steamProfile?.name ?? player.steamId}
       </span>
       <span className={c.playerTeamButtons}>
         {teams
