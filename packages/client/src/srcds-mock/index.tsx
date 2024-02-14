@@ -48,10 +48,17 @@ let nextSteamId = BigInt('76561197960465565');
 
 const App: FC = () => {
   const [players, setPlayers] = useState<OnlinePlayer[]>(onlinePlayers);
+  const [msgText, setMsgText] = useState('');
 
   useEffect(() => {
     onlinePlayers = players;
   }, [players]);
+
+  const onSendWsMessage = useCallback(() => {
+    const message: WsMessage = JSON.parse(msgText);
+
+    wsClient.send(message.type, message.data, uuid());
+  }, [msgText]);
 
   const onAddPlayer = useCallback(() => {
     const token = uuid();
@@ -106,6 +113,15 @@ const App: FC = () => {
 
   return (
     <div>
+      <input
+        type="text"
+        placeholder="WS message..."
+        value={msgText}
+        onChange={(e) => setMsgText(e.currentTarget.value)}
+      ></input>
+      <button onClick={onSendWsMessage}>Send WS message</button>
+      <br />
+      <br />
       <button onClick={onAddPlayer}>Add player</button>
       <div>
         {players.map((p) => (
