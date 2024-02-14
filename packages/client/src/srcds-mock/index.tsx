@@ -36,6 +36,13 @@ wsClient.subscribe('get_players_request', async () => {
   };
 });
 
+wsClient.subscribe('get_maps_request', async () => {
+  return {
+    type: 'get_maps_response',
+    data: ['dm_ethic', 'dm_lockdown', 'aim_arena_reloaded', 'dm_lostarena_rpg'],
+  };
+});
+
 let nextUserId = 1;
 let nextSteamId = BigInt('76561197960465565');
 
