@@ -2,10 +2,13 @@ import {
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
+  MatchEndedMessage,
+  MatchStartedMessage,
   Permission,
   PlayerClientSettings,
   ReactionData,
   ReactionName,
+  ServerInfo,
 } from '@motd-menu/common';
 
 export interface Database {
@@ -98,5 +101,12 @@ export interface Database {
       get: (steamId: string) => Promise<PlayerClientSettings>;
       set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;
     };
+  };
+  match: {
+    started(serverId: number, data: MatchStartedMessage): Promise<void>;
+    ended(serverId: number, data: MatchEndedMessage): Promise<void>;
+  };
+  server: {
+    getByApiKey(apiKey: string): Promise<ServerInfo>;
   };
 }

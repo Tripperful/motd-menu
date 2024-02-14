@@ -5,7 +5,6 @@ import {
   WsSubscriberCallback,
   uuid,
 } from '@motd-menu/common';
-import { createHash } from 'crypto';
 import type http from 'http';
 import { dbgErr, dbgWarn } from 'src/util';
 import { RawData, WebSocket, WebSocketServer } from 'ws';
@@ -15,49 +14,48 @@ export let wsApi: WsApi = null;
 export class WsApi {
   private wsServer: WebSocketServer = null;
 
-  public static init(httpServer: http.Server) {
-    const authPw = process.env.MOTD_WS_AUTH_PASSWORD;
-
-    if (!authPw) {
-      throw new Error(
-        'MOTD_WS_AUTH_PASSWORD env variable must be set to establish a secure WS connection',
-      );
-    }
-
-    const authMd5Hashes = authPw
-      .split('\n')
-      .map((pw) => createHash('md5').update(pw).digest('hex').toLowerCase());
-
+  public static init(
+    httpServer: http.Server,
+    authenticate: (authKey: string) => Promise<number>,
+  ) {
     if (!wsApi) {
-      wsApi = new WsApi(httpServer, authMd5Hashes);
+      wsApi = new WsApi(httpServer, authenticate);
     }
 
     return wsApi;
   }
 
-  // Maps unique remote IDs to their respective WS sockets
-  private remotesById: Record<string, WebSocket> = {};
+  // Maps WS session IDs to their respective WS sockets and remote IDs
+  private remotesBySessionId: Record<
+    string,
+    { ws: WebSocket; remoteId: number }
+  > = {};
 
-  private getRemoteId(remoteWs: WebSocket) {
-    for (const [id, ws] of Object.entries(this.remotesById)) {
+  private getSessionId(remoteWs: WebSocket) {
+    for (const [id, { ws }] of Object.entries(this.remotesBySessionId)) {
       if (ws === remoteWs) {
         return id;
       }
     }
+
     return null;
   }
 
-  private constructor(httpServer: http.Server, authMd5Hashes: string[]) {
+  private constructor(
+    httpServer: http.Server,
+    authenticate: (authKey: string) => Promise<number>,
+  ) {
     this.wsServer = new WebSocketServer({ noServer: true });
 
-    httpServer.on('upgrade', (req, socket, head) => {
+    httpServer.on('upgrade', async (req, socket, head) => {
       const searchParams = new URL(req.url, `http://${req.headers.host}`)
         ?.searchParams;
 
       const auth = searchParams?.get('auth')?.toLowerCase();
-      const remoteId = searchParams?.get('guid');
+      const sessionId = searchParams?.get('guid');
+      const remoteId = await authenticate(auth);
 
-      if (!authMd5Hashes.includes(auth) || !remoteId) {
+      if (!(remoteId && sessionId)) {
         const ip = req.socket.remoteAddress;
         const port = req.socket.remotePort;
 
@@ -69,8 +67,8 @@ export class WsApi {
       }
 
       this.wsServer.handleUpgrade(req, socket, head, (ws) => {
-        this.remotesById[remoteId] = ws;
-        this.wsServer.emit('connection', ws, req, remoteId);
+        this.remotesBySessionId[sessionId] = { ws, remoteId: remoteId };
+        this.wsServer.emit('connection', ws, req);
       });
     });
 
@@ -99,10 +97,10 @@ export class WsApi {
       });
 
       remoteWs.on('close', () => {
-        const remoteId = this.getRemoteId(remoteWs);
+        const sessionId = this.getSessionId(remoteWs);
 
-        if (remoteId) {
-          delete this.remotesById[remoteId];
+        if (sessionId) {
+          delete this.remotesBySessionId[sessionId];
         }
       });
     });
@@ -127,16 +125,16 @@ export class WsApi {
   }
 
   send<TData>(
-    remoteId: string,
+    sessionId: string,
     type: WsMessageType,
     data?: TData,
     guid?: string,
   ) {
-    const remoteWs = this.remotesById[remoteId];
+    const { ws } = this.remotesBySessionId[sessionId];
 
-    if (!remoteWs?.OPEN) {
+    if (!ws?.OPEN) {
       throw new Error(
-        'Trying to send a WS message to a disconnected remote: ' + remoteWs,
+        'Trying to send a WS message to a disconnected remote: ' + sessionId,
       );
     }
 
@@ -150,13 +148,13 @@ export class WsApi {
       msg.data = data;
     }
 
-    remoteWs.send(JSON.stringify(msg));
+    ws.send(JSON.stringify(msg));
   }
 
   private responseHandlers: Record<string, WsMessageCallback> = {};
 
   public async request<TReqData = unknown, TResData = unknown>(
-    remoteId: string,
+    sessionId: string,
     type: WsMessageType,
     data?: TReqData,
     timeout = 10000,
@@ -169,7 +167,7 @@ export class WsApi {
 
         this.responseHandlers[guid] = res as (msg: WsMessage<TResData>) => void;
 
-        this.send(remoteId, type, data, guid);
+        this.send(sessionId, type, data, guid);
       } catch (e) {
         rej(e);
       }
@@ -204,7 +202,8 @@ export class WsApi {
         );
       }
     } else {
-      const remoteId = this.getRemoteId(remoteWs);
+      const sessionId = this.getSessionId(remoteWs);
+      const { remoteId } = this.remotesBySessionId[sessionId];
 
       let subCount = 0;
 
@@ -215,12 +214,12 @@ export class WsApi {
           subCount++;
 
           try {
-            const responsePromise = callback(msg);
+            const responsePromise = callback(msg, remoteId);
 
             if (responsePromise) {
               responsePromise.then((res) => {
                 if (res) {
-                  this.send(remoteId, res.type, res.data, msg.guid);
+                  this.send(sessionId, res.type, res.data, msg.guid);
                 }
               });
             }

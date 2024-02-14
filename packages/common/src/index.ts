@@ -8,6 +8,7 @@ export * from './types/permissions';
 export * from './types/players';
 export * from './types/reactions';
 export * from './types/reviews';
+export * from './types/servers';
 export * from './types/steam';
 export * from './types/util';
 export * from './types/ws';

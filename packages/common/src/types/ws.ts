@@ -21,6 +21,8 @@ export type WsMessageType =
   | 'motd_auth_request'
   | 'motd_auth_response'
   | 'apply_settings'
+  | 'match_started'
+  | 'match_ended'
   | 'motd_close';
 
 export interface WsMessage<TData = unknown> {
@@ -35,6 +37,7 @@ export type WsMessageCallback<TData = unknown> = (
 
 export type WsSubscriberCallback<TData = unknown> = (
   msg: WsMessage<TData>,
+  remoteId?: number,
 ) => Promise<WsMessage | void> | void;
 
 export interface PlayerConnectedReqest {
@@ -69,4 +72,39 @@ export interface SetSettingsAction {
     hitsound: 0 | 1;
     killsound: 0 | 1;
   };
+}
+
+export interface BaseStatsMessage {
+  curtime: number;
+  tick: number;
+}
+
+export interface MatchEndedMessageTeam {
+  index: number;
+  name: string;
+  players: MatchEndedMessageTeamPlayer[];
+}
+
+export interface MatchEndedMessageTeamPlayer {
+  deaths?: number;
+  kills?: number;
+  steamId: string;
+}
+
+export interface MatchDataMessage extends BaseStatsMessage {
+  id: string;
+  demoId: string;
+  initiator: string;
+  mapName: string;
+  teams: MatchEndedMessageTeam[];
+}
+
+export interface MatchStartedMessage extends MatchDataMessage {
+  duration: number;
+  status: string;
+}
+
+export interface MatchEndedMessage extends MatchDataMessage {
+  duration: number;
+  status: string;
 }

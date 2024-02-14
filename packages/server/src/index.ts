@@ -9,7 +9,7 @@ import path from 'path';
 import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
-import { logDbgInfo } from './util';
+import { dbgWarn, logDbgInfo } from './util';
 import { WsApi } from './ws';
 import { wsHandlers } from './ws/handlers';
 
@@ -83,7 +83,20 @@ db.init().then(() => {
       `${protocol.toUpperCase()} server is listening on port ${port}`,
     );
 
-    const wsApi = WsApi.init(server);
+    const wsApi = WsApi.init(server, async (authKey: string) => {
+      const serverInfo = await db.server.getByApiKey(authKey);
+
+      if (!serverInfo) return null;
+
+      if (serverInfo.blocked) {
+        dbgWarn(
+          `A blocked server attempted WS connection (${serverInfo.name})`,
+        );
+        return null;
+      }
+
+      return serverInfo.id;
+    });
 
     for (const [msgType, handler] of Object.entries(wsHandlers)) {
       wsApi.subscribe(msgType as WsMessageType, handler);

@@ -2,10 +2,13 @@ import {
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
+  MatchEndedMessage,
+  MatchStartedMessage,
   Permission,
   PlayerClientSettings,
   ReactionData,
   ReactionName,
+  ServerInfo,
   allPermissions,
   allReactionNames,
 } from '@motd-menu/common';
@@ -192,6 +195,18 @@ export class PgDatabase extends BasePgDatabase implements Database {
         );
       },
     },
+  };
+
+  match = {
+    ended: (serverId: number, data: MatchEndedMessage) =>
+      this.call('match_ended', serverId, data),
+    started: (serverId: number, data: MatchStartedMessage) =>
+      this.call('match_started', serverId, data),
+  };
+
+  server = {
+    getByApiKey: (apiKey: string) =>
+      this.select<ServerInfo>('server_by_key', apiKey),
   };
 
   override async init() {

@@ -211,3 +211,137 @@ DELETE FROM client_aka
 WHERE client_aka.steam_id = client_delete_aka.steam_id::bigint;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE match_started (server_id int, match_data json) AS $$
+DECLARE
+  map_id int;
+  match_team_id int;
+  team json;
+  player_steam_id text;
+BEGIN
+IF EXISTS (SELECT * FROM matches WHERE matches.id = (match_data->>'id')::uuid) THEN
+  RETURN;
+END IF;
+SELECT id INTO map_id FROM maps WHERE maps.name = match_data->>'mapName';
+IF map_id IS NULL THEN
+  INSERT INTO maps(name) VALUES (match_data->>'mapName') RETURNING id INTO map_id;
+END IF;
+INSERT INTO matches ( 
+  id,
+  status,
+  demo_id,
+  map_id,
+  server_id,
+  initiator,
+  started
+)
+VALUES (
+  (match_data->>'id')::uuid,
+  'started',
+  match_data->>'demoId',
+  map_id,
+  match_started.server_id,
+  (match_data->>'initiator')::bigint,
+  NOW()
+);
+FOR team IN
+  SELECT * FROM json_array_elements((match_data->>'teams')::json)
+LOOP
+  INSERT INTO match_teams (match_id, index, name)
+  VALUES (
+    (match_data->>'id')::uuid,
+    (team->>'index')::smallint,
+    team->>'name'
+  ) RETURNING id INTO match_team_id;
+  FOR player_steam_id IN
+    SELECT * FROM json_array_elements_text((team->>'players')::json)
+  LOOP
+    INSERT INTO match_team_players (
+      match_team_id,
+      steam_id
+    )
+    VALUES (
+      match_team_id,
+      player_steam_id::bigint
+    );
+  END LOOP;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE match_ended (server_id int, match_data json) AS $$
+DECLARE
+  map_id int;
+  match_team_id int;
+  team json;
+  player json;
+BEGIN
+INSERT INTO maps(name) VALUES (match_data->>'mapName') ON CONFLICT DO NOTHING RETURNING id INTO map_id;
+INSERT INTO matches (
+  id,
+  status,
+  demo_id,
+  duration,
+  map_id,
+  server_id,
+  initiator,
+  ended
+)
+VALUES (
+  (match_data->>'id')::uuid,
+  match_data->>'status',
+  match_data->>'demoId',
+  (match_data->>'duration')::float,
+  map_id,
+  match_ended.server_id,
+  (match_data->>'initiator')::bigint,
+  NOW()
+)
+ON CONFLICT ON CONSTRAINT matches_pkey DO UPDATE
+SET
+  status = EXCLUDED.status,
+  ended = EXCLUDED.ended,
+  duration = EXCLUDED.duration;
+FOR team IN
+  SELECT * FROM json_array_elements((match_data->>'teams')::json)
+LOOP
+  SELECT id INTO match_team_id FROM match_teams
+    WHERE
+      match_teams.match_id = (match_data->>'id')::uuid
+      AND 
+      match_teams.index = (team->>'index')::smallint
+    LIMIT 1;
+  IF match_team_id IS NULL THEN
+    INSERT INTO match_teams (match_id, index, name)
+      VALUES (
+        (match_data->>'id')::uuid,
+        (team->>'index')::smallint,
+        team->>'name'
+      )
+      RETURNING id INTO match_team_id;
+  END IF;
+  FOR player IN
+    SELECT * FROM json_array_elements((team->>'players')::json)
+  LOOP
+    INSERT INTO match_team_players (
+      match_team_id,
+      steam_id,
+      kills,
+      deaths
+    )
+    VALUES (
+      match_team_id,
+      (player->>'steamId')::bigint,
+      (player->>'kills')::int,
+      (player->>'deaths')::int
+    )
+    ON CONFLICT ON CONSTRAINT match_team_players_match_team_id_steam_id_key DO UPDATE
+    SET
+      kills = EXCLUDED.kills,
+      deaths = EXCLUDED.deaths;
+  END LOOP;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;

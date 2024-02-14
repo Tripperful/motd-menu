@@ -1,4 +1,6 @@
 import {
+  MatchEndedMessage,
+  MatchStartedMessage,
   PlayerClientSettings,
   PlayerConnectedReqest,
   PlayerDisconnectedReqest,
@@ -84,4 +86,12 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       type: 'get_names_response',
       data: await db.client.getNames(msg.data),
     }),
+
+    match_started: async (msg: WsMessage<MatchStartedMessage>, serverId) => {
+      await db.match.started(serverId, msg.data);
+    },
+
+    match_ended: async (msg: WsMessage<MatchEndedMessage>, serverId) => {
+      await db.match.ended(serverId, msg.data);
+    },
   };

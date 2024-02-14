@@ -18,7 +18,6 @@ declare namespace NodeJS {
     MOTD_STEAM_API_KEY: string;
     MOTD_WEB_PORT: string;
     MOTD_WEB_PORT_HTTPS: string;
-    MOTD_WS_AUTH_PASSWORD: string;
     MOTD_DEBUG_LOG: string;
     MOTD_SSL_CERT: string;
     MOTD_SSL_PRIVATE_KEY: string;

@@ -38,3 +38,35 @@ CREATE TABLE IF NOT EXISTS
 
 CREATE TABLE IF NOT EXISTS
   client_aka (steam_id bigint PRIMARY KEY, name text);
+
+CREATE TABLE IF NOT EXISTS
+  matches (
+    id uuid PRIMARY KEY,
+    status text,
+    demo_id text,
+    duration float,
+    map_id int REFERENCES maps (id),
+    server_id int REFERENCES servers (id),
+    initiator bigint,
+    started timestamp,
+    ended timestamp
+  );
+
+CREATE TABLE IF NOT EXISTS
+  match_teams (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id),
+    index smallint,
+    name text,
+    UNIQUE (match_id, index)
+  );
+
+CREATE TABLE IF NOT EXISTS
+  match_team_players (
+    id SERIAL PRIMARY KEY,
+    match_team_id int REFERENCES match_teams (id),
+    steam_id bigint,
+    kills int,
+    deaths int,
+    UNIQUE (match_team_id, steam_id)
+  );
