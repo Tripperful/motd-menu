@@ -206,10 +206,14 @@ export class WsApi {
     } else {
       const remoteId = this.getRemoteId(remoteWs);
 
+      let subCount = 0;
+
       for (const [subId, callback] of Object.entries(this.subscribers)) {
         const subMsgType = subId.split(' ')[0];
 
         if (subMsgType === msg.type) {
+          subCount++;
+
           try {
             const responsePromise = callback(msg);
 
@@ -228,6 +232,10 @@ export class WsApi {
             );
           }
         }
+      }
+
+      if (subCount === 0) {
+        dbgWarn(`Unsupported incoming WS message: ${utf8}`);
       }
     }
   }
