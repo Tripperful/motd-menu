@@ -40,7 +40,6 @@ export type WsSubscriberCallback<TData = unknown> = (
 export interface PlayerConnectedReqest {
   token: string;
   steamId: string;
-  name: string;
   ip: string;
   port: number;
 }

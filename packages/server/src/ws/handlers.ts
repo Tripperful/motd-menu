@@ -9,13 +9,16 @@ import {
 } from '@motd-menu/common';
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
+import { getPlayersProfiles } from 'src/steam';
 
 export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
   {
-    player_connected: (msg: WsMessage<PlayerConnectedReqest>) => {
-      const { token, steamId, name, ip, port } = msg.data;
+    player_connected: async (msg: WsMessage<PlayerConnectedReqest>) => {
+      const { token, steamId, ip, port } = msg.data;
 
-      db.client.connected(token, steamId, ip, port, name);
+      const profile = (await getPlayersProfiles([steamId]))[steamId];
+
+      db.client.connected(token, steamId, ip, port, profile.name);
     },
 
     player_disconnected: (msg: WsMessage<PlayerDisconnectedReqest>) => {
