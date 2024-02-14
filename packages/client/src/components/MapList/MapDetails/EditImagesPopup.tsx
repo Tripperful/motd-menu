@@ -9,6 +9,7 @@ import AddImgIcon from '~icons/add-image.svg';
 import { outlineButton } from '~styles/elements';
 import { AddImagePopup } from './AddImagePopup';
 import { addNotification } from 'src/hooks/state/notifications';
+import { CopyOnClick } from '~components/common/CopyOnClick';
 
 const useStyles = createUseStyles({
   root: {
@@ -41,6 +42,7 @@ const useStyles = createUseStyles({
     width: '5em',
     height: '3em',
     objectFit: 'cover',
+    flex: '0 0 auto',
   },
   listImageSrc: {
     overflow: 'hidden',
@@ -57,7 +59,9 @@ const ListImage: FC<{
   return (
     <div className={c.listImageItem}>
       <img src={item} className={c.listImageImg} />
-      <span className={c.listImageSrc}>{item}</span>
+      <CopyOnClick what="link" copyText={item}>
+        <span className={c.listImageSrc}>{item}</span>
+      </CopyOnClick>
     </div>
   );
 };
