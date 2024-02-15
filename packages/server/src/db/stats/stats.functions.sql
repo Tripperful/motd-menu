@@ -345,3 +345,69 @@ LOOP
 END LOOP;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE player_death (death_data json) AS $$ BEGIN
+  INSERT INTO player_deaths (
+    match_id,
+    tick,
+    curtime,
+    origin,
+    victim_steam_id,
+    attacker_steam_id,
+    attacker_origin,
+    weapon,
+    model,
+    classname,
+    entity_id
+  ) VALUES (
+    (death_data->>'id')::uuid,
+    (death_data->>'tick')::int,
+    (death_data->>'curtime')::float,
+    NULLIF(ARRAY[
+      (((death_data->>'origin')::json)->>'x')::float,
+      (((death_data->>'origin')::json)->>'y')::float,
+      (((death_data->>'origin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    (death_data->>'victim')::bigint,
+    (death_data->>'attacker')::bigint,
+    NULLIF(ARRAY[
+      (((death_data->>'attackerOrigin')::json)->>'x')::float,
+      (((death_data->>'attackerOrigin')::json)->>'y')::float,
+      (((death_data->>'attackerOrigin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    death_data->>'weapon',
+    death_data->>'model',
+    death_data->>'classname',
+    (death_data->>'entityId')::bigint
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE player_respawn (respawn_data json) AS $$ BEGIN
+  INSERT INTO player_respawns (
+    match_id,
+    tick,
+    curtime,
+    origin,
+    angles,
+    steam_id
+  ) VALUES (
+    (respawn_data->>'id')::uuid,
+    (respawn_data->>'tick')::int,
+    (respawn_data->>'curtime')::float,
+    NULLIF(ARRAY[
+      (((respawn_data->>'origin')::json)->>'x')::float,
+      (((respawn_data->>'origin')::json)->>'y')::float,
+      (((respawn_data->>'origin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    NULLIF(ARRAY[
+      (((respawn_data->>'angles')::json)->>'x')::float,
+      (((respawn_data->>'angles')::json)->>'y')::float,
+      (((respawn_data->>'angles')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    (respawn_data->>'steamId')::bigint
+  );
+END;
+$$ LANGUAGE plpgsql;

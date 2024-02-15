@@ -3,7 +3,9 @@ import {
   MatchStartedMessage,
   PlayerClientSettings,
   PlayerConnectedReqest,
+  PlayerDeathMessage,
   PlayerDisconnectedReqest,
+  PlayerRespawnMessage,
   SetSettingsAction,
   WsMessage,
   WsMessageType,
@@ -93,5 +95,13 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
 
     match_ended: async (msg: WsMessage<MatchEndedMessage>, serverId) => {
       await db.match.ended(serverId, msg.data);
+    },
+
+    player_death: async (msg: WsMessage<PlayerDeathMessage>) => {
+      await db.player.death(msg.data);
+    },
+
+    player_respawn: async (msg: WsMessage<PlayerRespawnMessage>) => {
+      await db.player.respawn(msg.data);
     },
   };

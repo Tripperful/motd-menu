@@ -6,6 +6,8 @@ import {
   MatchStartedMessage,
   Permission,
   PlayerClientSettings,
+  PlayerDeathMessage,
+  PlayerRespawnMessage,
   ReactionData,
   ReactionName,
   ServerInfo,
@@ -207,6 +209,11 @@ export class PgDatabase extends BasePgDatabase implements Database {
   server = {
     getByApiKey: (apiKey: string) =>
       this.select<ServerInfo>('server_by_key', apiKey),
+  };
+
+  player = {
+    death: (data: PlayerDeathMessage) => this.call('player_death', data),
+    respawn: (data: PlayerRespawnMessage) => this.call('player_respawn', data),
   };
 
   override async init() {

@@ -70,3 +70,30 @@ CREATE TABLE IF NOT EXISTS
     deaths int,
     UNIQUE (match_team_id, steam_id)
   );
+
+CREATE TABLE IF NOT EXISTS
+  player_deaths (
+    id SERIAL PRIMARY KEY,
+    match_id uuid,
+    tick int,
+    curtime float,
+    origin float[3],
+    victim_steam_id bigint,
+    attacker_steam_id bigint,
+    attacker_origin float[3],
+    weapon text,
+    model text,
+    classname text,
+    entity_id bigint
+  );
+
+CREATE TABLE IF NOT EXISTS
+  player_respawns (
+    id SERIAL PRIMARY KEY,
+    match_id uuid,
+    tick int,
+    curtime float,
+    origin float[3],
+    angles float[3],
+    steam_id bigint
+  );

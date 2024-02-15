@@ -6,6 +6,8 @@ import {
   MatchStartedMessage,
   Permission,
   PlayerClientSettings,
+  PlayerDeathMessage,
+  PlayerRespawnMessage,
   ReactionData,
   ReactionName,
   ServerInfo,
@@ -108,5 +110,9 @@ export interface Database {
   };
   server: {
     getByApiKey(apiKey: string): Promise<ServerInfo>;
+  };
+  player: {
+    death(data: PlayerDeathMessage): Promise<void>;
+    respawn(data: PlayerRespawnMessage): Promise<void>;
   };
 }

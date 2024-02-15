@@ -1,3 +1,5 @@
+import { WeaponType } from './weapons';
+
 export type WsMessageType =
   | 'get_maps_request'
   | 'get_maps_response'
@@ -23,6 +25,8 @@ export type WsMessageType =
   | 'apply_settings'
   | 'match_started'
   | 'match_ended'
+  | 'player_death'
+  | 'player_respawn'
   | 'motd_close';
 
 export interface WsMessage<TData = unknown> {
@@ -77,6 +81,17 @@ export interface SetSettingsAction {
 export interface BaseStatsMessage {
   curtime: number;
   tick: number;
+  id: string;
+}
+
+export interface Vec3 {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface BasePointMessage extends BaseStatsMessage {
+  origin: Vec3;
 }
 
 export interface MatchEndedMessageTeam {
@@ -107,4 +122,19 @@ export interface MatchStartedMessage extends MatchDataMessage {
 export interface MatchEndedMessage extends MatchDataMessage {
   duration: number;
   status: string;
+}
+
+export interface PlayerDeathMessage extends BasePointMessage {
+  attacker: string;
+  attackerOrigin?: Vec3;
+  victim: string;
+  weapon: WeaponType;
+  model?: string;
+  classname?: string;
+  entityId?: string;
+}
+
+export interface PlayerRespawnMessage extends BasePointMessage {
+  angles: Vec3;
+  steamId: string;
 }

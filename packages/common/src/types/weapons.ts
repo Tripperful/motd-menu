@@ -1,0 +1,19 @@
+export type WeaponType =
+  | string
+  | 'worldspawn'
+  | 'suicide'
+  | 'physics'
+  | 'combine_ball'
+  | 'smg1_grenade'
+  | 'crowbar'
+  | 'stunstick'
+  | 'physcannon'
+  | 'pistol'
+  | '357'
+  | 'smg1'
+  | 'ar2'
+  | 'shotgun'
+  | 'crossbow'
+  | 'frag'
+  | 'rpg'
+  | 'slam';
