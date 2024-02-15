@@ -95,6 +95,8 @@ db.init().then(() => {
         return null;
       }
 
+      console.log(serverInfo.name + ' server authenticated');
+
       return serverInfo.id;
     });
 
