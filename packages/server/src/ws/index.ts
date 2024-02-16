@@ -101,6 +101,8 @@ export class WsApi {
 
         if (sessionId) {
           delete this.remotesBySessionId[sessionId];
+
+          console.log(`Closed WS connection: ${remoteHost}`);
         }
       });
     });
