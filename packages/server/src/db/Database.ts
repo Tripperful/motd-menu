@@ -1,16 +1,24 @@
 import {
+  AmmoPickupMessage,
+  BatteryPickupMessage,
+  ItemPickupMessage,
+  ItemRespawnMessage,
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
   MatchEndedMessage,
   MatchStartedMessage,
+  MedkitPickupMessage,
   Permission,
+  PlayerAttackMessage,
   PlayerClientSettings,
+  PlayerDamageMessage,
   PlayerDeathMessage,
   PlayerRespawnMessage,
   ReactionData,
   ReactionName,
   ServerInfo,
+  WeaponDropMessage,
 } from '@motd-menu/common';
 
 export interface Database {
@@ -104,15 +112,21 @@ export interface Database {
       set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;
     };
   };
-  match: {
-    started(serverId: number, data: MatchStartedMessage): Promise<void>;
-    ended(serverId: number, data: MatchEndedMessage): Promise<void>;
-  };
   server: {
     getByApiKey(apiKey: string): Promise<ServerInfo>;
   };
-  player: {
-    death(data: PlayerDeathMessage): Promise<void>;
-    respawn(data: PlayerRespawnMessage): Promise<void>;
+  matchStats: {
+    matchStarted(serverId: number, data: MatchStartedMessage): Promise<void>;
+    matchEnded(data: MatchEndedMessage): Promise<void>;
+    playerDeath(data: PlayerDeathMessage): Promise<void>;
+    playerRespawn(data: PlayerRespawnMessage): Promise<void>;
+    playerDamage(data: PlayerDamageMessage): Promise<void>;
+    playerAttack(data: PlayerAttackMessage): Promise<void>;
+    itemRespawn(data: ItemRespawnMessage): Promise<void>;
+    weaponDrop(data: WeaponDropMessage): Promise<void>;
+    itemPickup(data: ItemPickupMessage): Promise<void>;
+    medkitPickup(data: MedkitPickupMessage): Promise<void>;
+    batteryPickup(data: BatteryPickupMessage): Promise<void>;
+    ammoPickup(data: AmmoPickupMessage): Promise<void>;
   };
 }

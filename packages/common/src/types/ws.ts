@@ -27,6 +27,14 @@ export type WsMessageType =
   | 'match_ended'
   | 'player_death'
   | 'player_respawn'
+  | 'player_damage'
+  | 'item_respawn'
+  | 'item_pickup'
+  | 'player_attack'
+  | 'ammo_pickup'
+  | 'weapon_drop'
+  | 'medkit_pickup'
+  | 'battery_pickup'
   | 'motd_close';
 
 export interface WsMessage<TData = unknown> {
@@ -137,4 +145,72 @@ export interface PlayerDeathMessage extends BasePointMessage {
 export interface PlayerRespawnMessage extends BasePointMessage {
   angles: Vec3;
   steamId: string;
+}
+
+export interface PlayerDamageMessage extends BaseStatsMessage {
+  attacker: string;
+  attackerPos: Vec3;
+  attackerAng: Vec3;
+  victim: string;
+  victimPos: Vec3;
+  victimAng: Vec3;
+  hpBefore: number;
+  hpAfter: number;
+  armorBefore: number;
+  armorAfter: number;
+  damage: number;
+  damageOrigin: Vec3;
+  weapon: string;
+  classname: string;
+  entityId: string;
+  damageType: number;
+  hitbox: Record<string, number>;
+}
+
+export interface PlayerAttackMessage extends BaseStatsMessage {
+  wpn: string;
+  entityId: string;
+  steamId: string;
+  pos: Vec3;
+  ang: Vec3;
+  attackType: number;
+}
+
+export interface ItemRespawnMessage extends BasePointMessage {
+  item: string;
+  entityId: string;
+}
+
+export interface WeaponDropMessage extends BasePointMessage {
+  steamId: string;
+  entityId: string;
+  wpn: string;
+}
+
+export interface ItemPickupMessage extends BasePointMessage {
+  item: string;
+  entityId: string;
+  steamId: string;
+}
+
+export interface MedkitPickupMessage extends BasePointMessage {
+  steamId: string;
+  entityId: string;
+  hpBefore: number;
+  hpAfter: number;
+  big: number;
+}
+
+export interface BatteryPickupMessage extends BasePointMessage {
+  steamId: string;
+  entityId: string;
+  armorBefore: number;
+  armorAfter: number;
+}
+
+export interface AmmoPickupMessage extends BasePointMessage {
+  steamId: string;
+  ammoIndex: number;
+  prev: number;
+  post: number;
 }

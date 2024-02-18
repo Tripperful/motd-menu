@@ -42,20 +42,24 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
   matches (
     id uuid PRIMARY KEY,
-    status text,
-    demo_id text,
-    duration float,
     map_id int REFERENCES maps (id),
     server_id int REFERENCES servers (id),
+    demo_id text,
     initiator bigint,
-    started timestamp,
-    ended timestamp
+    start_tick int,
+    start_curtime float,
+    start_time timestamp,
+    end_tick int,
+    end_curtime float,
+    end_time timestamp,
+    duration float,
+    status text
   );
 
 CREATE TABLE IF NOT EXISTS
   match_teams (
     id SERIAL PRIMARY KEY,
-    match_id uuid REFERENCES matches (id),
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
     index smallint,
     name text,
     UNIQUE (match_id, index)
@@ -64,7 +68,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
   match_team_players (
     id SERIAL PRIMARY KEY,
-    match_team_id int REFERENCES match_teams (id),
+    match_team_id int REFERENCES match_teams (id) ON DELETE CASCADE,
     steam_id bigint,
     kills int,
     deaths int,
@@ -74,7 +78,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
   player_deaths (
     id SERIAL PRIMARY KEY,
-    match_id uuid,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
     tick int,
     curtime float,
     origin float[3],
@@ -90,10 +94,124 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
   player_respawns (
     id SERIAL PRIMARY KEY,
-    match_id uuid,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
     tick int,
     curtime float,
     origin float[3],
     angles float[3],
     steam_id bigint
+  );
+
+CREATE TABLE IF NOT EXISTS
+  player_damage (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    attacker_steam_id bigint,
+    attacker_pos float[3],
+    attacker_ang float[3],
+    victim_steam_id bigint,
+    victim_pos float[3],
+    victim_ang float[3],
+    hp_before int,
+    hp_after int,
+    armor_before int,
+    armor_after int,
+    damage float,
+    damage_type int,
+    damage_pos float[3],
+    weapon text,
+    classname text,
+    entity_id bigint,
+    hitboxes json
+  );
+
+CREATE TABLE IF NOT EXISTS
+  player_attacks (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    pos float[3],
+    ang float[3],
+    entity_id bigint,
+    steam_id bigint,
+    weapon text,
+    is_secondary boolean
+  );
+
+CREATE TABLE IF NOT EXISTS
+  item_respawns (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    item text,
+    entity_id bigint
+  );
+
+CREATE TABLE IF NOT EXISTS
+  weapon_drops (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    steam_id bigint,
+    entity_id bigint,
+    weapon text
+  );
+
+CREATE TABLE IF NOT EXISTS
+  item_pickups (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    item text,
+    steam_id bigint,
+    entity_id bigint
+  );
+
+CREATE TABLE IF NOT EXISTS
+  medkit_pickups (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    steam_id bigint,
+    entity_id bigint,
+    hp_before int,
+    hp_after int,
+    is_big boolean
+  );
+
+CREATE TABLE IF NOT EXISTS
+  battery_pickups (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    steam_id bigint,
+    entity_id bigint,
+    armor_before int,
+    armor_after int
+  );
+
+CREATE TABLE IF NOT EXISTS
+  ammo_pickups (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    steam_id bigint,
+    ammo_type int,
+    count_before int,
+    count_after int
   );

@@ -1,11 +1,7 @@
 import {
-  MatchEndedMessage,
-  MatchStartedMessage,
   PlayerClientSettings,
   PlayerConnectedReqest,
-  PlayerDeathMessage,
   PlayerDisconnectedReqest,
-  PlayerRespawnMessage,
   SetSettingsAction,
   WsMessage,
   WsMessageType,
@@ -14,7 +10,7 @@ import {
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
-import { dbgInfo } from 'src/util';
+import { matchStatsHandlers } from './matchStatsHandlers';
 
 export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
   {
@@ -90,35 +86,5 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       data: await db.client.getNames(msg.data),
     }),
 
-    match_started: async (msg: WsMessage<MatchStartedMessage>, serverId) => {
-      if (!msg.data.id) {
-        return dbgInfo('Debug event: ' + JSON.stringify(msg));
-      }
-
-      await db.match.started(serverId, msg.data);
-    },
-
-    match_ended: async (msg: WsMessage<MatchEndedMessage>, serverId) => {
-      if (!msg.data.id) {
-        return dbgInfo('Debug event: ' + JSON.stringify(msg));
-      }
-
-      await db.match.ended(serverId, msg.data);
-    },
-
-    player_death: async (msg: WsMessage<PlayerDeathMessage>) => {
-      if (!msg.data.id) {
-        return dbgInfo('Debug event: ' + JSON.stringify(msg));
-      }
-
-      await db.player.death(msg.data);
-    },
-
-    player_respawn: async (msg: WsMessage<PlayerRespawnMessage>) => {
-      if (!msg.data.id) {
-        return dbgInfo('Debug event: ' + JSON.stringify(msg));
-      }
-
-      await db.player.respawn(msg.data);
-    },
+    ...matchStatsHandlers,
   };

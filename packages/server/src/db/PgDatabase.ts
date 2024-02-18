@@ -1,16 +1,24 @@
 import {
+  AmmoPickupMessage,
+  BatteryPickupMessage,
+  ItemPickupMessage,
+  ItemRespawnMessage,
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
   MatchEndedMessage,
   MatchStartedMessage,
+  MedkitPickupMessage,
   Permission,
+  PlayerAttackMessage,
   PlayerClientSettings,
+  PlayerDamageMessage,
   PlayerDeathMessage,
   PlayerRespawnMessage,
   ReactionData,
   ReactionName,
   ServerInfo,
+  WeaponDropMessage,
   allPermissions,
   allReactionNames,
 } from '@motd-menu/common';
@@ -199,21 +207,30 @@ export class PgDatabase extends BasePgDatabase implements Database {
     },
   };
 
-  match = {
-    ended: (serverId: number, data: MatchEndedMessage) =>
-      this.call('match_ended', serverId, data),
-    started: (serverId: number, data: MatchStartedMessage) =>
-      this.call('match_started', serverId, data),
-  };
-
   server = {
     getByApiKey: (apiKey: string) =>
       this.select<ServerInfo>('server_by_key', apiKey),
   };
 
-  player = {
-    death: (data: PlayerDeathMessage) => this.call('player_death', data),
-    respawn: (data: PlayerRespawnMessage) => this.call('player_respawn', data),
+  matchStats = {
+    matchStarted: (serverId: number, data: MatchStartedMessage) =>
+      this.call('match_started', serverId, data),
+    matchEnded: (data: MatchEndedMessage) => this.call('match_ended', data),
+    playerDeath: (data: PlayerDeathMessage) => this.call('player_death', data),
+    playerRespawn: (data: PlayerRespawnMessage) =>
+      this.call('player_respawn', data),
+    playerDamage: (data: PlayerDamageMessage) =>
+      this.call('player_damaged', data),
+    playerAttack: (data: PlayerAttackMessage) =>
+      this.call('player_attack', data),
+    itemRespawn: (data: ItemRespawnMessage) => this.call('item_respawn', data),
+    weaponDrop: (data: WeaponDropMessage) => this.call('weapon_drop', data),
+    itemPickup: (data: ItemPickupMessage) => this.call('item_pickup', data),
+    medkitPickup: (data: MedkitPickupMessage) =>
+      this.call('medkit_pickup', data),
+    batteryPickup: (data: BatteryPickupMessage) =>
+      this.call('battery_pickup', data),
+    ammoPickup: (data: AmmoPickupMessage) => this.call('ammo_pickup', data),
   };
 
   override async init() {
