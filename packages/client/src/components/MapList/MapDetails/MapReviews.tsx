@@ -39,7 +39,6 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
-    overflow: 'hidden auto',
     flex: '1 1 100%',
   },
 });

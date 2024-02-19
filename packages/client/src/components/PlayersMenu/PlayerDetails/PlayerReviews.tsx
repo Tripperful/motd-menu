@@ -6,9 +6,12 @@ import { MapReview } from '~components/MapList/MapDetails/MapReview';
 const useStyles = createUseStyles({
   root: {},
   list: {
-    padding: '0.5em 0',
+    margin: '0.5em 0',
     display: 'flex',
     flexDirection: 'column',
+    overflow: 'hidden auto',
+    paddingRight: '0.5em',
+    maxHeight: '50vh',
     gap: '1em',
   },
 });
