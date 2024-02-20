@@ -308,11 +308,14 @@ LOOP
   FOR player IN
     SELECT * FROM json_array_elements((team->>'players')::json)
   LOOP
-  UPDATE match_team_players
-    SET
-      kills = (player->>'kills')::int,
-      deaths = (player->>'deaths')::int
-    WHERE match_team_players.match_team_id = _match_team_id;
+    UPDATE match_team_players
+      SET
+        kills = (player->>'kills')::int,
+        deaths = (player->>'deaths')::int
+      WHERE
+        match_team_players.match_team_id = _match_team_id
+        AND
+        match_team_players.steam_id = (player->>'steamId')::bigint;
   END LOOP;
 END LOOP;
 END;
@@ -695,5 +698,57 @@ OR REPLACE PROCEDURE ammo_pickup (pickup_data json) AS $$ BEGIN
     (pickup_data->>'prev')::int,
     (pickup_data->>'post')::int
   );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_matches (lmt int, ofst int) RETURNS json AS $$ BEGIN RETURN json_agg(
+  json_build_object(
+    'id',
+    _match_id::text,
+    'status',
+    status,
+    'server',
+    (SELECT servers.name FROM servers WHERE servers.id = server_id),
+    'mapName',
+    (SELECT maps.name FROM maps WHERE maps.id = map_id),
+    'demoName',
+    demo_id,
+    'initiator',
+    initiator::text,
+    'duration',
+    duration,
+    'teams',
+    (
+      SELECT json_agg(
+        json_build_object(
+          'name',
+          match_teams.name,
+          'players',
+          (
+            SELECT json_agg(
+              json_build_object(
+                'steamId',
+                match_team_players.steam_id::text,
+                'kills',
+                match_team_players.kills,
+                'deaths',
+                match_team_players.deaths
+              )
+            ) FROM match_team_players WHERE match_team_players.match_team_id = match_teams.id
+          )
+        )
+      ) FROM match_teams WHERE match_teams.match_id = _match_id
+    )
+  )
+)
+FROM (
+  SELECT
+    id AS _match_id,
+    *
+  FROM matches
+  WHERE matches.status != 'started'
+  LIMIT lmt OFFSET ofst
+);
 END;
 $$ LANGUAGE plpgsql;
