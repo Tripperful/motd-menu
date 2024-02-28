@@ -7,6 +7,30 @@ export interface StartMatchSettings {
   players?: StartMatchPlayerTeams;
 }
 
+export interface MatchSummaryTeamPlayer {
+  steamId: string;
+  kills: number;
+  deaths: number;
+}
+
+export interface MatchSummaryTeam {
+  name: string;
+  index: number;
+  players: MatchSummaryTeamPlayer[];
+}
+
+export interface MatchSummary {
+  id: string;
+  status: 'completed' | 'cancelled' | 'votecancelled' | 'timedout';
+  server: string;
+  mapName: string;
+  demoName: string;
+  initiator: string;
+  duration: number;
+  startDate: number;
+  teams: MatchSummaryTeam[];
+}
+
 export const matchCvarDefaults: Partial<Record<Cvar, string>> = {
   mp_timelimit: '15',
   mm_overtime: '60',

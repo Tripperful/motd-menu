@@ -8,7 +8,9 @@ import {
   MapReviewData,
   MatchEndedMessage,
   MatchStartedMessage,
+  MatchSummary,
   MedkitPickupMessage,
+  PagedData,
   Permission,
   PlayerAttackMessage,
   PlayerClientSettings,
@@ -231,6 +233,15 @@ export class PgDatabase extends BasePgDatabase implements Database {
     batteryPickup: (data: BatteryPickupMessage) =>
       this.call('battery_pickup', data),
     ammoPickup: (data: AmmoPickupMessage) => this.call('ammo_pickup', data),
+  };
+
+  matches = {
+    get: async (limit: number, offset: number) =>
+      (await this.select<PagedData<MatchSummary>>(
+        'get_matches',
+        limit,
+        offset,
+      )) ?? { data: [], total: 0 },
   };
 
   override async init() {

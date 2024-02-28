@@ -8,7 +8,9 @@ import {
   MapReviewData,
   MatchEndedMessage,
   MatchStartedMessage,
+  MatchSummary,
   MedkitPickupMessage,
+  PagedData,
   Permission,
   PlayerAttackMessage,
   PlayerClientSettings,
@@ -128,5 +130,8 @@ export interface Database {
     medkitPickup(data: MedkitPickupMessage): Promise<void>;
     batteryPickup(data: BatteryPickupMessage): Promise<void>;
     ammoPickup(data: AmmoPickupMessage): Promise<void>;
+  };
+  matches: {
+    get(limit: number, offset: number): Promise<PagedData<MatchSummary>>;
   };
 }

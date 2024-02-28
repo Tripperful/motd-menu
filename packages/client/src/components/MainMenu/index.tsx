@@ -2,10 +2,10 @@ import React, { FC, Suspense } from 'react';
 import { Menu, MenuItemInfo } from '~components/common/Menu';
 import TeamsIcon from '~icons/flag.svg';
 import KnobsIcon from '~icons/knobs.svg';
-import PlayersIcon from '~icons/people.svg';
-import PlayIcon from '~icons/play.svg';
-import TerrainIcon from '~icons/terrain.svg';
+import PlayersIcon from '~icons/players.svg';
+import MatchesIcon from '~icons/playlist.svg';
 import SettingsIcon from '~icons/settings.svg';
+import TerrainIcon from '~icons/terrain.svg';
 
 const menuItems: MenuItemInfo[] = [
   { title: 'Maps', link: 'maps', Icon: TerrainIcon },
@@ -27,10 +27,10 @@ const menuItems: MenuItemInfo[] = [
     permissions: ['cvars_matchmaking_view', 'cvars_admin_view'],
   },
   {
-    title: 'Match menu',
-    link: 'match',
-    Icon: PlayIcon,
-    permissions: ['match_organizer'],
+    title: 'Matches',
+    link: 'matches',
+    Icon: MatchesIcon,
+    permissions: ['dev'],
   },
 ];
 

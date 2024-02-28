@@ -16,7 +16,7 @@ import EyeIcon from '~icons/eye.svg';
 import LambdaIcon from '~icons/lambda.svg';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
-import { StartMatchSettingsContext } from '.';
+import { StartMatchSettingsContext } from './StartMatchMenu';
 
 const teams = [2, 3, 1];
 

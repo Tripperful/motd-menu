@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from 'react';
 import { createUseStyles } from 'react-jss';
 import { ChildrenProps } from '~types/props';
-import { PageHeader } from './PageHeader';
+import { PageHeader } from '../PageHeader';
 
 const useStyles = createUseStyles({
   root: {

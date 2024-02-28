@@ -4,7 +4,9 @@ import {
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
+  MatchSummary,
   OnlinePlayerInfo,
+  PagedData,
   Permission,
   PlayerClientSettings,
   ReactionData,
@@ -283,6 +285,12 @@ class MotdApi {
     await this.delete(
       `maps/reviews/reactions/${mapName}/${reviewAuthorSteamId}/${reaction}`,
     );
+  }
+
+  public async getMatchResults(offset?: number) {
+    const res = await this.get('match/results/' + offset ?? '');
+
+    return JSON.parse(res) as PagedData<MatchSummary>;
   }
 
   public async startMatch(settings: StartMatchSettings) {

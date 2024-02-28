@@ -1,14 +1,14 @@
 import { Cvar, matchCvars } from '@motd-menu/common';
 import React, { FC, useCallback, useContext } from 'react';
 import { createUseStyles } from 'react-jss';
+import { motdApi } from 'src/api';
+import { addNotification } from 'src/hooks/state/notifications';
 import { CvarControl } from '~components/common/CvarControl';
 import { SidePanel } from '~components/common/SidePanel';
 import PlayIcon from '~icons/play.svg';
 import { outlineButton } from '~styles/elements';
-import { StartMatchSettingsContext } from '.';
-import { motdApi } from 'src/api';
-import { addNotification } from 'src/hooks/state/notifications';
 import { theme } from '~styles/theme';
+import { StartMatchSettingsContext } from './StartMatchMenu';
 
 const useStyles = createUseStyles({
   root: {

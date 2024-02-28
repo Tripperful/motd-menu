@@ -5,10 +5,23 @@ import {
   matchCvars,
 } from '@motd-menu/common';
 import { Router } from 'express';
+import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
 import { sanitizeCvarValue } from 'src/util';
 
 export const matchApi = Router();
+
+matchApi.get('/results/:offset?', async (req, res) => {
+  try {
+    const { offset } = req.params;
+
+    const result = await db.matches.get(50, Number(offset ?? 0));
+
+    res.status(200).end(JSON.stringify(result));
+  } catch {
+    res.status(500).end();
+  }
+});
 
 matchApi.post('/start', async (req, res) => {
   try {

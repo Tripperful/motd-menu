@@ -67,7 +67,7 @@ export const Router: FC = () => {
             }
           />
           <Route
-            path="match/*"
+            path="matches/*"
             element={
               <Suspense>
                 <MatchMenu />
