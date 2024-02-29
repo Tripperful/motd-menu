@@ -702,6 +702,202 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE PROCEDURE projectile_spawn (spawn_data json) AS $$ BEGIN
+  IF NOT EXISTS ( -- Don't save if not tied to an existing match
+    SELECT FROM matches m WHERE m.id = (spawn_data->>'id')::uuid
+  ) THEN
+    RETURN;
+  END IF;
+  INSERT INTO projectile_spawns (
+    match_id,
+    tick,
+    curtime,
+    origin,
+    projectile,
+    steam_id,
+    entity_id
+  ) VALUES (
+    (spawn_data->>'id')::uuid,
+    (spawn_data->>'tick')::int,
+    (spawn_data->>'curtime')::float,
+    NULLIF(ARRAY[
+      (((spawn_data->>'origin')::json)->>'x')::float,
+      (((spawn_data->>'origin')::json)->>'y')::float,
+      (((spawn_data->>'origin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    spawn_data->>'projectile',
+    (spawn_data->>'entityId')::bigint,
+    (spawn_data->>'steamId')::bigint
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE projectile_death (death_data json) AS $$ BEGIN
+  IF NOT EXISTS ( -- Don't save if not tied to an existing match
+    SELECT FROM matches m WHERE m.id = (death_data->>'id')::uuid
+  ) THEN
+    RETURN;
+  END IF;
+  INSERT INTO projectile_deaths (
+    match_id,
+    tick,
+    curtime,
+    origin,
+    entity_id,
+    killer_entity,
+    killer_entity_id,
+    killer_steam_id,
+    damage,
+    damage_type,
+    ammo_type,
+    lifetime,
+    distance
+  ) VALUES (
+    (death_data->>'id')::uuid,
+    (death_data->>'tick')::int,
+    (death_data->>'curtime')::float,
+    NULLIF(ARRAY[
+      (((death_data->>'origin')::json)->>'x')::float,
+      (((death_data->>'origin')::json)->>'y')::float,
+      (((death_data->>'origin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    (death_data->>'entityId')::bigint,
+    death_data->>'entityKiller',
+    (death_data->>'entityIdKiller')::bigint,
+    (death_data->>'killerId')::bigint,
+    (death_data->>'damage')::int,
+    (death_data->>'damageType')::int,
+    (death_data->>'ammoType')::int,
+    (death_data->>'lifetime')::float,
+    (death_data->>'distance')::float
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE projectile_bounce (bounce_data json) AS $$ BEGIN
+  IF NOT EXISTS ( -- Don't save if not tied to an existing match
+    SELECT FROM matches m WHERE m.id = (bounce_data->>'id')::uuid
+  ) THEN
+    RETURN;
+  END IF;
+  INSERT INTO projectile_bounces (
+    match_id,
+    tick,
+    curtime,
+    origin,
+    entity_id,
+    distance
+  ) VALUES (
+    (bounce_data->>'id')::uuid,
+    (bounce_data->>'tick')::int,
+    (bounce_data->>'curtime')::float,
+    NULLIF(ARRAY[
+      (((bounce_data->>'origin')::json)->>'x')::float,
+      (((bounce_data->>'origin')::json)->>'y')::float,
+      (((bounce_data->>'origin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    (bounce_data->>'entityId')::bigint,
+    (bounce_data->>'distance')::float
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE projectile_owner_change (change_data json) AS $$ BEGIN
+  IF NOT EXISTS ( -- Don't save if not tied to an existing match
+    SELECT FROM matches m WHERE m.id = (change_data->>'id')::uuid
+  ) THEN
+    RETURN;
+  END IF;
+  INSERT INTO projectile_owner_changes (
+    match_id,
+    tick,
+    curtime,
+    origin,
+    entity_id,
+    prev_owner_steam_id,
+    new_owner_steam_id
+  ) VALUES (
+    (change_data->>'id')::uuid,
+    (change_data->>'tick')::int,
+    (change_data->>'curtime')::float,
+    NULLIF(ARRAY[
+      (((change_data->>'origin')::json)->>'x')::float,
+      (((change_data->>'origin')::json)->>'y')::float,
+      (((change_data->>'origin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    (change_data->>'entityId')::bigint,
+    (change_data->>'prevOwner')::bigint,
+    (change_data->>'newOwner')::bigint
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE projectile_lifetime_reset (reset_data json) AS $$ BEGIN
+  IF NOT EXISTS ( -- Don't save if not tied to an existing match
+    SELECT FROM matches m WHERE m.id = (reset_data->>'id')::uuid
+  ) THEN
+    RETURN;
+  END IF;
+  INSERT INTO projectile_lifetime_resets (
+    match_id,
+    tick,
+    curtime,
+    origin,
+    entity_id,
+    prev_lifetime,
+    new_lifetime
+  ) VALUES (
+    (reset_data->>'id')::uuid,
+    (reset_data->>'tick')::int,
+    (reset_data->>'curtime')::float,
+    NULLIF(ARRAY[
+      (((reset_data->>'origin')::json)->>'x')::float,
+      (((reset_data->>'origin')::json)->>'y')::float,
+      (((reset_data->>'origin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    (reset_data->>'entityId')::bigint,
+    (reset_data->>'timeleft')::float,
+    (reset_data->>'newlifetime')::float
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE entity_teleport (teleport_data json) AS $$ BEGIN
+  IF NOT EXISTS ( -- Don't save if not tied to an existing match
+    SELECT FROM matches m WHERE m.id = (teleport_data->>'id')::uuid
+  ) THEN
+    RETURN;
+  END IF;
+  INSERT INTO entity_teleports (
+    match_id,
+    tick,
+    curtime,
+    prev_pos,
+    new_pos
+  ) VALUES (
+    (teleport_data->>'id')::uuid,
+    (teleport_data->>'tick')::int,
+    (teleport_data->>'curtime')::float,
+    NULLIF(ARRAY[
+      (((teleport_data->>'prevPos')::json)->>'x')::float,
+      (((teleport_data->>'prevPos')::json)->>'y')::float,
+      (((teleport_data->>'prevPos')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    NULLIF(ARRAY[
+      (((teleport_data->>'newPos')::json)->>'x')::float,
+      (((teleport_data->>'newPos')::json)->>'y')::float,
+      (((teleport_data->>'newPos')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float])
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE FUNCTION get_matches (lmt int, ofst int) RETURNS json AS $$ BEGIN RETURN json_build_object(
   'total',
   total,

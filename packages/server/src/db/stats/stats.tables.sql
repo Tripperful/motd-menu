@@ -215,3 +215,78 @@ CREATE TABLE IF NOT EXISTS
     count_before int,
     count_after int
   );
+
+CREATE TABLE IF NOT EXISTS
+  projectile_spawns (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    projectile text,
+    steam_id bigint,
+    entity_id bigint
+  );
+
+CREATE TABLE IF NOT EXISTS
+  projectile_deaths (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    entity_id bigint,
+    killer_entity text,
+    killer_entity_id bigint,
+    killer_steam_id bigint,
+    damage int,
+    damage_type int,
+    ammo_type int,
+    lifetime float,
+    distance float
+  );
+
+CREATE TABLE IF NOT EXISTS
+  projectile_bounces (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    entity_id bigint,
+    distance float
+  );
+
+CREATE TABLE IF NOT EXISTS
+  projectile_owner_changes (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    entity_id bigint,
+    prev_owner_steam_id bigint,
+    new_owner_steam_id bigint
+  );
+
+CREATE TABLE IF NOT EXISTS
+  projectile_lifetime_resets (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    origin float[3],
+    entity_id bigint,
+    prev_lifetime float,
+    new_lifetime float
+  );
+
+CREATE TABLE IF NOT EXISTS
+  entity_teleports (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    prev_pos float[3],
+    new_pos float[3]
+  );

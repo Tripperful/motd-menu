@@ -1,6 +1,7 @@
 import {
   AmmoPickupMessage,
   BatteryPickupMessage,
+  EntityTeleportMessage,
   ItemPickupMessage,
   ItemRespawnMessage,
   MapDetailsData,
@@ -17,6 +18,11 @@ import {
   PlayerDamageMessage,
   PlayerDeathMessage,
   PlayerRespawnMessage,
+  ProjectileBounceMessage,
+  ProjectileDeathMessage,
+  ProjectileLifetimeResetMessage,
+  ProjectileOwnerChangeMessage,
+  ProjectileSpawnMessage,
   ReactionData,
   ReactionName,
   ServerInfo,
@@ -233,6 +239,18 @@ export class PgDatabase extends BasePgDatabase implements Database {
     batteryPickup: (data: BatteryPickupMessage) =>
       this.call('battery_pickup', data),
     ammoPickup: (data: AmmoPickupMessage) => this.call('ammo_pickup', data),
+    projectileSpawn: (data: ProjectileSpawnMessage) =>
+      this.call('projectile_spawn', data),
+    projectileDeath: (data: ProjectileDeathMessage) =>
+      this.call('projectile_death', data),
+    projectileBounce: (data: ProjectileBounceMessage) =>
+      this.call('projectile_bounce', data),
+    projectileOwnerChange: (data: ProjectileOwnerChangeMessage) =>
+      this.call('projectile_owner_change', data),
+    projectileLifetimeReset: (data: ProjectileLifetimeResetMessage) =>
+      this.call('projectile_lifetime_reset', data),
+    entityTeleport: (data: EntityTeleportMessage) =>
+      this.call('entity_teleport', data),
   };
 
   matches = {

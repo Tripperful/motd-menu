@@ -35,6 +35,13 @@ export type WsMessageType =
   | 'weapon_drop'
   | 'medkit_pickup'
   | 'battery_pickup'
+  | 'charger_use'
+  | 'projectile_spawn'
+  | 'projectile_death'
+  | 'projectile_bounce'
+  | 'projectile_owner_change'
+  | 'projectile_lifetime_reset'
+  | 'ent_teleport'
   | 'motd_close';
 
 export interface WsMessage<TData = unknown> {
@@ -213,4 +220,45 @@ export interface AmmoPickupMessage extends BasePointMessage {
   ammoIndex: number;
   prev: number;
   post: number;
+}
+
+export interface ProjectileSpawnMessage extends BasePointMessage {
+  projectile: string;
+  entityId: string;
+  steamId: string;
+}
+
+export interface ProjectileDeathMessage extends BasePointMessage {
+  entityId: string;
+  entityIdKiller: string;
+  entityKiller: string;
+  killerId: string;
+  damage: number;
+  damageType: number;
+  ammoType: number;
+  lifetime: number;
+  distance: number;
+}
+
+export interface ProjectileBounceMessage extends BasePointMessage {
+  entityId: string;
+  distance: number;
+}
+
+export interface ProjectileOwnerChangeMessage extends BasePointMessage {
+  entityId: string;
+  prevOwner: string;
+  newOwner: string;
+}
+
+export interface ProjectileLifetimeResetMessage extends BasePointMessage {
+  entityId: string;
+  timeleft: number;
+  newlifetime: number;
+}
+
+export interface EntityTeleportMessage extends BaseStatsMessage {
+  entityId: string;
+  prevPos: Vec3;
+  newPos: Vec3;
 }

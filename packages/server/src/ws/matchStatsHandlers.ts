@@ -2,6 +2,7 @@ import {
   AmmoPickupMessage,
   BaseStatsMessage,
   BatteryPickupMessage,
+  EntityTeleportMessage,
   ItemPickupMessage,
   ItemRespawnMessage,
   MatchEndedMessage,
@@ -11,6 +12,11 @@ import {
   PlayerDamageMessage,
   PlayerDeathMessage,
   PlayerRespawnMessage,
+  ProjectileBounceMessage,
+  ProjectileDeathMessage,
+  ProjectileLifetimeResetMessage,
+  ProjectileOwnerChangeMessage,
+  ProjectileSpawnMessage,
   WeaponDropMessage,
   WsMessageType,
   WsSubscriberCallback,
@@ -59,6 +65,28 @@ const handlerMap: Partial<
 
   battery_pickup: async (data: BatteryPickupMessage) =>
     db.matchStats.batteryPickup(data),
+
+  charger_use: async () => {
+    // TODO: Aggregate and store
+  },
+
+  projectile_spawn: async (data: ProjectileSpawnMessage) =>
+    db.matchStats.projectileSpawn(data),
+
+  projectile_death: async (data: ProjectileDeathMessage) =>
+    db.matchStats.projectileDeath(data),
+
+  projectile_bounce: async (data: ProjectileBounceMessage) =>
+    db.matchStats.projectileBounce(data),
+
+  projectile_owner_change: async (data: ProjectileOwnerChangeMessage) =>
+    db.matchStats.projectileOwnerChange(data),
+
+  projectile_lifetime_reset: async (data: ProjectileLifetimeResetMessage) =>
+    db.matchStats.projectileLifetimeReset(data),
+
+  ent_teleport: async (data: EntityTeleportMessage) =>
+    db.matchStats.entityTeleport(data),
 };
 
 type StatsCallback = WsSubscriberCallback<BaseStatsMessage>;

@@ -1,6 +1,7 @@
 import {
   AmmoPickupMessage,
   BatteryPickupMessage,
+  EntityTeleportMessage,
   ItemPickupMessage,
   ItemRespawnMessage,
   MapDetailsData,
@@ -17,6 +18,11 @@ import {
   PlayerDamageMessage,
   PlayerDeathMessage,
   PlayerRespawnMessage,
+  ProjectileBounceMessage,
+  ProjectileDeathMessage,
+  ProjectileLifetimeResetMessage,
+  ProjectileOwnerChangeMessage,
+  ProjectileSpawnMessage,
   ReactionData,
   ReactionName,
   ServerInfo,
@@ -130,6 +136,14 @@ export interface Database {
     medkitPickup(data: MedkitPickupMessage): Promise<void>;
     batteryPickup(data: BatteryPickupMessage): Promise<void>;
     ammoPickup(data: AmmoPickupMessage): Promise<void>;
+    projectileSpawn(data: ProjectileSpawnMessage): Promise<void>;
+    projectileDeath(data: ProjectileDeathMessage): Promise<void>;
+    projectileBounce(data: ProjectileBounceMessage): Promise<void>;
+    projectileOwnerChange(data: ProjectileOwnerChangeMessage): Promise<void>;
+    projectileLifetimeReset(
+      data: ProjectileLifetimeResetMessage,
+    ): Promise<void>;
+    entityTeleport(data: EntityTeleportMessage): Promise<void>;
   };
   matches: {
     get(limit: number, offset: number): Promise<PagedData<MatchSummary>>;
