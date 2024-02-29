@@ -208,6 +208,16 @@ export interface MedkitPickupMessage extends BasePointMessage {
   big: number;
 }
 
+export interface ChargerUseMessage extends BasePointMessage {
+  steamId: string;
+  entityId: string;
+  charger: string;
+  hpBefore: number;
+  hpAfter: number;
+  armorBefore: number;
+  armorAfter: number;
+}
+
 export interface BatteryPickupMessage extends BasePointMessage {
   steamId: string;
   entityId: string;

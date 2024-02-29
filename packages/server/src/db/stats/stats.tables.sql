@@ -217,6 +217,26 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE TABLE IF NOT EXISTS
+  charger_uses (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    start_tick int,
+    start_curtime float,
+    end_tick int,
+    end_curtime float,
+    steam_id bigint,
+    entity_id bigint,
+    charger_type text,
+    origin float[3],
+    start_hp int,
+    start_ap int,
+    end_hp int,
+    end_ap int,
+    consumed_hp int,
+    consumed_ap int
+  );
+
+CREATE TABLE IF NOT EXISTS
   projectile_spawns (
     id SERIAL PRIMARY KEY,
     match_id uuid REFERENCES matches (id) ON DELETE CASCADE,

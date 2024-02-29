@@ -30,6 +30,7 @@ import {
   allPermissions,
   allReactionNames,
 } from '@motd-menu/common';
+import { ChargeAggregate } from 'src/ws/chargerUseHandler';
 import { config } from '~root/config';
 import { BasePgDatabase } from './BasePgDatabase';
 import { Database } from './Database';
@@ -239,6 +240,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
     batteryPickup: (data: BatteryPickupMessage) =>
       this.call('battery_pickup', data),
     ammoPickup: (data: AmmoPickupMessage) => this.call('ammo_pickup', data),
+    chargerUse: (data: ChargeAggregate) => this.call('charger_use', data),
     projectileSpawn: (data: ProjectileSpawnMessage) =>
       this.call('projectile_spawn', data),
     projectileDeath: (data: ProjectileDeathMessage) =>

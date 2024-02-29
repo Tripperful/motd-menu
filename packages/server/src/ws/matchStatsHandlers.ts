@@ -2,6 +2,7 @@ import {
   AmmoPickupMessage,
   BaseStatsMessage,
   BatteryPickupMessage,
+  ChargerUseMessage,
   EntityTeleportMessage,
   ItemPickupMessage,
   ItemRespawnMessage,
@@ -23,6 +24,7 @@ import {
 } from '@motd-menu/common';
 import { db } from 'src/db';
 import { dbgInfo } from 'src/util';
+import { chargerUseHandler } from './chargerUseHandler';
 
 const handlerMap: Partial<
   Record<
@@ -66,9 +68,7 @@ const handlerMap: Partial<
   battery_pickup: async (data: BatteryPickupMessage) =>
     db.matchStats.batteryPickup(data),
 
-  charger_use: async () => {
-    // TODO: Aggregate and store
-  },
+  charger_use: async (data: ChargerUseMessage) => chargerUseHandler(data),
 
   projectile_spawn: async (data: ProjectileSpawnMessage) =>
     db.matchStats.projectileSpawn(data),

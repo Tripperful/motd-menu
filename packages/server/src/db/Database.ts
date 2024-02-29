@@ -28,6 +28,7 @@ import {
   ServerInfo,
   WeaponDropMessage,
 } from '@motd-menu/common';
+import { ChargeAggregate } from 'src/ws/chargerUseHandler';
 
 export interface Database {
   init(): Promise<void>;
@@ -136,6 +137,7 @@ export interface Database {
     medkitPickup(data: MedkitPickupMessage): Promise<void>;
     batteryPickup(data: BatteryPickupMessage): Promise<void>;
     ammoPickup(data: AmmoPickupMessage): Promise<void>;
+    chargerUse(data: ChargeAggregate): Promise<void>;
     projectileSpawn(data: ProjectileSpawnMessage): Promise<void>;
     projectileDeath(data: ProjectileDeathMessage): Promise<void>;
     projectileBounce(data: ProjectileBounceMessage): Promise<void>;

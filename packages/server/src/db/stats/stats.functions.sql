@@ -702,6 +702,53 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE PROCEDURE charger_use (charge_data json) AS $$ BEGIN
+  IF NOT EXISTS ( -- Don't save if not tied to an existing match
+    SELECT FROM matches m WHERE m.id = (charge_data->>'id')::uuid
+  ) THEN
+    RETURN;
+  END IF;
+  INSERT INTO charger_uses (
+    match_id,
+    start_tick,
+    start_curtime,
+    end_tick,
+    end_curtime,
+    steam_id,
+    entity_id,
+    charger_type,
+    origin,
+    start_hp,
+    start_ap,
+    end_hp,
+    end_ap,
+    consumed_hp,
+    consumed_ap
+  ) VALUES (
+    (charge_data->>'id')::uuid,
+    (charge_data->>'startTick')::int,
+    (charge_data->>'startTime')::float,
+    (charge_data->>'endTick')::int,
+    (charge_data->>'endTime')::float,
+    (charge_data->>'steamId')::bigint,
+    (charge_data->>'entityId')::bigint,
+    charge_data->>'chargerType',
+    NULLIF(ARRAY[
+      (((charge_data->>'origin')::json)->>'x')::float,
+      (((charge_data->>'origin')::json)->>'y')::float,
+      (((charge_data->>'origin')::json)->>'z')::float
+    ], ARRAY[NULL::float, NULL::float, NULL::float]),
+    (charge_data->>'startHp')::int,
+    (charge_data->>'startAp')::int,
+    (charge_data->>'endHp')::int,
+    (charge_data->>'endAp')::int,
+    (charge_data->>'consumedHp')::int,
+    (charge_data->>'consumedAp')::int
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE PROCEDURE projectile_spawn (spawn_data json) AS $$ BEGIN
   IF NOT EXISTS ( -- Don't save if not tied to an existing match
     SELECT FROM matches m WHERE m.id = (spawn_data->>'id')::uuid
