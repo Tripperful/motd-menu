@@ -259,7 +259,7 @@ CREATE TABLE IF NOT EXISTS
     killer_entity text,
     killer_entity_id bigint,
     killer_steam_id bigint,
-    damage int,
+    damage float,
     damage_type int,
     ammo_type int,
     lifetime float,

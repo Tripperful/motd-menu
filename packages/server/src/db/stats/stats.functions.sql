@@ -813,7 +813,7 @@ OR REPLACE PROCEDURE projectile_death (death_data json) AS $$ BEGIN
     death_data->>'entityKiller',
     (death_data->>'entityIdKiller')::bigint,
     (death_data->>'killerId')::bigint,
-    (death_data->>'damage')::int,
+    (death_data->>'damage')::float,
     (death_data->>'damageType')::int,
     (death_data->>'ammoType')::int,
     (death_data->>'lifetime')::float,
