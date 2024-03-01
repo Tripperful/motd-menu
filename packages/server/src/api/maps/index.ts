@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { db } from 'src/db';
-import { mapsReactionsApi } from './reactions';
-import { reviewsApi } from './reviews';
+import { mapsReactionsRouter } from './reactions';
+import { reviewsRouter } from './reviews';
 
-export const mapsApi = Router();
+export const mapsRouter = Router();
 
-mapsApi.use('/reviews', reviewsApi);
-mapsApi.use('/reactions', mapsReactionsApi);
+mapsRouter.use('/reviews', reviewsRouter);
+mapsRouter.use('/reactions', mapsReactionsRouter);
 
-mapsApi.get('/', async (_req, res) => {
+mapsRouter.get('/', async (_req, res) => {
   try {
     const {
       srcdsApi,
@@ -35,7 +35,7 @@ mapsApi.get('/', async (_req, res) => {
   }
 });
 
-mapsApi.get('/:mapName', async (req, res) => {
+mapsRouter.get('/:mapName', async (req, res) => {
   try {
     res
       .status(200)
@@ -49,7 +49,7 @@ mapsApi.get('/:mapName', async (req, res) => {
   }
 });
 
-mapsApi.post('/parent/:mapName/:parentMapName', async (req, res) => {
+mapsRouter.post('/parent/:mapName/:parentMapName', async (req, res) => {
   try {
     const { mapName, parentMapName } = req.params;
 
@@ -74,7 +74,7 @@ mapsApi.post('/parent/:mapName/:parentMapName', async (req, res) => {
   }
 });
 
-mapsApi.delete('/parent/:mapName', async (req, res) => {
+mapsRouter.delete('/parent/:mapName', async (req, res) => {
   try {
     const { permissions } = res.locals.sessionData;
 
@@ -92,7 +92,7 @@ mapsApi.delete('/parent/:mapName', async (req, res) => {
   }
 });
 
-mapsApi.post('/description/:mapName', async (req, res) => {
+mapsRouter.post('/description/:mapName', async (req, res) => {
   try {
     const { permissions } = res.locals.sessionData;
 
@@ -110,7 +110,7 @@ mapsApi.post('/description/:mapName', async (req, res) => {
   }
 });
 
-mapsApi.post('/images/:mapName', async (req, res) => {
+mapsRouter.post('/images/:mapName', async (req, res) => {
   try {
     const { permissions } = res.locals.sessionData;
 
@@ -128,7 +128,7 @@ mapsApi.post('/images/:mapName', async (req, res) => {
   }
 });
 
-mapsApi.post('/tags/:mapName', async (req, res) => {
+mapsRouter.post('/tags/:mapName', async (req, res) => {
   try {
     const { permissions } = res.locals.sessionData;
 
@@ -146,7 +146,7 @@ mapsApi.post('/tags/:mapName', async (req, res) => {
   }
 });
 
-mapsApi.post('/favorite/:mapName', async (req, res) => {
+mapsRouter.post('/favorite/:mapName', async (req, res) => {
   try {
     const {
       sessionData: { steamId },
@@ -160,7 +160,7 @@ mapsApi.post('/favorite/:mapName', async (req, res) => {
   }
 });
 
-mapsApi.delete('/favorite/:mapName', async (req, res) => {
+mapsRouter.delete('/favorite/:mapName', async (req, res) => {
   try {
     const {
       sessionData: { steamId },
@@ -174,7 +174,7 @@ mapsApi.delete('/favorite/:mapName', async (req, res) => {
   }
 });
 
-mapsApi.post('/changelevel/:mapName', async (req, res) => {
+mapsRouter.post('/changelevel/:mapName', async (req, res) => {
   try {
     const {
       srcdsApi,

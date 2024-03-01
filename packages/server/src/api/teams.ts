@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
-export const teamsApi = Router();
+export const teamsRouter = Router();
 
-teamsApi.post('/set/:userId?/:teamIndex', async (req, res) => {
+teamsRouter.post('/set/:userId?/:teamIndex', async (req, res) => {
   try {
     const { teamIndex, userId: userIdStr } = req.params;
     const {

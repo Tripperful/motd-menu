@@ -9,9 +9,9 @@ import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
 import { sanitizeCvarValue } from 'src/util';
 
-export const matchApi = Router();
+export const matchRouter = Router();
 
-matchApi.get('/results/:offset?', async (req, res) => {
+matchRouter.get('/results/:offset?', async (req, res) => {
   try {
     const { offset } = req.params;
 
@@ -23,7 +23,7 @@ matchApi.get('/results/:offset?', async (req, res) => {
   }
 });
 
-matchApi.post('/start', async (req, res) => {
+matchRouter.post('/start', async (req, res) => {
   try {
     const {
       srcdsApi,

@@ -2,9 +2,9 @@ import { Permission } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
 
-export const permissionsApi = Router();
+export const permissionsRouter = Router();
 
-permissionsApi.get('/:steamId', async (req, res) => {
+permissionsRouter.get('/:steamId', async (req, res) => {
   try {
     const { permissions } = res.locals.sessionData;
 
@@ -22,7 +22,7 @@ permissionsApi.get('/:steamId', async (req, res) => {
   }
 });
 
-permissionsApi.post('/:steamId/grant/:permission', async (req, res) => {
+permissionsRouter.post('/:steamId/grant/:permission', async (req, res) => {
   try {
     const { permissions } = res.locals.sessionData;
 
@@ -40,7 +40,7 @@ permissionsApi.post('/:steamId/grant/:permission', async (req, res) => {
   }
 });
 
-permissionsApi.post('/:steamId/withdraw/:permission', async (req, res) => {
+permissionsRouter.post('/:steamId/withdraw/:permission', async (req, res) => {
   try {
     const { permissions } = res.locals.sessionData;
 

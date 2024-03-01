@@ -2,12 +2,12 @@ import { MapReviewData } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
-import { mapsReviewsReactionsApi } from './reactions';
+import { mapsReviewsReactionsRouter } from './reactions';
 
-export const reviewsApi = Router();
-reviewsApi.use('/reactions', mapsReviewsReactionsApi);
+export const reviewsRouter = Router();
+reviewsRouter.use('/reactions', mapsReviewsReactionsRouter);
 
-reviewsApi.get('/:mapName', async (req, res) => {
+reviewsRouter.get('/:mapName', async (req, res) => {
   const { mapName } = req.params;
 
   try {
@@ -33,7 +33,7 @@ reviewsApi.get('/:mapName', async (req, res) => {
   }
 });
 
-reviewsApi.get('/player/:steamId', async (req, res) => {
+reviewsRouter.get('/player/:steamId', async (req, res) => {
   const { steamId } = req.params;
 
   try {
@@ -53,7 +53,7 @@ reviewsApi.get('/player/:steamId', async (req, res) => {
   }
 });
 
-reviewsApi.post('/:mapName', async (req, res) => {
+reviewsRouter.post('/:mapName', async (req, res) => {
   const { mapName } = req.params;
   const review: MapReviewData = req.body;
 
@@ -73,7 +73,7 @@ reviewsApi.post('/:mapName', async (req, res) => {
   }
 });
 
-reviewsApi.delete('/:mapName/:authorSteamId?', async (req, res) => {
+reviewsRouter.delete('/:mapName/:authorSteamId?', async (req, res) => {
   const { mapName } = req.params;
   let { authorSteamId } = req.params;
 

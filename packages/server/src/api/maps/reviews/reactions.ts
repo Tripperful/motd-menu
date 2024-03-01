@@ -3,9 +3,9 @@ import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
 
-export const mapsReviewsReactionsApi = Router();
+export const mapsReviewsReactionsRouter = Router();
 
-mapsReviewsReactionsApi.get(
+mapsReviewsReactionsRouter.get(
   '/:mapName/:reviewAuthorSteamId',
   async (req, res) => {
     const { mapName, reviewAuthorSteamId } = req.params;
@@ -36,7 +36,7 @@ mapsReviewsReactionsApi.get(
   },
 );
 
-mapsReviewsReactionsApi.post(
+mapsReviewsReactionsRouter.post(
   '/:mapName/:reviewAuthorSteamId/:reactionName',
   async (req, res) => {
     const { mapName, reviewAuthorSteamId, reactionName } = req.params;
@@ -56,7 +56,7 @@ mapsReviewsReactionsApi.post(
   },
 );
 
-mapsReviewsReactionsApi.delete(
+mapsReviewsReactionsRouter.delete(
   '/:mapName/:reviewAuthorSteamId/:reactionName',
   async (req, res) => {
     const { mapName, reviewAuthorSteamId, reactionName } = req.params;

@@ -1,17 +1,17 @@
 import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayersProfiles } from 'src/steam';
-import { akaApi } from './aka';
-import { permissionsApi } from './permissions';
-import { playerSettingsApi } from './settings';
+import { akaRouter } from './aka';
+import { permissionsRouter } from './permissions';
+import { playerSettingsRouter } from './settings';
 
-export const playersApi = Router();
+export const playersRouter = Router();
 
-playersApi.use('/permissions', permissionsApi);
-playersApi.use('/aka', akaApi);
-playersApi.use('/settings', playerSettingsApi);
+playersRouter.use('/permissions', permissionsRouter);
+playersRouter.use('/aka', akaRouter);
+playersRouter.use('/settings', playerSettingsRouter);
 
-playersApi.get('/', async (_req, res) => {
+playersRouter.get('/', async (_req, res) => {
   try {
     const { srcdsApi } = res.locals;
 
@@ -31,7 +31,7 @@ playersApi.get('/', async (_req, res) => {
   }
 });
 
-playersApi.get('/:steamId', async (req, res) => {
+playersRouter.get('/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
@@ -43,7 +43,7 @@ playersApi.get('/:steamId', async (req, res) => {
   }
 });
 
-playersApi.get('/timeplayed/:steamId', async (req, res) => {
+playersRouter.get('/timeplayed/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
     const {
@@ -58,7 +58,7 @@ playersApi.get('/timeplayed/:steamId', async (req, res) => {
   }
 });
 
-playersApi.get('/smurfs/:steamId', async (req, res) => {
+playersRouter.get('/smurfs/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
@@ -70,7 +70,7 @@ playersApi.get('/smurfs/:steamId', async (req, res) => {
   }
 });
 
-playersApi.get('/names/:steamId', async (req, res) => {
+playersRouter.get('/names/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 

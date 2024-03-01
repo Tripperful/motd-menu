@@ -2,9 +2,9 @@ import { Cvar, getEditableCvars, getViewableCvars } from '@motd-menu/common';
 import { Router } from 'express';
 import { sanitizeCvarValue } from 'src/util';
 
-export const cvarsApi = Router();
+export const cvarsRouter = Router();
 
-cvarsApi.post('/get/:cvar?', async (req, res) => {
+cvarsRouter.post('/get/:cvar?', async (req, res) => {
   try {
     const {
       sessionData: { permissions },
@@ -37,7 +37,7 @@ cvarsApi.post('/get/:cvar?', async (req, res) => {
   }
 });
 
-cvarsApi.post('/set/:cvar', async (req, res) => {
+cvarsRouter.post('/set/:cvar', async (req, res) => {
   try {
     const {
       sessionData: { permissions },
@@ -52,7 +52,7 @@ cvarsApi.post('/set/:cvar', async (req, res) => {
 
     const sanitizedValue = sanitizeCvarValue(value);
 
-    await srcdsApi.setCvar(cvar, sanitizedValue);
+    srcdsApi.setCvar(cvar, sanitizedValue);
 
     res.status(200).end();
   } catch {

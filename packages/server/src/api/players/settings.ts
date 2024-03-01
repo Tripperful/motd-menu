@@ -2,9 +2,9 @@ import { PlayerClientSettings } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
 
-export const playerSettingsApi = Router();
+export const playerSettingsRouter = Router();
 
-playerSettingsApi.get('/:steamId', async (req, res) => {
+playerSettingsRouter.get('/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
@@ -14,7 +14,7 @@ playerSettingsApi.get('/:steamId', async (req, res) => {
   }
 });
 
-playerSettingsApi.post('/', async (req, res) => {
+playerSettingsRouter.post('/', async (req, res) => {
   try {
     const { steamId } = res.locals.sessionData;
     const settings = req.body as PlayerClientSettings;

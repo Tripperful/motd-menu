@@ -2,7 +2,7 @@ import { Severity } from '@motd-menu/common';
 import { Router } from 'express';
 import { dbgErr, dbgInfo, dbgWarn } from 'src/util';
 
-export const logApi = Router();
+export const logRouter = Router();
 
 const logFuncMap: Record<Severity, (...args: string[]) => void> = {
   info: dbgInfo,
@@ -10,7 +10,7 @@ const logFuncMap: Record<Severity, (...args: string[]) => void> = {
   error: dbgErr,
 };
 
-logApi.post('/:severity', async (req, res) => {
+logRouter.post('/:severity', async (req, res) => {
   try {
     const { sessionData } = res.locals;
 

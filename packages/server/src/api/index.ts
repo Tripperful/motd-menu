@@ -1,20 +1,20 @@
 import { Router } from 'express';
 
-import { cvarsApi } from './cvars';
-import { logApi } from './log';
-import { mapsApi } from './maps';
-import { matchApi } from './match';
-import { menuApi } from './menu';
-import { playersApi } from './players';
-import { teamsApi } from './teams';
+import { cvarsRouter } from './cvars';
+import { logRouter } from './log';
+import { mapsRouter } from './maps';
+import { matchRouter } from './match';
+import { menuRouter } from './menu';
+import { playersRouter } from './players';
+import { teamsRouter } from './teams';
 
 export const api = Router();
 
-api.use('/log', logApi);
-api.use('/menu', menuApi);
-api.use('/maps', mapsApi);
-api.use('/players', playersApi);
-api.use('/teams', teamsApi);
-api.use('/cvars', cvarsApi);
-api.use('/match', matchApi);
+api.use('/log', logRouter);
+api.use('/menu', menuRouter);
+api.use('/maps', mapsRouter);
+api.use('/players', playersRouter);
+api.use('/teams', teamsRouter);
+api.use('/cvars', cvarsRouter);
+api.use('/match', matchRouter);
 api.use((_, res) => res.status(400).end());

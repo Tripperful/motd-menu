@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import { db } from 'src/db';
 
-export const akaApi = Router();
+export const akaRouter = Router();
 
-akaApi.post('/:steamId/:name', async (req, res) => {
+akaRouter.post('/:steamId/:name', async (req, res) => {
   try {
     if (!res.locals.sessionData.permissions.includes('aka_edit')) {
       return res.status(403).end();
@@ -19,7 +19,7 @@ akaApi.post('/:steamId/:name', async (req, res) => {
   }
 });
 
-akaApi.delete('/:steamId', async (req, res) => {
+akaRouter.delete('/:steamId', async (req, res) => {
   try {
     if (!res.locals.sessionData.permissions.includes('aka_edit')) {
       return res.status(403).end();
@@ -35,7 +35,7 @@ akaApi.delete('/:steamId', async (req, res) => {
   }
 });
 
-akaApi.get('/:steamId', async (req, res) => {
+akaRouter.get('/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
