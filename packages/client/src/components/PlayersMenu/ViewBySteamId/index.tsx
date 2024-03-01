@@ -6,7 +6,6 @@ import { Popup } from '~components/common/Popup';
 import { outlineButton } from '~styles/elements';
 
 const useStyles = createUseStyles({
-  root: {},
   submit: {
     ...outlineButton(),
     textAlign: 'center',
@@ -19,11 +18,7 @@ export const ViewBySteamId: FC = () => {
   const [steamId, setSteamId] = useState('');
 
   return (
-    <Popup
-      title={'View player by Steam ID'}
-      onClose={goBack}
-      className={c.root}
-    >
+    <Popup title={'View player by Steam ID'} onClose={goBack}>
       <small>Player&apos;s Steam ID 64</small>
       <input
         type="text"
