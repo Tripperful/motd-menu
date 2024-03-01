@@ -1,6 +1,7 @@
 import {
   AmmoPickupMessage,
   BatteryPickupMessage,
+  EfpsMatchSummary,
   EntityTeleportMessage,
   ItemPickupMessage,
   ItemRespawnMessage,
@@ -262,6 +263,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
         limit,
         offset,
       )) ?? { data: [], total: 0 },
+    getEfpsStats: async (matchId: string) =>
+      this.select<EfpsMatchSummary>('get_efps_stats', matchId),
   };
 
   override async init() {

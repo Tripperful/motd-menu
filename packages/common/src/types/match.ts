@@ -31,6 +31,35 @@ export interface MatchSummary {
   teams: MatchSummaryTeam[];
 }
 
+export interface EfpsMatchSummaryKill {
+  attacker: {
+    steamId: string;
+    team: number;
+  };
+  victim: {
+    steamId: string;
+    team: number;
+  };
+  weapon: string;
+}
+
+export interface EfpsMatchSummaryStat {
+  steamId: string;
+  fired: number;
+  hit: number;
+  hs: number;
+  team: number;
+}
+
+export interface EfpsMatchSummary {
+  server: string;
+  map: string;
+  teamplay: boolean;
+  matchDuration: number;
+  kills: EfpsMatchSummaryKill[];
+  stats: EfpsMatchSummaryStat[];
+}
+
 export const matchCvarDefaults: Partial<Record<Cvar, string>> = {
   mp_timelimit: '15',
   mm_overtime: '60',

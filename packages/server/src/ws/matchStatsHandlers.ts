@@ -23,7 +23,7 @@ import {
   WsSubscriberCallback,
 } from '@motd-menu/common';
 import { db } from 'src/db';
-import { dbgInfo } from 'src/util';
+import { dbgErr, dbgInfo } from 'src/util';
 import { chargerUseHandler } from './chargerUseHandler';
 
 const handlerMap: Partial<
@@ -35,8 +35,22 @@ const handlerMap: Partial<
   match_started: async (data: MatchStartedMessage, serverId) =>
     db.matchStats.matchStarted(serverId, data),
 
-  match_ended: async (data: MatchEndedMessage) =>
-    db.matchStats.matchEnded(data),
+  match_ended: async (data: MatchEndedMessage) => {
+    await db.matchStats.matchEnded(data);
+
+    if (process.env.MOTD_EFPS_STATS_POST_URL) {
+      try {
+        const efpsStats = await db.matches.getEfpsStats(data.id);
+
+        await fetch(process.env.MOTD_EFPS_STATS_POST_URL, {
+          method: 'POST',
+          body: JSON.stringify(efpsStats),
+        });
+      } catch {
+        dbgErr('Failed to post EFPS stats');
+      }
+    }
+  },
 
   player_death: async (data: PlayerDeathMessage) =>
     db.matchStats.playerDeath(data),

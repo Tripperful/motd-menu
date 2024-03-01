@@ -1009,3 +1009,145 @@ FROM (
 ) GROUP BY total;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_efps_accuracy (match_id uuid, steam_id bigint) RETURNS json AS $$
+DECLARE
+  _hitscan_weapons text[];
+  _hitscan_dmg text[];
+  _total_shots int;
+  _total_hits int;
+  _total_hs int;
+BEGIN
+  _hitscan_weapons := ARRAY['weapon_pistol', 'weapon_357', 'weapon_smg1', 'weapon_ar2', 'weapon_shotgun'];
+  _hitscan_dmg := ARRAY['pistol', '357', 'smg1', 'ar2', 'shotgun'];
+
+  SELECT SUM(
+      CASE WHEN weapon = 'weapon_shotgun'
+      THEN
+        CASE WHEN is_secondary = true THEN 12 ELSE 7 END
+        ELSE 1
+      END
+    )
+    INTO _total_shots
+    FROM player_attacks
+    WHERE weapon = ANY(_hitscan_weapons)
+    AND player_attacks.steam_id = get_efps_accuracy.steam_id
+    AND player_attacks.match_id = get_efps_accuracy.match_id;
+
+  SELECT COUNT(*) INTO _total_hits
+    FROM player_damage
+    WHERE weapon = ANY(_hitscan_dmg)
+    AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
+    AND player_damage.match_id = get_efps_accuracy.match_id;
+
+  SELECT COUNT(*) INTO _total_hs
+    FROM player_damage
+    WHERE weapon = ANY(_hitscan_dmg)
+    AND hitboxes->'1' IS NOT NULL
+    AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
+    AND player_damage.match_id = get_efps_accuracy.match_id;
+
+  RETURN json_build_object(
+    'steamId',
+    steam_id::text,
+    'fired',
+    _total_shots,
+    'hit',
+    _total_hits,
+    'hs',
+    _total_hs,
+    'team',
+    (
+      SELECT match_teams.index
+      FROM match_teams
+      WHERE match_teams.match_id = get_efps_accuracy.match_id
+      AND EXISTS (
+        SELECT *
+        FROM match_team_players
+        WHERE match_team_players.steam_id = get_efps_accuracy.steam_id
+        AND match_team_players.match_team_id = match_teams.id
+      )
+    )
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_efps_stats (match_id text) RETURNS json AS $$ BEGIN RETURN json_build_object(
+  'server',
+  (SELECT servers.name FROM servers WHERE servers.id = server_id),
+  'map',
+  (SELECT maps.name FROM maps WHERE maps.id = map_id),
+  'teamplay',
+  (CASE WHEN (
+    SELECT COUNT(*)
+    FROM match_teams
+    WHERE match_teams.match_id = get_efps_stats.match_id::uuid
+    ) > 1 THEN true ELSE false END
+  ),
+  'matchDuration',
+  ROUND(duration),
+  'kills',
+  (
+    SELECT json_agg(
+      json_build_object(
+        'attacker',
+        json_build_object(
+          'steamId',
+          player_deaths.attacker_steam_id::text,
+          'team',
+          (
+            SELECT match_teams.index
+            FROM match_teams
+            WHERE match_teams.match_id = get_efps_stats.match_id::uuid
+            AND EXISTS (
+              SELECT *
+              FROM match_team_players
+              WHERE match_team_players.steam_id = player_deaths.attacker_steam_id
+              AND match_team_players.match_team_id = match_teams.id
+            )
+          )
+        ),
+        'victim',
+        json_build_object(
+          'steamId',
+          player_deaths.victim_steam_id::text,
+          'team',
+          (
+            SELECT match_teams.index
+            FROM match_teams
+            WHERE match_teams.match_id = get_efps_stats.match_id::uuid
+            AND EXISTS (
+              SELECT *
+              FROM match_team_players
+              WHERE match_team_players.steam_id = player_deaths.victim_steam_id
+              AND match_team_players.match_team_id = match_teams.id
+            )
+          )
+        ),
+        'weapon',
+        player_deaths.weapon
+      )
+    )
+    FROM player_deaths
+    WHERE player_deaths.match_id = get_efps_stats.match_id::uuid
+  ),
+  'stats',
+  (
+    SELECT json_agg(
+      get_efps_accuracy(get_efps_stats.match_id::uuid, match_team_players.steam_id)
+    )
+    FROM match_team_players
+    WHERE match_team_players.match_team_id IN (
+      SELECT id
+      FROM match_teams
+      WHERE match_teams.match_id = get_efps_stats.match_id::uuid
+    )
+  )
+)
+FROM matches
+WHERE matches.id = get_efps_stats.match_id::uuid
+LIMIT 1;
+END;
+$$ LANGUAGE plpgsql;

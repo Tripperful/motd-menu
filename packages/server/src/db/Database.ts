@@ -1,6 +1,7 @@
 import {
   AmmoPickupMessage,
   BatteryPickupMessage,
+  EfpsMatchSummary,
   EntityTeleportMessage,
   ItemPickupMessage,
   ItemRespawnMessage,
@@ -149,5 +150,6 @@ export interface Database {
   };
   matches: {
     get(limit: number, offset: number): Promise<PagedData<MatchSummary>>;
+    getEfpsStats(matchId: string): Promise<EfpsMatchSummary>;
   };
 }
