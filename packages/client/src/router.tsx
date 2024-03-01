@@ -43,7 +43,7 @@ export const Router: FC = () => {
           />
           <Route path="teams/:teamIndex?" element={<TeamMenu />} />
           <Route
-            path="serverSettings"
+            path="serverSettings/*"
             element={
               <Suspense>
                 <ServerSettings />
@@ -51,7 +51,7 @@ export const Router: FC = () => {
             }
           />
           <Route
-            path="clientSettings"
+            path="clientSettings/*"
             element={
               <Suspense>
                 <ClientSettings />

@@ -4,6 +4,7 @@ export type WsMessageType =
   | 'get_maps_request'
   | 'get_maps_response'
   | 'set_cvar'
+  | 'run_command'
   | 'get_settings_request'
   | 'set_settings'
   | 'get_settings_response'

@@ -21,4 +21,5 @@ export interface SrcdsApi {
     postTimerCommands?: string[],
   ): void;
   applySettings(steamId: string, settings: PlayerClientSettings): void;
+  runCommand(command: string): void;
 }

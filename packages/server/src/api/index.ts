@@ -6,6 +6,7 @@ import { mapsRouter } from './maps';
 import { matchRouter } from './match';
 import { menuRouter } from './menu';
 import { playersRouter } from './players';
+import { srcdsRouter } from './srcds';
 import { teamsRouter } from './teams';
 
 export const api = Router();
@@ -17,4 +18,5 @@ api.use('/players', playersRouter);
 api.use('/teams', teamsRouter);
 api.use('/cvars', cvarsRouter);
 api.use('/match', matchRouter);
+api.use('/srcds', srcdsRouter);
 api.use((_, res) => res.status(400).end());

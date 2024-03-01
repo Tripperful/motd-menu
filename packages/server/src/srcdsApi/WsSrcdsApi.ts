@@ -92,4 +92,8 @@ export class WsSrcdsApi implements SrcdsApi {
       },
     } as SetSettingsAction);
   }
+
+  runCommand(command: string): void {
+    this.send('run_command', command);
+  }
 }

@@ -10,6 +10,7 @@ export const permissionDescriptions = {
   cvars_admin_edit: 'Edit admin cvars',
   permissions_view: "View players' permissions",
   permissions_edit: "Edit players' permissions",
+  rcon: 'Run server concommands via the menu',
   dev: 'Developer',
 };
 

@@ -296,6 +296,10 @@ class MotdApi {
   public async startMatch(settings: StartMatchSettings) {
     await this.post(`match/start`, JSON.stringify(settings));
   }
+
+  public async runCommand(command: string) {
+    await this.post(`srcds/runCommand`, JSON.stringify({ command }));
+  }
 }
 
 export const motdApi = new MotdApi();
