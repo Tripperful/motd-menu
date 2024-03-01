@@ -62,6 +62,7 @@ export interface EfpsMatchSummary {
 
 export const matchCvarDefaults: Partial<Record<Cvar, string>> = {
   mp_timelimit: '15',
+  mp_fraglimit: '0',
   mm_overtime: '60',
   mp_teamplay: '1',
   mm_equalizer: '1',

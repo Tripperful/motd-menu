@@ -47,6 +47,7 @@ export type Cvar =
   | 'mp_footsteps'
   | 'mp_forcerespawn'
   | 'mp_timelimit'
+  | 'mp_fraglimit'
   | 'mm_equalizer'
   | 'mm_overtime'
   | 'mm_hotbolt_fix'
@@ -174,6 +175,13 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     type: 'number',
     min: 0,
     max: 240,
+    permissions: matchmakingPermissions,
+  },
+  mp_fraglimit: {
+    description: 'Frag limit',
+    type: 'number',
+    min: 0,
+    max: 1000,
     permissions: matchmakingPermissions,
   },
   mm_overtime: {
