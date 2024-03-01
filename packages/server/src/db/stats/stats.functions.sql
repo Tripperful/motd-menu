@@ -1035,28 +1035,37 @@ BEGIN
     AND player_attacks.steam_id = get_efps_accuracy.steam_id
     AND player_attacks.match_id = get_efps_accuracy.match_id;
 
-  SELECT COUNT(*) INTO _total_hits
-    FROM player_damage
-    WHERE weapon = ANY(_hitscan_dmg)
-    AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
-    AND player_damage.match_id = get_efps_accuracy.match_id;
+  SELECT SUM(hitbox_hits.hits) INTO _total_hits
+    FROM (
+      SELECT SUM(hb) AS hits
+      FROM (
+        SELECT ((json_each_text(hitboxes)).value)::int AS hb
+        FROM player_damage
+        WHERE weapon = ANY(_hitscan_dmg)
+        AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
+        AND player_damage.match_id = get_efps_accuracy.match_id
+      )
+    ) hitbox_hits;
 
-  SELECT COUNT(*) INTO _total_hs
-    FROM player_damage
-    WHERE weapon = ANY(_hitscan_dmg)
-    AND hitboxes->'1' IS NOT NULL
-    AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
-    AND player_damage.match_id = get_efps_accuracy.match_id;
+  SELECT SUM(hs_hits.hits) INTO _total_hs
+    FROM (
+      SELECT SUM((hitboxes->>'1')::int) AS hits
+      FROM player_damage
+      WHERE weapon = ANY(_hitscan_dmg)
+      AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
+      AND player_damage.match_id = get_efps_accuracy.match_id
+      AND hitboxes->'1' IS NOT NULL
+    ) hs_hits;
 
   RETURN json_build_object(
     'steamId',
     steam_id::text,
     'fired',
-    _total_shots,
+    COALESCE(_total_shots, 0),
     'hit',
-    _total_hits,
+    COALESCE(_total_hits, 0),
     'hs',
-    _total_hs,
+    COALESCE(_total_hs, 0),
     'team',
     (
       SELECT match_teams.index
