@@ -38,7 +38,7 @@ const handlerMap: Partial<
   match_ended: async (data: MatchEndedMessage) => {
     await db.matchStats.matchEnded(data);
 
-    if (process.env.MOTD_EFPS_STATS_POST_URL) {
+    if (process.env.MOTD_EFPS_STATS_POST_URL && data.status === 'completed') {
       try {
         const efpsStats = await db.matches.getEfpsStats(data.id);
 
