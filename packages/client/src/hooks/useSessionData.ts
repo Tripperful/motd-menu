@@ -6,11 +6,15 @@ export const useSessionData = () => {
   return useMemo(() => {
     const cookies = getCookies();
 
-    return {
-      name: cookies.name ?? 'Unknown',
-      permissions: cookies.permissions ? JSON.parse(cookies.permissions) : [],
+    const sessionData: SessionData = {
       steamId: cookies.steamId ?? 'Unknown',
-      userId: Number(cookies.userId ?? -1),
-    } as SessionData;
+      permissions: cookies.permissions ? JSON.parse(cookies.permissions) : [],
+    };
+
+    if (cookies.userId) {
+      sessionData.userId = Number(cookies.userId);
+    }
+
+    return sessionData;
   }, []);
 };

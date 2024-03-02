@@ -7,3 +7,10 @@ CREATE TABLE IF NOT EXISTS
     api_key text,
     blocked boolean
   );
+
+CREATE TABLE IF NOT EXISTS
+  dev_tokens (
+    id SERIAL PRIMARY KEY,
+    token text,
+    steam_id bigint
+  );

@@ -1,5 +1,4 @@
 import { Client, QueryResult } from 'pg';
-import { config } from '~root/config';
 
 const sqlImportOrder = ['migrations', 'tables', 'functions'];
 
@@ -20,7 +19,12 @@ export class BasePgDatabase {
   protected pgRes: <TRes>(res: QueryResult<TRes>) => unknown;
 
   constructor() {
-    const pg = new Client(config.db);
+    const pg = new Client({
+      host: '0.0.0.0',
+      user: 'motd-menu',
+      password: '123123',
+    });
+
     this.pg = pg;
 
     this.pgEscText = (arg: string) => pg.escapeLiteral(arg);

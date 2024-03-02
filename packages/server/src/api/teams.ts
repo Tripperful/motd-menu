@@ -17,7 +17,7 @@ teamsRouter.post('/set/:userId?/:teamIndex', async (req, res) => {
       return res.status(403).end();
     }
 
-    await srcdsApi.setPlayerTeam(userId, Number(teamIndex));
+    srcdsApi.setPlayerTeam(userId, Number(teamIndex));
 
     res.status(200).end();
   } catch {

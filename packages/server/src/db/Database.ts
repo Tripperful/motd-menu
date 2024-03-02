@@ -124,6 +124,7 @@ export interface Database {
   };
   server: {
     getByApiKey(apiKey: string): Promise<ServerInfo>;
+    devTokenAuth(token: string): Promise<string>;
   };
   matchStats: {
     matchStarted(serverId: number, data: MatchStartedMessage): Promise<void>;

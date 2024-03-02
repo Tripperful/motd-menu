@@ -1,4 +1,4 @@
-import { OnlinePlayerInfo, Permission, SrcdsProtocol } from '@motd-menu/common';
+import { OnlinePlayerInfo, Permission } from '@motd-menu/common';
 import { RequestHandler } from 'express';
 import { db } from './db';
 import { getSrcdsApi } from './srcdsApi';
@@ -6,11 +6,10 @@ import { SrcdsApi } from './srcdsApi/SrcdsApi';
 import { dbgWarn } from './util';
 
 export interface MotdSessionData {
-  protocol: SrcdsProtocol;
   remoteId: string;
   token: string;
-  userId: number;
   steamId: string;
+  userId?: number;
   permissions: Permission[];
 }
 
@@ -22,18 +21,22 @@ const getUserCredentials = async (
   token: string,
   srcdsApi: SrcdsApi,
 ): Promise<OnlinePlayerInfo> => {
-  if (!authCache[token]) {
-    const auth = await srcdsApi.auth(token);
+  let auth = authCache[token];
 
-    if (!(auth.userId && auth.steamId)) {
-      delete authCache[token];
-
-      throw 'Unauthorized';
-    }
-
-    authCache[token] = auth;
+  if (!auth?.steamId) {
+    auth = { steamId: await db.server.devTokenAuth(token) };
   }
 
+  if (!auth?.steamId) {
+    auth = await srcdsApi.auth(token);
+  }
+
+  if (!auth?.steamId) {
+    delete authCache[token];
+    throw 'Unauthorized';
+  }
+
+  authCache[token] = auth;
   return authCache[token];
 };
 
@@ -72,16 +75,13 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       throw 'Unauthorized';
     }
 
-    const protocol = 'ws';
-
-    const srcdsApi = getSrcdsApi({ protocol, remoteId });
+    const srcdsApi = getSrcdsApi(remoteId);
     res.locals.srcdsApi = srcdsApi;
 
     const { steamId, userId } = await getUserCredentials(token, srcdsApi);
     const permissions = await db.permissions.get(steamId);
 
     res.locals.sessionData = {
-      protocol,
       remoteId,
       token,
       userId,
@@ -90,18 +90,22 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     };
 
     res.cookie('version', authVersion);
-    res.cookie('protocol', protocol);
     res.cookie('remoteId', remoteId);
     res.cookie('token', token, { httpOnly: true });
-    res.cookie('userId', userId);
     res.cookie('steamId', steamId);
+
+    if (userId) {
+      res.cookie('userId', userId);
+    } else {
+      res.clearCookie('userId');
+    }
+
     res.cookie('permissions', JSON.stringify(permissions));
 
     next();
   } catch {
     res.clearCookie('version');
     res.clearCookie('token');
-    res.clearCookie('protocol');
     res.clearCookie('remoteId');
     res.clearCookie('userId');
     res.clearCookie('steamId');

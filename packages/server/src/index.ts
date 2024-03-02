@@ -8,6 +8,7 @@ import https from 'https';
 import path from 'path';
 import { api } from './api';
 import { authMiddleware } from './auth';
+import './config';
 import { db } from './db';
 import { dbgWarn, logDbgInfo } from './util';
 import { WsApi } from './ws';

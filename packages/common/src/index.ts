@@ -1,5 +1,4 @@
 export * from './cvars';
-export * from './types/config';
 export * from './types/data';
 export * from './types/log';
 export * from './types/maps';

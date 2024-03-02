@@ -32,7 +32,6 @@ import {
   allReactionNames,
 } from '@motd-menu/common';
 import { ChargeAggregate } from 'src/ws/chargerUseHandler';
-import { config } from '~root/config';
 import { BasePgDatabase } from './BasePgDatabase';
 import { Database } from './Database';
 
@@ -220,6 +219,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
   server = {
     getByApiKey: (apiKey: string) =>
       this.select<ServerInfo>('server_by_key', apiKey),
+    devTokenAuth: (token: string) =>
+      this.select<string>('dev_token_steam_id', token),
   };
 
   matchStats = {
@@ -270,7 +271,11 @@ export class PgDatabase extends BasePgDatabase implements Database {
   override async init() {
     await super.init();
     await Promise.allSettled([
-      this.call('permissions_init', allPermissions, config.rootAdmins ?? []),
+      this.call(
+        'permissions_init',
+        allPermissions,
+        process.env.MOTD_ROOT_ADMINS?.split(',')?.map((v) => v.trim()) ?? [],
+      ),
       this.call('reactions_init', allReactionNames),
     ]);
   }

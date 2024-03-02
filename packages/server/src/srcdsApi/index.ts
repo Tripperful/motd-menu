@@ -4,29 +4,18 @@ import { WsSrcdsApi } from './WsSrcdsApi';
 
 const srcdsApis: Record<string, SrcdsApi> = {};
 
-export type SrcdsIdentity = {
-  protocol: 'ws';
-  remoteId: string;
+const createSrcdsApi = (remoteId: string): SrcdsApi => {
+  return new WsSrcdsApi(remoteId);
 };
 
-const createSrcdsApi = (srcdsIdentity: SrcdsIdentity): SrcdsApi => {
-  switch (srcdsIdentity.protocol) {
-    case 'ws':
-      return new WsSrcdsApi(srcdsIdentity.remoteId);
-  }
-};
-
-export const getSrcdsApi: (srcdsIdentity: SrcdsIdentity) => SrcdsApi = (
-  srcdsIdentity,
-) => {
-  const apiHost = JSON.stringify(srcdsIdentity);
-  let api = srcdsApis[apiHost];
+export const getSrcdsApi: (remoteId: string) => SrcdsApi = (remoteId) => {
+  let api = srcdsApis[remoteId];
 
   if (!api) {
-    api = createSrcdsApi(srcdsIdentity);
-    srcdsApis[apiHost] = api;
+    api = createSrcdsApi(remoteId);
+    srcdsApis[remoteId] = api;
 
-    dbgInfo(`SRCDS API instance for ${apiHost} created`);
+    dbgInfo(`SRCDS API instance for ${remoteId} created`);
   }
 
   return api;

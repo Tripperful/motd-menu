@@ -73,7 +73,7 @@ matchRouter.post('/start', async (req, res) => {
         preTimerCommands.push(`motd_team_change ${player.userId} ${teamIndex}`);
       }
 
-      await srcdsApi.startMatch(token, preTimerCommands, postTimerCommands);
+      srcdsApi.startMatch(token, preTimerCommands, postTimerCommands);
     } catch (e) {
       return res
         .status(400)
