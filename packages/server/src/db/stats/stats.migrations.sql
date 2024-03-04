@@ -10,3 +10,7 @@ LIMIT 1) = pg_typeof(1::int) THEN
 END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Add distance column to player_deaths table if it doesn't exist
+ALTER TABLE player_deaths
+ADD COLUMN IF NOT EXISTS distance float;

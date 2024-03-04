@@ -88,7 +88,8 @@ CREATE TABLE IF NOT EXISTS
     weapon text,
     model text,
     classname text,
-    entity_id bigint
+    entity_id bigint,
+    distance float
   );
 
 CREATE TABLE IF NOT EXISTS

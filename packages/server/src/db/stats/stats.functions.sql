@@ -339,7 +339,8 @@ OR REPLACE PROCEDURE player_death (death_data json) AS $$ BEGIN
     weapon,
     model,
     classname,
-    entity_id
+    entity_id,
+    distance
   ) VALUES (
     (death_data->>'id')::uuid,
     (death_data->>'tick')::int,
@@ -359,7 +360,8 @@ OR REPLACE PROCEDURE player_death (death_data json) AS $$ BEGIN
     death_data->>'weapon',
     death_data->>'model',
     death_data->>'classname',
-    (death_data->>'entityId')::bigint
+    (death_data->>'entityId')::bigint,
+    (death_data->>'distance')::float
   );
 END;
 $$ LANGUAGE plpgsql;

@@ -148,6 +148,7 @@ export interface PlayerDeathMessage extends BasePointMessage {
   model?: string;
   classname?: string;
   entityId?: string;
+  distance: number;
 }
 
 export interface PlayerRespawnMessage extends BasePointMessage {
