@@ -1,7 +1,7 @@
 import { MapReviewData } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
-import { getPlayersProfiles } from 'src/steam';
+import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
 import { mapsReviewsReactionsRouter } from './reactions';
 
 export const reviewsRouter = Router();
@@ -40,7 +40,7 @@ reviewsRouter.get('/player/:steamId', async (req, res) => {
     const reviews = (await db.maps.reviews.getByAuthor(steamId)) ?? [];
 
     if (reviews.length > 0) {
-      const author = (await getPlayersProfiles([steamId]))[steamId];
+      const author = await getPlayerProfile(steamId);
 
       for (const review of reviews) {
         review.author = author;
@@ -64,7 +64,7 @@ reviewsRouter.post('/:mapName', async (req, res) => {
     const timestamp = await db.maps.reviews.set(mapName, review);
 
     review.mapName = mapName;
-    review.author = (await getPlayersProfiles([steamId]))[steamId];
+    review.author = await getPlayerProfile(steamId);
     review.timestamp = Number(timestamp);
 
     res.status(200).end(JSON.stringify(review));

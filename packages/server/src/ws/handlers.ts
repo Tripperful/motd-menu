@@ -9,7 +9,7 @@ import {
 } from '@motd-menu/common';
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
-import { getPlayersProfiles } from 'src/steam';
+import { getPlayerProfile } from 'src/steam';
 import { matchStatsHandlers } from './matchStatsHandlers';
 
 export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
@@ -17,9 +17,9 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
     player_connected: async (msg: WsMessage<PlayerConnectedReqest>) => {
       const { token, steamId, ip, port } = msg.data;
 
-      const profile = (await getPlayersProfiles([steamId]))[steamId];
+      const profile = await getPlayerProfile(steamId);
 
-      db.client.connected(token, steamId, ip, port, profile.name);
+      db.client.connected(token, steamId, ip, port, profile?.name || null);
     },
 
     player_disconnected: (msg: WsMessage<PlayerDisconnectedReqest>) => {

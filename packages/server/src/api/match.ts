@@ -6,7 +6,7 @@ import {
 } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
-import { getPlayersProfiles } from 'src/steam';
+import { getPlayerProfile } from 'src/steam';
 import { sanitizeCvarValue } from 'src/util';
 
 export const matchRouter = Router();
@@ -62,9 +62,7 @@ matchRouter.post('/start', async (req, res) => {
         const player = onlinePlayers.find((p) => p.steamId === steamId);
 
         if (!player) {
-          const disconnectedPlayer = (await getPlayersProfiles([steamId]))[
-            steamId
-          ];
+          const disconnectedPlayer = await getPlayerProfile(steamId);
           const disconnectedPlayerName = disconnectedPlayer?.name ?? steamId;
 
           throw `Failed to start the match (${disconnectedPlayerName} left the game)`;

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from 'src/db';
-import { getPlayersProfiles } from 'src/steam';
+import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
 import { akaRouter } from './aka';
 import { permissionsRouter } from './permissions';
 import { playerSettingsRouter } from './settings';
@@ -35,7 +35,7 @@ playersRouter.get('/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
-    const playerProfile = (await getPlayersProfiles([steamId]))[steamId];
+    const playerProfile = await getPlayerProfile(steamId);
 
     res.status(200).end(JSON.stringify(playerProfile));
   } catch {
