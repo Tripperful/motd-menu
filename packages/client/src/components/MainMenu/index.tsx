@@ -30,7 +30,6 @@ const menuItems: MenuItemInfo[] = [
     title: 'Matches',
     link: 'matches',
     Icon: MatchesIcon,
-    permissions: ['dev'],
   },
 ];
 
