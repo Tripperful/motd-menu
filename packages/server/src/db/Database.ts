@@ -151,6 +151,7 @@ export interface Database {
   };
   matches: {
     get(limit: number, offset: number): Promise<PagedData<MatchSummary>>;
+    get(matchId: string): Promise<MatchSummary>;
     getEfpsStats(matchId: string): Promise<EfpsMatchSummary>;
   };
 }

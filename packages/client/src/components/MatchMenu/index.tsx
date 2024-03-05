@@ -6,8 +6,8 @@ import { StartMatchMenu } from './StartMatchMenu';
 export const MatchMenu: FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<MatchResultsMenu />} />
       <Route path="start/*" element={<StartMatchMenu />} />
+      <Route path="/*" element={<MatchResultsMenu />} />
     </Routes>
   );
 };

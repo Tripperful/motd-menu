@@ -23,6 +23,18 @@ matchRouter.get('/results/:offset?', async (req, res) => {
   }
 });
 
+matchRouter.get('/:matchId', async (req, res) => {
+  try {
+    const { matchId } = req.params;
+
+    const result = await db.matches.get(matchId);
+
+    res.status(200).end(JSON.stringify(result));
+  } catch {
+    res.status(500).end();
+  }
+});
+
 matchRouter.post('/start', async (req, res) => {
   try {
     const {

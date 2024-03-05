@@ -2,6 +2,7 @@ import { MatchSummary } from '@motd-menu/common';
 import classNames from 'classnames';
 import React, { FC, Suspense, useEffect, useRef } from 'react';
 import { createUseStyles } from 'react-jss';
+import { Link, Route, Routes } from 'react-router-dom';
 import { useIntersection } from 'react-use';
 import {
   fetchMorematchResults,
@@ -13,6 +14,7 @@ import { MapPreviewImage } from '~components/common/MapPreviewImage';
 import { ActionPage } from '~components/common/Page/ActionPage';
 import ArrowRightIcon from '~icons/thick-arrow-right.svg';
 import { theme } from '~styles/theme';
+import { MatchResultPopup } from './MatchResultPopup';
 
 const useStyles = createUseStyles({
   content: {
@@ -30,6 +32,11 @@ const useStyles = createUseStyles({
     borderRadius: '0.5em',
     padding: '0.5em',
     gap: '1em',
+    cursor: 'pointer',
+
+    '&:hover': {
+      backgroundColor: theme.bg2,
+    },
   },
   uncompleted: {
     opacity: 0.5,
@@ -130,7 +137,8 @@ const MatchResult: FC<{ data: MatchSummary }> = ({ data }) => {
   const c = useStyles();
 
   return (
-    <div
+    <Link
+      to={data.id}
       key={data.id}
       className={classNames(
         c.result,
@@ -153,7 +161,7 @@ const MatchResult: FC<{ data: MatchSummary }> = ({ data }) => {
           ).toLocaleString()}
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
@@ -211,6 +219,9 @@ export const MatchResultsMenu: FC = () => {
       <div className={c.content}>
         <Suspense>
           <MatchResultsContent />
+          <Routes>
+            <Route path="/:matchId/*" element={<MatchResultPopup />} />
+          </Routes>
         </Suspense>
       </div>
     </ActionPage>

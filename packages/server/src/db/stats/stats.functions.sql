@@ -947,68 +947,83 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
-OR REPLACE FUNCTION get_matches (lmt int, ofst int) RETURNS json AS $$ BEGIN RETURN json_build_object(
+OR REPLACE FUNCTION match_json(match matches) RETURNS json AS $$ BEGIN RETURN json_build_object(
+  'id',
+  match.id::text,
+  'status',
+  match.status,
+  'server',
+  (SELECT servers.name FROM servers WHERE servers.id = match.server_id),
+  'mapName',
+  (SELECT maps.name FROM maps WHERE maps.id = match.map_id),
+  'demoName',
+  match.demo_id,
+  'initiator',
+  match.initiator::text,
+  'duration',
+  ROUND(match.duration),
+  'startDate',
+  ROUND(EXTRACT(
+    EPOCH
+    FROM match.start_time
+  ) * 1000),
+  'teams',
+  (
+    SELECT json_agg(
+      json_build_object(
+        'name',
+        match_teams.name,
+        'index',
+        match_teams.index,
+        'players',
+        (
+          SELECT json_agg(
+            json_build_object(
+              'steamId',
+              match_team_players.steam_id::text,
+              'kills',
+              match_team_players.kills,
+              'deaths',
+              match_team_players.deaths
+            )
+          ) FROM match_team_players WHERE match_team_players.match_team_id = match_teams.id
+        )
+      )
+    ) FROM match_teams WHERE match_teams.match_id = match.id
+  )
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_match (match_id text) RETURNS json AS $$
+DECLARE
+  match matches;
+BEGIN
+SELECT * INTO match FROM matches WHERE matches.id = get_match.match_id::uuid LIMIT 1;
+RETURN match_json(match);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_matches (lmt int, ofst int) RETURNS json AS $$
+DECLARE
+  total int;
+  match_json json;
+BEGIN
+SELECT COUNT(*) INTO total FROM matches WHERE matches.status != 'started';
+RETURN json_build_object(
   'total',
   total,
   'data',
-  json_agg(
-    json_build_object(
-      'id',
-      _match_id::text,
-      'status',
-      status,
-      'server',
-      (SELECT servers.name FROM servers WHERE servers.id = server_id),
-      'mapName',
-      (SELECT maps.name FROM maps WHERE maps.id = map_id),
-      'demoName',
-      demo_id,
-      'initiator',
-      initiator::text,
-      'duration',
-      ROUND(duration),
-      'startDate',
-      ROUND(EXTRACT(
-        EPOCH
-        FROM start_time
-      ) * 1000),
-      'teams',
-      (
-        SELECT json_agg(
-          json_build_object(
-            'name',
-            match_teams.name,
-            'index',
-            match_teams.index,
-            'players',
-            (
-              SELECT json_agg(
-                json_build_object(
-                  'steamId',
-                  match_team_players.steam_id::text,
-                  'kills',
-                  match_team_players.kills,
-                  'deaths',
-                  match_team_players.deaths
-                )
-              ) FROM match_team_players WHERE match_team_players.match_team_id = match_teams.id
-            )
-          )
-        ) FROM match_teams WHERE match_teams.match_id = _match_id
-      )
-    )
-  )
+  json_agg(match_json(matches_record))
 )
 FROM (
-  SELECT
-    id AS _match_id,
-    COUNT(*) OVER() AS total,
-    *
-  FROM matches
+  SELECT * FROM matches
   WHERE matches.status != 'started'
   ORDER BY start_time DESC
   LIMIT lmt OFFSET ofst
-) GROUP BY total;
+) AS matches_record;
 END;
 $$ LANGUAGE plpgsql;
 

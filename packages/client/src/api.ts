@@ -293,6 +293,12 @@ class MotdApi {
     return JSON.parse(res) as PagedData<MatchSummary>;
   }
 
+  public async getMatchResult(matchId: string) {
+    const res = await this.get('match/' + matchId);
+
+    return JSON.parse(res) as MatchSummary;
+  }
+
   public async startMatch(settings: StartMatchSettings) {
     await this.post(`match/start`, JSON.stringify(settings));
   }

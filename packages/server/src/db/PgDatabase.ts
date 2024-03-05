@@ -258,12 +258,14 @@ export class PgDatabase extends BasePgDatabase implements Database {
   };
 
   matches = {
-    get: async (limit: number, offset: number) =>
-      (await this.select<PagedData<MatchSummary>>(
-        'get_matches',
-        limit,
-        offset,
-      )) ?? { data: [], total: 0 },
+    get: (async (limitOrId: number | string, offset?: number) =>
+      typeof limitOrId === 'string'
+        ? await this.select<MatchSummary>('get_match', limitOrId)
+        : (await this.select<PagedData<MatchSummary>>(
+            'get_matches',
+            limitOrId,
+            offset,
+          )) ?? { data: [], total: 0 }) as Database['matches']['get'],
     getEfpsStats: async (matchId: string) =>
       this.select<EfpsMatchSummary>('get_efps_stats', matchId),
   };

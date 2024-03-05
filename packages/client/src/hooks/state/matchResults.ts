@@ -37,3 +37,13 @@ export const useMatchResults = () => {
     hasMore: results.length < total,
   };
 };
+
+const matchResultState = createGlobalState(
+  async (matchId: string) =>
+    (await matchResultsState.get())?.data?.find((m) => m.id === matchId) ??
+    motdApi.getMatchResult(matchId),
+);
+
+export const useMatchResult = (matchId: string) => {
+  return matchResultState.useExternalState(matchId);
+};

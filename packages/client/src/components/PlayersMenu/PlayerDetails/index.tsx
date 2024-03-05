@@ -9,11 +9,11 @@ import { steamProfileLink } from 'src/util';
 import { MapDetails } from '~components/MapList/MapDetails';
 import { IFramePopup } from '~components/common/IFramePopup';
 import { LineWithCopy } from '~components/common/LineWithCopy';
+import { PlayerSettings } from '~components/common/PlayerSettings';
 import { SidePanel } from '~components/common/SidePanel';
 import EfpsIcon from '~icons/efps.svg';
 import UserInspectIcon from '~icons/user-inspect.svg';
 import { outlineButton } from '~styles/elements';
-import { PlayerSettings } from '~components/common/PlayerSettings';
 import { PlayerAka } from './PlayerAka';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
@@ -136,12 +136,12 @@ const RatedMapDetails: FC = () => {
   return <MapDetails mapName={mapName} />;
 };
 
-export const PlayerDetails: FC = () => {
+export const PlayerDetails: FC<{ backPath?: string }> = ({ backPath }) => {
   const c = useStyles();
   const { steamId } = useParams();
 
   return (
-    <SidePanel title="Player details">
+    <SidePanel title="Player details" backPath={backPath}>
       <div className={c.root}>
         <Suspense fallback="Loading...">
           <PlayerDetailsContent />
