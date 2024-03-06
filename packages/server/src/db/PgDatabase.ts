@@ -8,6 +8,7 @@ import {
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
+  MatchDeathData,
   MatchEndedMessage,
   MatchStartedMessage,
   MatchSummary,
@@ -217,6 +218,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
   };
 
   server = {
+    getById: (serverId: number) =>
+      this.select<ServerInfo>('server_by_id', serverId),
     getByApiKey: (apiKey: string) =>
       this.select<ServerInfo>('server_by_key', apiKey),
     devTokenAuth: (token: string) =>
@@ -266,6 +269,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
             limitOrId,
             offset,
           )) ?? { data: [], total: 0 }) as Database['matches']['get'],
+    getMatchDeaths: (matchId: string) =>
+      this.select<MatchDeathData[]>('get_match_deaths', matchId),
     getEfpsStats: async (matchId: string) =>
       this.select<EfpsMatchSummary>('get_efps_stats', matchId),
   };

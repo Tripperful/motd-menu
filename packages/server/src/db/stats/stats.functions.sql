@@ -967,6 +967,10 @@ OR REPLACE FUNCTION match_json(match matches) RETURNS json AS $$ BEGIN RETURN js
     EPOCH
     FROM match.start_time
   ) * 1000),
+  'startCurtime',
+  match.start_curtime,
+  'endCurtime',
+  match.end_curtime,
   'teams',
   (
     SELECT json_agg(
@@ -1024,6 +1028,77 @@ FROM (
   ORDER BY start_time DESC
   LIMIT lmt OFFSET ofst
 ) AS matches_record;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_match_deaths(match_id text) RETURNS json AS $$
+DECLARE
+  is_dm boolean;
+BEGIN
+SELECT COUNT(*) = 1 INTO is_dm
+FROM match_teams
+WHERE match_teams.match_id = get_match_deaths.match_id::uuid;
+RETURN json_agg(
+  json_build_object(
+    'curtime',
+    curtime,
+    'attackerSteamId',
+    attacker_steam_id::text,
+    'victimSteamId',
+    victim_steam_id::text,
+    'weapon',
+    weapon,
+    'attackerScoreChange',
+    attacker_score_change,
+    'victimScoreChange',
+    victim_score_change
+  )
+) FROM (
+  WITH teams AS (
+    SELECT steam_id, index
+    FROM match_teams, match_team_players
+    WHERE match_teams.match_id = get_match_deaths.match_id::uuid
+    AND match_teams.id = match_team_players.match_team_id
+  )
+  SELECT
+    curtime,
+    attacker_steam_id,
+    victim_steam_id,
+    weapon,
+    (
+      SELECT CASE
+        WHEN (
+          NOT is_dm
+          AND
+          (SELECT index FROM teams WHERE teams.steam_id = attacker_steam_id)
+          =
+          (SELECT index FROM teams WHERE teams.steam_id = victim_steam_id)
+        ) THEN -1
+        WHEN (
+          attacker_steam_id IS NOT NULL
+          AND
+          attacker_steam_id != 0
+        ) THEN 1
+        ELSE 0
+      END
+    ) AS attacker_score_change,
+    (
+      SELECT CASE
+        WHEN (
+          attacker_steam_id = victim_steam_id
+          OR
+          attacker_steam_id = 0
+          OR
+          attacker_steam_id = NULL
+        ) THEN -1
+        ELSE 0
+      END
+    ) AS victim_score_change
+  FROM player_deaths
+  WHERE player_deaths.match_id = get_match_deaths.match_id::uuid
+  ORDER BY curtime ASC
+);
 END;
 $$ LANGUAGE plpgsql;
 

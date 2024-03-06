@@ -1,5 +1,6 @@
 export const theme = {
   bg1: '#000b',
+  bg1Thick: '#000e',
   bg2: '#333b',
   bgInfo: '#382b0b',
   bgError: '#380b0b',

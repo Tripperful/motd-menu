@@ -15,7 +15,9 @@ const fetchPlayerSteamProfile = async (steamId: string) =>
   (await onlinePlayersState.getRaw())?.find((p) => p.steamId === steamId)
     ?.steamProfile ?? (await motdApi.getPlayerSteamProfile(steamId));
 
-const playerSteamProfilesState = createGlobalState(fetchPlayerSteamProfile);
+export const playerSteamProfilesState = createGlobalState(
+  fetchPlayerSteamProfile,
+);
 
 export const usePlayerSteamProfile = (steamId: string) =>
   playerSteamProfilesState.useExternalState(steamId);

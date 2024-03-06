@@ -28,7 +28,18 @@ export interface MatchSummary {
   initiator: string;
   duration: number;
   startDate: number;
+  startCurtime: number;
+  endCurtime: number;
   teams: MatchSummaryTeam[];
+}
+
+export interface MatchDeathData {
+  curtime: number;
+  attackerSteamId: string;
+  victimSteamId: string;
+  weapon: string;
+  attackerScoreChange: number;
+  victimScoreChange: number;
 }
 
 export interface EfpsMatchSummaryKill {

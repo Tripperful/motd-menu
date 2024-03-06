@@ -35,6 +35,18 @@ matchRouter.get('/:matchId', async (req, res) => {
   }
 });
 
+matchRouter.get('/deaths/:matchId', async (req, res) => {
+  try {
+    const { matchId } = req.params;
+
+    const result = await db.matches.getMatchDeaths(matchId);
+
+    res.status(200).end(JSON.stringify(result));
+  } catch {
+    res.status(500).end();
+  }
+});
+
 matchRouter.post('/start', async (req, res) => {
   try {
     const {
