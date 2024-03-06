@@ -1,17 +1,36 @@
 CREATE
+OR REPLACE FUNCTION server_json (server servers) RETURNS json AS $$ BEGIN RETURN json_build_object(
+  'id',
+  server.id,
+  'ip',
+  server.ip::text,
+  'port',
+  server.port,
+  'name',
+  server.name,
+  'blocked',
+  server.blocked
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION server_by_id (server_id int) RETURNS json AS $$
+DECLARE
+  server servers;
+BEGIN
+SELECT * INTO server FROM servers WHERE servers.id = server_by_id.server_id LIMIT 1;
+RETURN server_json(server);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE FUNCTION server_by_key (api_key text) RETURNS json AS $$
-BEGIN RETURN json_build_object(
-    'id',
-    servers.id,
-    'ip',
-    servers.ip::text,
-    'port',
-    servers.port,
-    'name',
-    servers.name,
-    'blocked',
-    servers.blocked
-  ) FROM servers WHERE servers.api_key = server_by_key.api_key LIMIT 1;
+DECLARE
+  server servers;
+BEGIN 
+SELECT * INTO server FROM servers WHERE servers.api_key = server_by_key.api_key LIMIT 1;
+RETURN server_json(server);
 END;
 $$ LANGUAGE plpgsql;
 

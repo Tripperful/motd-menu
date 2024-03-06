@@ -35,11 +35,15 @@ const handlerMap: Partial<
   match_started: async (data: MatchStartedMessage, serverId) =>
     db.matchStats.matchStarted(serverId, data),
 
-  match_ended: async (data: MatchEndedMessage) => {
+  match_ended: async (data: MatchEndedMessage, serverId) => {
     await db.matchStats.matchEnded(data);
 
     if (process.env.MOTD_EFPS_STATS_POST_URL && data.status === 'completed') {
       try {
+        const server = await db.server.getById(serverId);
+
+        if (server.name.toLowerCase().includes('dev')) return;
+
         const efpsStats = await db.matches.getEfpsStats(data.id);
 
         await fetch(process.env.MOTD_EFPS_STATS_POST_URL, {
