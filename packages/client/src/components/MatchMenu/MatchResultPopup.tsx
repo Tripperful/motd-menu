@@ -256,7 +256,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
       <div className={c.title}>Kills minus deaths graph</div>
       <ResponsiveContainer
         width="100%"
-        aspect={2}
+        aspect={3}
         style={{
           paddingRight: '0.5em',
         }}
@@ -279,9 +279,10 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
             dataKey="curtime"
             tickFormatter={(v) => Math.round(v / 60).toString()}
             scale={'time'}
-            unit="min"
+            unit=" min"
             type="number"
             ticks={xTicks}
+            tickMargin={10}
           />
           <YAxis />
           {players.map((steamId, idx) => (
@@ -289,7 +290,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
               key={steamId}
               dataKey={steamId}
               stroke={getContrastingColor(idx)}
-              strokeWidth={4}
+              strokeWidth={2}
               dot={false}
               type="monotone"
               strokeLinecap="round"
