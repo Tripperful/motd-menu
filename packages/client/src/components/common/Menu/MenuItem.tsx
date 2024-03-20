@@ -30,7 +30,7 @@ export const MenuItem: FC<{
   totalItems: number;
   idx: number;
   radius: number;
-  Icon: FC;
+  Icon: JSX.Element;
   size?: number;
   className?: string;
   color?: string;
@@ -67,7 +67,7 @@ export const MenuItem: FC<{
       onMouseLeave={() => setActive(false)}
     >
       <div className={c.button} style={{ color }}>
-        <Icon />
+        {Icon}
       </div>
     </Link>
   );

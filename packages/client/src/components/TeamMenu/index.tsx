@@ -1,32 +1,8 @@
 import React, { FC, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motdApi } from 'src/api';
-import { Menu, MenuItemInfo } from '~components/common/Menu';
-import CombineIcon from '~icons/combine.svg';
-import SpectateIcon from '~icons/eye.svg';
-import RebelIcon from '~icons/lambda.svg';
-import { theme } from '~styles/theme';
-
-const menuItems: MenuItemInfo[] = [
-  {
-    title: 'Spectate',
-    link: '1',
-    Icon: SpectateIcon,
-    color: theme.teamColors.spectator,
-  },
-  {
-    title: 'Combine',
-    link: '2',
-    Icon: CombineIcon,
-    color: theme.teamColors.combine,
-  },
-  {
-    title: 'Rebels',
-    link: '3',
-    Icon: RebelIcon,
-    color: theme.teamColors.rebel,
-  },
-];
+import { useAvailableTeams } from 'src/hooks/useAvailableTeams';
+import { Menu } from '~components/common/Menu';
 
 export const TeamMenu: FC = () => {
   const { teamIndex } = useParams();
@@ -39,5 +15,17 @@ export const TeamMenu: FC = () => {
     }
   }, [nav, teamIndex]);
 
-  return <Menu items={menuItems} title="Select your team" />;
+  const availableTeams = useAvailableTeams();
+
+  return (
+    <Menu
+      items={availableTeams.map((t) => ({
+        title: t.name,
+        link: t.index.toString(),
+        Icon: t.icon,
+        color: t.color,
+      }))}
+      title="Select your team"
+    />
+  );
 };

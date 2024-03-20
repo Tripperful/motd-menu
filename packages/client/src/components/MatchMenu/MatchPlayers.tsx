@@ -1,5 +1,4 @@
 import { OnlinePlayerInfo } from '@motd-menu/common';
-import classNames from 'classnames';
 import React, {
   FC,
   Suspense,
@@ -11,20 +10,14 @@ import React, {
 } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useOnlinePlayers } from 'src/hooks/state/players';
+import { useAvailableTeams } from 'src/hooks/useAvailableTeams';
+import { teamInfoByIdx } from 'src/util/teams';
 import CombineIcon from '~icons/combine.svg';
 import EyeIcon from '~icons/eye.svg';
 import LambdaIcon from '~icons/lambda.svg';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { StartMatchSettingsContext } from './StartMatchMenu';
-
-const teams = [2, 3, 1];
-
-const teamColors = {
-  1: theme.teamColors.spectator,
-  2: theme.teamColors.combine,
-  3: theme.teamColors.rebel,
-};
 
 const useStyles = createUseStyles({
   root: {
@@ -75,11 +68,6 @@ const useStyles = createUseStyles({
     gap: '0.5em',
     fontSize: '0.75em',
   },
-  teamColor: (teamIndex: number) => ({
-    '&&': {
-      color: teamColors[teamIndex],
-    },
-  }),
   playerTeamButton: {
     ...activeItem(),
     display: 'flex',
@@ -100,7 +88,8 @@ const SetTeamButton: FC<{
 
   return (
     <div
-      className={classNames(c.playerTeamButton, c.teamColor)}
+      className={c.playerTeamButton}
+      style={{ color: teamInfoByIdx[teamIndex].color }}
       onClick={() => setTeamIndex(teamIndex)}
     >
       {teamIcons[teamIndex]}
@@ -114,19 +103,20 @@ const MatchPlayerItem: FC<{
   setTeamIndex: (teamIndex: number) => void;
 }> = ({ player, teamIndex, setTeamIndex }) => {
   const c = useStyles(teamIndex);
+  const availableTeams = useAvailableTeams();
 
   return (
     <div className={c.playerItem}>
-      <span className={c.teamColor}>
+      <span style={{ color: teamInfoByIdx[teamIndex].color }}>
         {player.steamProfile?.name ?? player.steamId}
       </span>
       <span className={c.playerTeamButtons}>
-        {teams
-          .filter((t) => t !== teamIndex)
-          .map((otherTeamIdx) => (
+        {availableTeams
+          .filter((t) => t.index !== teamIndex)
+          .map((t) => (
             <SetTeamButton
-              key={otherTeamIdx}
-              teamIndex={otherTeamIdx}
+              key={t.index}
+              teamIndex={t.index}
               setTeamIndex={setTeamIndex}
             />
           ))}
@@ -136,8 +126,6 @@ const MatchPlayerItem: FC<{
 };
 
 type MatchPlayerInfo = OnlinePlayerInfo & { teamIndex: number };
-
-const teamNames = [undefined, 'Spectators', 'Combine', 'Rebels'];
 
 const TeamList: FC<{
   players: MatchPlayerInfo[];
@@ -151,10 +139,12 @@ const TeamList: FC<{
     [players, teamIndex],
   );
 
+  const teamInfo = teamInfoByIdx[teamIndex];
+
   return (
     <div className={c.playerList}>
-      <div className={classNames(c.playerListHeader, c.teamColor)}>
-        {teamNames[teamIndex]}
+      <div className={c.playerListHeader} style={{ color: teamInfo.color }}>
+        {teamInfo.name}
       </div>
       {teamPlayers?.map((player) => (
         <MatchPlayerItem
@@ -178,6 +168,8 @@ const MatchPlayersContent: FC = () => {
     () => onlinePlayers?.map((p) => ({ ...p, teamIndex: 1 })),
   );
 
+  const availableTeams = useAvailableTeams();
+
   const setPlayerTeam = useCallback((steamId: string, teamIndex: number) => {
     setPlayers((cur) => {
       const player = cur.find((p) => p.steamId === steamId);
@@ -198,9 +190,14 @@ const MatchPlayersContent: FC = () => {
 
   return (
     <div className={c.content}>
-      <TeamList players={players} teamIndex={1} setPlayerTeam={setPlayerTeam} />
-      <TeamList players={players} teamIndex={2} setPlayerTeam={setPlayerTeam} />
-      <TeamList players={players} teamIndex={3} setPlayerTeam={setPlayerTeam} />
+      {availableTeams.map((t) => (
+        <TeamList
+          key={t.index}
+          players={players}
+          teamIndex={t.index}
+          setPlayerTeam={setPlayerTeam}
+        />
+      ))}
     </div>
   );
 };

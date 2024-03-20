@@ -3,17 +3,9 @@ import { createUseStyles } from 'react-jss';
 import { motdApi } from 'src/api';
 import { addNotification } from 'src/hooks/state/notifications';
 import { getOnlinePlayers } from 'src/hooks/state/players';
-import CombineIcon from '~icons/combine.svg';
-import SpecIcon from '~icons/eye.svg';
-import RebelIcon from '~icons/lambda.svg';
+import { useAvailableTeams } from 'src/hooks/useAvailableTeams';
+import { teamInfoByIdx } from 'src/util/teams';
 import { outlineButton } from '~styles/elements';
-import { theme } from '~styles/theme';
-
-const teamColors = {
-  1: theme.teamColors.spectator,
-  2: theme.teamColors.combine,
-  3: theme.teamColors.rebel,
-};
 
 const useStyles = createUseStyles({
   root: {
@@ -31,7 +23,7 @@ const useStyles = createUseStyles({
   button: (teamIndex: number) => ({
     ...outlineButton(),
     '&&': {
-      color: teamColors[teamIndex],
+      color: teamInfoByIdx[teamIndex]?.color,
     },
   }),
 });
@@ -51,7 +43,7 @@ const SetTeamButton: FC<
 export const SetPlayerTeam: FC<{ steamId: string }> = ({ steamId }) => {
   const c = useStyles();
 
-  const setTeam = async (teamIndex: 1 | 2 | 3) => {
+  const setTeam = async (teamIndex: number) => {
     const player = (await getOnlinePlayers())?.find(
       (p) => p.steamId === steamId,
     );
@@ -64,22 +56,22 @@ export const SetPlayerTeam: FC<{ steamId: string }> = ({ steamId }) => {
     await motdApi.setTeam(teamIndex, player.userId);
   };
 
+  const availableTeams = useAvailableTeams();
+
   return (
     <div className={c.root}>
       <span>Set team</span>
       <span className={c.buttons}>
-        <SetTeamButton teamIndex={1} onClick={() => setTeam(1)}>
-          <SpecIcon />
-          Spectator
-        </SetTeamButton>
-        <SetTeamButton teamIndex={2} onClick={() => setTeam(2)}>
-          <CombineIcon />
-          Combine
-        </SetTeamButton>
-        <SetTeamButton teamIndex={3} onClick={() => setTeam(3)}>
-          <RebelIcon />
-          Rebel
-        </SetTeamButton>
+        {availableTeams.map((t) => (
+          <SetTeamButton
+            key={t.index}
+            teamIndex={t.index}
+            onClick={() => setTeam(t.index)}
+          >
+            {t.icon}
+            {t.name}
+          </SetTeamButton>
+        ))}
       </span>
     </div>
   );

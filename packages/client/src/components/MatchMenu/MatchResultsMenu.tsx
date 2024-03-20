@@ -10,11 +10,13 @@ import {
   useMatchResults,
 } from 'src/hooks/state/matchResults';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
+import { teamInfoByIdx } from 'src/util/teams';
 import { MapPreviewImage } from '~components/common/MapPreviewImage';
 import { ActionPage } from '~components/common/Page/ActionPage';
 import ArrowRightIcon from '~icons/thick-arrow-right.svg';
 import { theme } from '~styles/theme';
 import { MatchResultPopup } from './MatchResultPopup';
+import Color from 'color';
 
 const useStyles = createUseStyles({
   content: {
@@ -48,52 +50,38 @@ const useStyles = createUseStyles({
     alignItems: 'flex-start',
   },
   mapImageWrapper: {
-    width: '8em',
+    minWidth: '10em',
     height: '5em',
     borderRadius: '0.5em',
     backgroundColor: theme.bg2,
     overflow: 'hidden',
     position: 'relative',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   mapImage: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
     width: '100%',
     height: '100%',
   },
   score: {
-    position: 'absolute',
-    left: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
     fontSize: '1.2em',
     borderRadius: '0.5em',
     overflow: 'hidden',
     display: 'flex',
     gap: '0.1em',
     boxShadow: '0 0 8px #000',
+    position: 'relative',
+    margin: '1em',
   },
   scoreItem: {
     padding: '0.1em 0.3em',
     color: theme.fg2,
     textShadow: '0 0 4px #000b',
     position: 'relative',
-  },
-  scoreItemBg: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
-    right: 0,
-    zIndex: -1,
-    opacity: 0.7,
-  },
-  unassigned: {
-    backgroundColor: theme.teamColors.unassigned,
-  },
-  rebel: {
-    backgroundColor: theme.teamColors.rebel,
-  },
-  combine: {
-    backgroundColor: theme.teamColors.combine,
   },
 });
 
@@ -112,11 +100,11 @@ const MatchScore: FC<{ data: MatchSummary }> = ({ data }) => {
     data.teams.length === 1
       ? data.teams[0].players.map((p) => ({
           score: p.kills,
-          team: 'unassigned',
+          team: 0,
         }))
       : data.teams.map((t) => ({
           score: t.players.reduce((a, b) => a + b.kills, 0),
-          team: t.index === 2 ? 'combine' : 'rebel',
+          team: t.index,
         }));
 
   scores.sort((a, b) => b.score - a.score);
@@ -124,8 +112,15 @@ const MatchScore: FC<{ data: MatchSummary }> = ({ data }) => {
   return (
     <div className={c.score}>
       {scores.map((s, i) => (
-        <span key={i} className={c.scoreItem}>
-          <span className={classNames(c.scoreItemBg, c[s.team])}></span>
+        <span
+          key={i}
+          className={c.scoreItem}
+          style={{
+            backgroundColor: Color(teamInfoByIdx[s.team].color)
+              .alpha(0.8)
+              .hexa(),
+          }}
+        >
           {s.score}
         </span>
       ))}

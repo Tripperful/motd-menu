@@ -8,28 +8,28 @@ import SettingsIcon from '~icons/settings.svg';
 import TerrainIcon from '~icons/terrain.svg';
 
 const menuItems: MenuItemInfo[] = [
-  { title: 'Maps', link: 'maps', Icon: TerrainIcon },
-  { title: 'Teams', link: 'teams', Icon: TeamsIcon },
+  { title: 'Maps', link: 'maps', Icon: <TerrainIcon /> },
+  { title: 'Teams', link: 'teams', Icon: <TeamsIcon /> },
   {
     title: 'Players',
     link: 'players',
-    Icon: PlayersIcon,
+    Icon: <PlayersIcon />,
   },
   {
     title: 'Client settings',
     link: 'clientSettings',
-    Icon: SettingsIcon,
+    Icon: <SettingsIcon />,
   },
   {
     title: 'Server settings',
     link: 'serverSettings',
-    Icon: KnobsIcon,
+    Icon: <KnobsIcon />,
     permissions: ['cvars_matchmaking_view', 'cvars_admin_view'],
   },
   {
     title: 'Matches',
     link: 'matches',
-    Icon: MatchesIcon,
+    Icon: <MatchesIcon />,
   },
 ];
 

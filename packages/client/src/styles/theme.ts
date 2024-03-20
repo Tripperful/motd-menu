@@ -10,10 +10,4 @@ export const theme = {
   fg3: '#7d7554',
   fgError: '#cc2929',
   fgSuccess: '#29cc31',
-  teamColors: {
-    unassigned: '#ffb100',
-    spectator: '#ddd',
-    rebel: '#ff3e3e',
-    combine: '#9acdff',
-  },
 };

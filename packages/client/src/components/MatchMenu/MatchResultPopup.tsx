@@ -22,8 +22,10 @@ import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { usePlayersProfiles } from 'src/hooks/usePlayersProfiles';
 import { getContrastingColor } from 'src/util/color';
+import { teamInfoByIdx } from 'src/util/teams';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
 import { Popup } from '~components/common/Popup';
+import { Spinner } from '~components/common/Spinner';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 
@@ -61,6 +63,27 @@ const useStyles = createUseStyles({
     alignItems: 'center',
     padding: '1em',
     backgroundColor: theme.bg1,
+    position: 'relative',
+    textWrap: 'nowrap',
+    borderRadius: '0.5em',
+    overflow: 'hidden',
+  },
+  teamScoreHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5em',
+  },
+  teamIcon: {
+    fontSize: '0.75em',
+    display: 'flex',
+  },
+  scoreboardBg: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: '100%',
+    height: '100%',
+    opacity: 0.2,
   },
   player: {
     justifySelf: 'start',
@@ -116,9 +139,21 @@ const MatchTeamPlayer: FC<{ player: MatchSummaryTeamPlayer }> = ({
 const MatchTeam: FC<{ team: MatchSummaryTeam }> = ({ team }) => {
   const c = useStyles();
 
+  const teamTotalKills = team.players.reduce((acc, p) => acc + p.kills, 0);
+  const teamInfo = teamInfoByIdx[team.index];
+
   return (
     <div className={c.scoreboardGrid}>
-      <div>{team.name}</div>
+      <div
+        className={c.scoreboardBg}
+        style={{ backgroundColor: teamInfo.color }}
+      ></div>
+      <div className={c.teamScoreHeader}>
+        <span style={{ color: teamInfo.color }} className={c.teamIcon}>
+          {teamInfo.icon}
+        </span>
+        {team.name} ({teamTotalKills})
+      </div>
       <div className={c.alignCenter}>Kills</div>
       <div className={c.alignCenter}>Deaths</div>
       {team.players
@@ -247,11 +282,24 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
     xTicks.push(i);
   }
 
+  const sortedTeams = useMemo(
+    () =>
+      [...(match?.teams ?? [])].sort((a, b) => {
+        const teamATotalKills = a.players.reduce((acc, p) => acc + p.kills, 0);
+        const teamBTotalKills = b.players.reduce((acc, p) => acc + p.kills, 0);
+
+        return teamBTotalKills - teamATotalKills;
+      }),
+    [match.teams],
+  );
+
   return (
     <div className={c.content}>
       <div className={c.title}>Score board</div>
       <div className={c.teams}>
-        {match?.teams.map((t) => <MatchTeam key={t.index} team={t} />)}
+        {sortedTeams.map((t) => (
+          <MatchTeam key={t.index} team={t} />
+        ))}
       </div>
       <div className={c.title}>Kills minus deaths graph</div>
       <ResponsiveContainer
@@ -332,7 +380,7 @@ export const MatchResultPopup: FC = () => {
 
   return (
     <Popup onClose={goBack} title="Match details" className={c.root}>
-      <Suspense>
+      <Suspense fallback={<Spinner />}>
         <MatchResultPopupContent matchId={matchId} />
       </Suspense>
       <Routes>

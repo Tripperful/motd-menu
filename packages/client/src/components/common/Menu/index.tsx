@@ -60,7 +60,7 @@ const useStyles = createUseStyles({
 export interface MenuItemInfo {
   title: string;
   link: string;
-  Icon: FC;
+  Icon: JSX.Element;
   size?: number;
   color?: string;
   permissions?: Permission[];
@@ -69,14 +69,14 @@ export interface MenuItemInfo {
 const exitItem: MenuItemInfo = {
   title: 'Exit',
   link: '/exit',
-  Icon: CrossIcon,
+  Icon: <CrossIcon />,
   size: 0.5,
 };
 
 const backItem: MenuItemInfo = {
   title: 'Back',
   link: '..',
-  Icon: BackIcon,
+  Icon: <BackIcon />,
   size: 0.5,
 };
 
