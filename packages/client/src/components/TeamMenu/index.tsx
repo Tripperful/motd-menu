@@ -21,7 +21,7 @@ export const TeamMenu: FC = () => {
     <Menu
       items={availableTeams.map((t) => ({
         title: t.name,
-        link: t.index.toString(),
+        link: t.joinIndex.toString(),
         Icon: t.icon,
         color: t.color,
       }))}

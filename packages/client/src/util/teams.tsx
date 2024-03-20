@@ -14,7 +14,7 @@ export interface PlayerTeam {
 const teamsInfo: PlayerTeam[] = [
   {
     index: 0,
-    joinIndex: 3,
+    joinIndex: 2,
     name: 'Unassigned',
     color: '#ffb100',
     icon: <RebelIcon />,
