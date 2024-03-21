@@ -83,6 +83,7 @@ export const matchCvarDefaults: Partial<Record<Cvar, string>> = {
   mp_flashlight: '1',
   mp_footsteps: '1',
   mm_hotbolt_fix: '1',
+  mm_new_shotgun: '1',
   sv_hl2mp_item_respawn_time: '30',
   sv_hl2mp_weapon_respawn_time: '20',
   mm_rpg_spawn_time: '20',

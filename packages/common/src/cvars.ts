@@ -51,6 +51,8 @@ export type Cvar =
   | 'mm_equalizer'
   | 'mm_overtime'
   | 'mm_hotbolt_fix'
+  | 'mm_new_shotgun'
+  | 'mm_shotgun_tracehull_size'
   | 'mm_esp_teammates'
   | 'mm_show_endmatch_rate'
   | 'mm_rpg_spawn_time';
@@ -169,6 +171,18 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
       { title: 'Enhanced', value: '2' },
     ],
     permissions: matchmakingPermissions,
+  },
+  mm_new_shotgun: {
+    description: 'Improved shotgun behavior',
+    type: 'bool',
+    permissions: matchmakingPermissions,
+  },
+  mm_shotgun_tracehull_size: {
+    description: 'Shotgun trace hull size',
+    type: 'number',
+    min: 0,
+    max: 24,
+    permissions: adminEditPermissions,
   },
   mp_timelimit: {
     description: 'Time limit (minutes)',
