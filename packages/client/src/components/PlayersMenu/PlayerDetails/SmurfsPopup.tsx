@@ -50,7 +50,7 @@ export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
 
   return (
     <>
-      <div className={c.header}>Names</div>
+      <div className={c.header}>Names ({names.length})</div>
       <div className={c.list}>
         {names?.map((name) => (
           <LineWithCopy key={name} copyText={name} what="Nickname">
@@ -60,7 +60,9 @@ export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
       </div>
       {(relatedSteamIds?.length ?? 0) > 0 && (
         <>
-          <div className={c.header}>Other related accounts</div>
+          <div className={c.header}>
+            Other related accounts ({relatedSteamIds.length})
+          </div>
           <div className={c.list}>
             {relatedSteamIds?.map((steamId) => (
               <PlayersListItem key={steamId} steamId={steamId} />
