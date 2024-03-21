@@ -11,7 +11,8 @@ $$ LANGUAGE plpgsql;
 CREATE
 OR REPLACE FUNCTION client_get_names (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(client_names.name)
 FROM client_names
-WHERE client_names.steam_id = client_get_names.steam_id::bigint;
+WHERE client_names.steam_id = client_get_names.steam_id::bigint
+AND client_names.name IS NOT NULL;
 END;
 $$ LANGUAGE plpgsql;
 

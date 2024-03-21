@@ -11,6 +11,7 @@ import { Popup } from '~components/common/Popup';
 import { theme } from '~styles/theme';
 import { PlayerDetails } from '.';
 import { PlayersListItem } from '../PlayersList/PlayersListItem';
+import { Spinner } from '~components/common/Spinner';
 
 const useStyles = createUseStyles({
   root: {
@@ -79,7 +80,7 @@ export const SmurfsPopup: FC = () => {
   return (
     <Popup title="Player accounts details" onClose={goBack}>
       <div className={c.root}>
-        <Suspense>
+        <Suspense fallback={<Spinner />}>
           <SmurfsPopupContent steamId={steamId} />
         </Suspense>
       </div>
