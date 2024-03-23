@@ -14,3 +14,7 @@ $$ LANGUAGE plpgsql;
 -- Add distance column to player_deaths table if it doesn't exist
 ALTER TABLE player_deaths
 ADD COLUMN IF NOT EXISTS distance float;
+
+-- Add dsp column to client_settings table if it doesn't exist
+ALTER TABLE client_settings
+ADD COLUMN IF NOT EXISTS dsp boolean DEFAULT true;

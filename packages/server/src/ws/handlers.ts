@@ -43,7 +43,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
     },
 
     get_settings_request: async (msg: WsMessage<string>) => {
-      const { fov, drawViewmodel, esp, hitSound, killSound } =
+      const { fov, drawViewmodel, esp, dsp, hitSound, killSound } =
         await db.client.settings.get(msg.data);
 
       const aka = (await db.client.getAka(msg.data)) ?? '';
@@ -54,6 +54,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
           fov,
           drawviewmodel: drawViewmodel ? 1 : 0,
           esp: esp ? 1 : 0,
+          dsp: dsp ? 1 : 0,
           hitsound: hitSound ? 1 : 0,
           killsound: killSound ? 1 : 0,
           aka,
@@ -69,6 +70,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
         drawViewmodel:
           s.drawviewmodel == null ? null : Boolean(s.drawviewmodel),
         esp: s.esp == null ? null : Boolean(s.esp),
+        dsp: s.dsp == null ? null : Boolean(s.dsp),
         hitSound: s.hitsound == null ? null : Boolean(s.hitsound),
         killSound: s.killsound == null ? null : Boolean(s.killsound),
       };

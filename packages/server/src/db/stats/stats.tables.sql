@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS
     kill_sound boolean,
     fov int,
     esp boolean,
+    dsp boolean,
     draw_viewmodel boolean
   );
 

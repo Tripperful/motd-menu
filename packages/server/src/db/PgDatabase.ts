@@ -40,6 +40,7 @@ const defaultSettings: PlayerClientSettings = {
   fov: 90,
   drawViewmodel: true,
   esp: false,
+  dsp: true,
   hitSound: true,
   killSound: true,
 };
@@ -200,7 +201,14 @@ export class PgDatabase extends BasePgDatabase implements Database {
       },
       set: async (
         steamId: string,
-        { hitSound, killSound, fov, esp, drawViewmodel }: PlayerClientSettings,
+        {
+          hitSound,
+          killSound,
+          fov,
+          esp,
+          dsp,
+          drawViewmodel,
+        }: PlayerClientSettings,
       ) => {
         const curSettings = await this.client.settings.get(steamId);
 
@@ -211,6 +219,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
           killSound ?? curSettings.killSound,
           fov ?? curSettings.fov,
           esp ?? curSettings.esp,
+          dsp ?? curSettings.dsp,
           drawViewmodel ?? curSettings.drawViewmodel,
         );
       },

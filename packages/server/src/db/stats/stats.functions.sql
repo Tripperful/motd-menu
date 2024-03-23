@@ -82,6 +82,8 @@ OR REPLACE FUNCTION get_client_settings (steam_id text) RETURNS json AS $$ BEGIN
   client_settings.fov,
   'esp',
   client_settings.esp,
+  'dsp',
+  client_settings.dsp,
   'drawViewmodel',
   client_settings.draw_viewmodel
 )
@@ -97,6 +99,7 @@ OR REPLACE PROCEDURE set_client_settings (
   kill_sound boolean,
   fov int,
   esp boolean,
+  dsp boolean,
   draw_viewmodel boolean
 ) AS $$ BEGIN
 INSERT INTO client_settings (
@@ -105,6 +108,7 @@ INSERT INTO client_settings (
   kill_sound,
   fov,
   esp,
+  dsp,
   draw_viewmodel
 )
 VALUES (
@@ -113,6 +117,7 @@ VALUES (
   kill_sound,
   fov,
   esp,
+  dsp,
   draw_viewmodel
 ) ON CONFLICT ON CONSTRAINT client_settings_pkey DO UPDATE
 SET
@@ -120,6 +125,7 @@ SET
   kill_sound = EXCLUDED.kill_sound,
   fov = EXCLUDED.fov,
   esp = EXCLUDED.esp,
+  dsp = EXCLUDED.dsp,
   draw_viewmodel = EXCLUDED.draw_viewmodel;
 END;
 $$ LANGUAGE plpgsql;

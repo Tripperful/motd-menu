@@ -88,6 +88,7 @@ export interface SetSettingsAction {
   settings: {
     drawviewmodel: 0 | 1;
     esp: 0 | 1;
+    dsp: 0 | 1;
     fov: number;
     hitsound: 0 | 1;
     killsound: 0 | 1;

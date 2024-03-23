@@ -42,6 +42,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   const [hitSound, setHitSound] = useState(settings.hitSound);
   const [killSound, setKillSound] = useState(settings.killSound);
   const [esp, setEsp] = useState(settings.esp);
+  const [dsp, setDsp] = useState(settings.dsp);
   const [drawViewmodel, setDrawViewmodel] = useState(settings.drawViewmodel);
 
   const [fov, setFov] = useState(settings.fov);
@@ -71,6 +72,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
       hitSound,
       killSound,
       esp,
+      dsp,
       drawViewmodel,
       fov,
     };
@@ -87,6 +89,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     disabled,
     drawViewmodel,
     esp,
+    dsp,
     firstMount,
     fov,
     hitSound,
@@ -113,6 +116,12 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
           active={esp}
           setActive={setEsp}
           label="Teammates ESP"
+          disabled={disabled}
+        />
+        <LabeledSwitch
+          active={dsp}
+          setActive={setDsp}
+          label="Ringing sound from explosions"
           disabled={disabled}
         />
         <LabeledSwitch

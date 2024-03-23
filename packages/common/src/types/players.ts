@@ -11,5 +11,6 @@ export interface PlayerClientSettings {
   killSound: boolean;
   fov: number;
   esp: boolean;
+  dsp: boolean;
   drawViewmodel: boolean;
 }
