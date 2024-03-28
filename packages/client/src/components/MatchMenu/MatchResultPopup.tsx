@@ -1,27 +1,29 @@
 import { MatchSummaryTeam, MatchSummaryTeamPlayer } from '@motd-menu/common';
+import { WeaponType } from '@motd-menu/common/src/types/weapons';
 import React, { FC, Fragment, Suspense, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
 import {
+  Bar,
+  BarChart,
   CartesianGrid,
+  LabelList,
   Legend,
   Line,
   LineChart,
-  PolarAngleAxis,
-  PolarGrid,
-  Radar,
-  RadarChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from 'recharts';
+import { useMatchDamage } from 'src/hooks/state/matchDamage';
 import { useMatchDeaths } from 'src/hooks/state/matchDeaths';
 import { useMatchResult } from 'src/hooks/state/matchResults';
 import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { usePlayersProfiles } from 'src/hooks/usePlayersProfiles';
 import { getContrastingColor } from 'src/util/color';
+import { IconGlyph, weaponIconsGlyphs } from 'src/util/iconGlyph';
 import { teamInfoByIdx } from 'src/util/teams';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
 import { Popup } from '~components/common/Popup';
@@ -116,6 +118,10 @@ const useStyles = createUseStyles({
     flexDirection: 'column',
     alignItems: 'center',
   },
+  weaponIcon: {
+    fontSize: '3em',
+    transform: 'translateX(-50%)',
+  },
 });
 
 const MatchTeamPlayer: FC<{ player: MatchSummaryTeamPlayer }> = ({
@@ -186,6 +192,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
   const c = useStyles();
   const match = useMatchResult(matchId);
   const deaths = useMatchDeaths(matchId);
+  const damage = useMatchDamage(matchId);
 
   const players = useMemo(() => {
     const players: string[] = [];
@@ -233,46 +240,69 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
     return scoreDataPoints;
   }, [deaths, match.startCurtime, players]);
 
-  const playersUsedWeapons = useMemo(() => {
-    const playersUsedWeapons: Record<
-      string,
-      {
-        subject: string;
-        countUsed: number;
-      }[]
-    > = {};
+  const killsByWeapon = useMemo(() => {
+    const killsByWeapon: Record<string, Record<string, number | string>> = {};
 
     for (const death of deaths) {
       const attacker = death.attackerSteamId;
-
       if (attacker === '0') continue;
 
-      playersUsedWeapons[attacker] ??= [];
-
       const weapon = death.weapon;
+      killsByWeapon[weapon] ??= { weapon };
 
-      const weaponIndex = playersUsedWeapons[attacker].findIndex(
-        (w) => w.subject === weapon,
-      );
+      killsByWeapon[weapon][attacker] ??= 0;
+      (killsByWeapon[weapon][attacker] as number)++;
+    }
 
-      if (weaponIndex === -1) {
-        playersUsedWeapons[attacker].push({
-          subject: weapon,
-          countUsed: 1,
-        });
-      } else {
-        playersUsedWeapons[attacker][weaponIndex].countUsed++;
+    const res = Object.values(killsByWeapon).sort((a, b) => {
+      const aTotal = Object.values(a).reduce(
+        (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+        0,
+      ) as number;
+
+      const bTotal = Object.values(b).reduce(
+        (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+        0,
+      ) as number;
+
+      return bTotal - aTotal;
+    });
+
+    return res;
+  }, [deaths]);
+
+  const damageByWeapon = useMemo(() => {
+    const damageByWeapon: Record<string, Record<string, number>> = {};
+
+    for (const d of damage) {
+      const { steamId, damageDealtByWeapon } = d;
+
+      for (const [weapon, damage] of Object.entries(damageDealtByWeapon)) {
+        damageByWeapon[weapon] ??= {};
+        damageByWeapon[weapon][steamId] ??= 0;
+        damageByWeapon[weapon][steamId] += damage;
       }
     }
 
-    for (const [steamId, weapons] of Object.entries(playersUsedWeapons)) {
-      playersUsedWeapons[steamId] = weapons.sort((a, b) =>
-        a.subject.localeCompare(b.subject),
-      );
-    }
+    return Object.entries(damageByWeapon)
+      .map(([weapon, damage]) => ({
+        weapon,
+        ...damage,
+      }))
+      .sort((a, b) => {
+        const aTotal = Object.values(a).reduce(
+          (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+          0,
+        ) as number;
 
-    return playersUsedWeapons;
-  }, [deaths]);
+        const bTotal = Object.values(b).reduce(
+          (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+          0,
+        ) as number;
+
+        return bTotal - aTotal;
+      });
+  }, [damage]);
 
   const playersProfiles = usePlayersProfiles(players);
 
@@ -347,28 +377,118 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
           ))}
         </LineChart>
       </ResponsiveContainer>
-      <div className={c.title}>Weapons usage</div>
-      <div className={c.radars}>
-        {Object.entries(playersUsedWeapons).map(([steamId, weapons]) => (
-          <div key={steamId} className={c.radarGroup}>
-            <div>{playersProfiles[steamId]?.name ?? steamId}</div>
-            <ResponsiveContainer width="100%" aspect={2}>
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={weapons}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="subject" />
-                <Radar
-                  name="Times killed"
-                  dataKey="countUsed"
-                  stroke="#8884d8"
-                  fill="#8884d8"
-                  fillOpacity={0.6}
+      <div className={c.title}>Kills by weapon</div>
+      <ResponsiveContainer
+        width="100%"
+        aspect={3}
+        style={{
+          paddingRight: '0.5em',
+        }}
+      >
+        <BarChart data={killsByWeapon} margin={{ top: 30 }}>
+          <Legend
+            formatter={(value: string) => playersProfiles[value]?.name ?? value}
+          />
+          <Tooltip
+            itemSorter={(item) => -item.value as number}
+            formatter={(value: string, name: string) => [
+              value + ' kills',
+              playersProfiles[name]?.name ?? name,
+            ]}
+            contentStyle={tooltipStyles}
+            cursor={{ fill: '#fff2' }}
+          />
+          <CartesianGrid strokeDasharray="3 3" stroke="#fff2" />
+          <XAxis dataKey="weapon" tick={false} />
+          <YAxis />
+          {players.map((steamId, idx) => (
+            <Bar
+              key={steamId}
+              dataKey={steamId}
+              opacity={0.5}
+              activeBar={{ opacity: 1 }}
+              stackId="a"
+              fill={getContrastingColor(idx)}
+            >
+              {idx === players.length - 1 && (
+                <LabelList
+                  dataKey="weapon"
+                  position="centerTop"
+                  content={({ x, y, width, value }) => (
+                    <g transform={`translate(${+x + +width / 2}, ${+y - 10})`}>
+                      <text
+                        fill="currentColor"
+                        textAnchor="middle"
+                        fontSize="2em"
+                        fontWeight="normal"
+                      >
+                        {weaponIconsGlyphs[value as WeaponType] ??
+                          IconGlyph.Suicide}
+                      </text>
+                    </g>
+                  )}
                 />
-                <Tooltip contentStyle={tooltipStyles} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        ))}
-      </div>
+              )}
+            </Bar>
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
+      <div className={c.title}>Damage by weapon</div>
+      <ResponsiveContainer
+        width="100%"
+        aspect={3}
+        style={{
+          paddingRight: '0.5em',
+        }}
+      >
+        <BarChart data={damageByWeapon} margin={{ top: 30 }}>
+          <Legend
+            formatter={(value: string) => playersProfiles[value]?.name ?? value}
+          />
+          <Tooltip
+            itemSorter={(item) => -item.value as number}
+            formatter={(value: string, name: string) => [
+              value + ' hp',
+              playersProfiles[name]?.name ?? name,
+            ]}
+            contentStyle={tooltipStyles}
+            cursor={{ fill: '#fff2' }}
+          />
+          <CartesianGrid strokeDasharray="3 3" stroke="#fff2" />
+          <XAxis dataKey="weapon" tick={false} />
+          <YAxis />
+          {players.map((steamId, idx) => (
+            <Bar
+              key={steamId}
+              dataKey={steamId}
+              opacity={0.5}
+              activeBar={{ opacity: 1 }}
+              stackId="a"
+              fill={getContrastingColor(idx)}
+            >
+              {idx === players.length - 1 && (
+                <LabelList
+                  dataKey="weapon"
+                  position="centerTop"
+                  content={({ x, y, width, value }) => (
+                    <g transform={`translate(${+x + +width / 2}, ${+y - 10})`}>
+                      <text
+                        fill="currentColor"
+                        textAnchor="middle"
+                        fontSize="2em"
+                        fontWeight="normal"
+                      >
+                        {weaponIconsGlyphs[value as WeaponType] ??
+                          IconGlyph.Suicide}
+                      </text>
+                    </g>
+                  )}
+                />
+              )}
+            </Bar>
+          ))}
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   );
 };

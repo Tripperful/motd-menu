@@ -4,6 +4,7 @@ import {
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
+  MatchDamageData,
   MatchDeathData,
   MatchSummary,
   OnlinePlayerInfo,
@@ -304,6 +305,12 @@ class MotdApi {
     const res = await this.get('match/deaths/' + matchId);
 
     return JSON.parse(res) as MatchDeathData[];
+  }
+
+  public async getMatchDamage(matchId: string) {
+    const res = await this.get('match/damage/' + matchId);
+
+    return JSON.parse(res) as MatchDamageData[];
   }
 
   public async startMatch(settings: StartMatchSettings) {

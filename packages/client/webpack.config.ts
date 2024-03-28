@@ -69,12 +69,12 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
           use: 'babel-loader',
         },
         {
-          test: /\.(png|webm)$/i,
-          type: 'asset',
+          test: /\.(png|webm|woff2?|wav)$/i,
+          type: 'asset/resource',
         },
         {
           test: /\.svg$/i,
-          type: 'asset',
+          type: 'asset/resource',
           resourceQuery: /url/,
         },
         {
@@ -82,10 +82,6 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
           issuer: /\.[jt]sx?$/,
           resourceQuery: { not: [/url/] },
           use: ['@svgr/webpack'],
-        },
-        {
-          test: /\.wav$/,
-          type: 'asset/resource',
         },
       ],
     },

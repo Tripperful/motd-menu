@@ -3,12 +3,13 @@ import { createUseStyles } from 'react-jss';
 import arrowDownSrc from '~icons/chevron-down.svg?url';
 import arrowUpSrc from '~icons/chevron-up.svg?url';
 import { theme } from './theme';
+import iconsFont from '~assets/fonts/motd-menu-icons.woff2';
 
 export const useGlobalStyles = createUseStyles({
   '@global': {
     html: {
       fontSize: 'min(2vw, 20px)',
-      fontFamily: "'Roboto', sans-serif",
+      fontFamily: "'motd-menu-icons', 'Roboto', sans-serif",
       fontWeight: 'bold',
       userSelect: 'none',
       color: theme.fg2,
@@ -111,6 +112,12 @@ export const useGlobalStyles = createUseStyles({
       '&::-webkit-scrollbar-button': {
         display: 'none',
       },
+    },
+    '@font-face': {
+      fontFamily: 'motd-menu-icons',
+      src: `url("${iconsFont}") format("woff")`,
+      fontWeight: 'normal',
+      fontStyle: 'normal',
     },
   },
 });

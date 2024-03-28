@@ -19,6 +19,18 @@ declare module '*.png' {
   export default src;
 }
 
+declare module '*.woff' {
+  const src: string;
+
+  export default src;
+}
+
+declare module '*.woff2' {
+  const src: string;
+
+  export default src;
+}
+
 declare module '*.webm' {
   const src: string;
 

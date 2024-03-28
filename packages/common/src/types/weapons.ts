@@ -1,5 +1,4 @@
 export type WeaponType =
-  | string
   | 'worldspawn'
   | 'suicide'
   | 'physics'
@@ -14,6 +13,11 @@ export type WeaponType =
   | 'ar2'
   | 'shotgun'
   | 'crossbow'
+  | 'crossbow_bolt'
   | 'frag'
+  | 'grenade_frag'
   | 'rpg'
-  | 'slam';
+  | 'rpg_missile'
+  | 'slam'
+  | 'entityflame'
+  | 'env_fire';

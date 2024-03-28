@@ -8,6 +8,7 @@ import {
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
+  MatchDamageData,
   MatchDeathData,
   MatchEndedMessage,
   MatchStartedMessage,
@@ -280,6 +281,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
           )) ?? { data: [], total: 0 }) as Database['matches']['get'],
     getMatchDeaths: (matchId: string) =>
       this.select<MatchDeathData[]>('get_match_deaths', matchId),
+    getMatchDamage: (matchId: string) =>
+      this.select<MatchDamageData[]>('get_match_damage', matchId),
     getEfpsStats: async (matchId: string) =>
       this.select<EfpsMatchSummary>('get_efps_stats', matchId),
   };

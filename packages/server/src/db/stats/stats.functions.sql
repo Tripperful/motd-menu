@@ -1110,6 +1110,41 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE FUNCTION get_match_damage(match_id text) RETURNS json AS $$
+DECLARE
+  is_dm boolean;
+BEGIN
+SELECT COUNT(*) = 1 INTO is_dm
+FROM match_teams
+WHERE match_teams.match_id = get_match_damage.match_id::uuid;
+RETURN json_agg(
+  json_build_object(
+    'steamId',
+    steam_id::text,
+    'damageDealtByWeapon',
+    (
+      SELECT json_object_agg(
+        weapon,
+        damage
+      ) FROM (
+        SELECT
+          weapon,
+          SUM(hp_before - hp_after + armor_before - armor_after) AS damage
+        FROM player_damage
+        WHERE player_damage.match_id = get_match_damage.match_id::uuid
+        AND player_damage.attacker_steam_id = match_team_players.steam_id
+        GROUP BY weapon
+      ) AS weapon_dmg
+    )
+  )
+) FROM match_team_players
+  WHERE match_team_players.match_team_id IN (
+    SELECT id FROM match_teams WHERE match_teams.match_id = get_match_damage.match_id::uuid
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE FUNCTION get_efps_accuracy (match_id uuid, steam_id bigint) RETURNS json AS $$
 DECLARE
   _hitscan_weapons text[];

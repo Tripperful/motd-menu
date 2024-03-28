@@ -8,6 +8,7 @@ import {
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
+  MatchDamageData,
   MatchDeathData,
   MatchEndedMessage,
   MatchStartedMessage,
@@ -155,6 +156,7 @@ export interface Database {
     get(limit: number, offset: number): Promise<PagedData<MatchSummary>>;
     get(matchId: string): Promise<MatchSummary>;
     getMatchDeaths(matchId: string): Promise<MatchDeathData[]>;
+    getMatchDamage(matchId: string): Promise<MatchDamageData[]>;
     getEfpsStats(matchId: string): Promise<EfpsMatchSummary>;
   };
 }

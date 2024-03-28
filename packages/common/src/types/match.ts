@@ -42,6 +42,11 @@ export interface MatchDeathData {
   victimScoreChange: number;
 }
 
+export interface MatchDamageData {
+  steamId: string;
+  damageDealtByWeapon: Record<string, number>;
+}
+
 export interface EfpsMatchSummaryKill {
   attacker: {
     steamId: string;
