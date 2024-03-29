@@ -8,10 +8,10 @@ import {
 import { useGoBack } from 'src/hooks/useGoBack';
 import { LineWithCopy } from '~components/common/LineWithCopy';
 import { Popup } from '~components/common/Popup';
+import { Spinner } from '~components/common/Spinner';
 import { theme } from '~styles/theme';
 import { PlayerDetails } from '.';
 import { PlayersListItem } from '../PlayersList/PlayersListItem';
-import { Spinner } from '~components/common/Spinner';
 
 const useStyles = createUseStyles({
   root: {
@@ -50,25 +50,32 @@ export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
 
   return (
     <>
-      <div className={c.header}>Names ({names.length})</div>
-      <div className={c.list}>
-        {names?.map((name) => (
-          <LineWithCopy key={name} copyText={name} what="Nickname">
-            {name}
-          </LineWithCopy>
-        ))}
-      </div>
+      {(names?.length ?? 0) > 0 && (
+        <>
+          <div className={c.header}>Names ({names.length})</div>
+          <div className={c.list}>
+            {names.map((name) => (
+              <LineWithCopy key={name} copyText={name} what="Nickname">
+                {name}
+              </LineWithCopy>
+            ))}
+          </div>
+        </>
+      )}
       {(relatedSteamIds?.length ?? 0) > 0 && (
         <>
           <div className={c.header}>
             Other related accounts ({relatedSteamIds.length})
           </div>
           <div className={c.list}>
-            {relatedSteamIds?.map((steamId) => (
+            {relatedSteamIds.map((steamId) => (
               <PlayersListItem key={steamId} steamId={steamId} />
             ))}
           </div>
         </>
+      )}
+      {!(names?.length ?? 0) && !(relatedSteamIds?.length ?? 0) && (
+        <div>No data available</div>
       )}
     </>
   );
