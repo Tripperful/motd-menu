@@ -36,6 +36,7 @@ import {
 import { ChargeAggregate } from 'src/ws/chargerUseHandler';
 import { BasePgDatabase } from './BasePgDatabase';
 import { Database } from './Database';
+import { LogEventType } from './LogEventType';
 
 const defaultSettings: PlayerClientSettings = {
   fov: 90,
@@ -47,6 +48,11 @@ const defaultSettings: PlayerClientSettings = {
 };
 
 export class PgDatabase extends BasePgDatabase implements Database {
+  logs = {
+    add: (eventType: LogEventType, steamId?: string, eventData?: unknown) =>
+      this.call('add_log', eventType, steamId, eventData),
+  };
+
   maps = {
     init: (mapNames: string[]) => this.call('maps_init', mapNames),
     get: ((steamId: string, mapName?: string) =>

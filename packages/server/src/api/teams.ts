@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { db } from 'src/db';
 
 export const teamsRouter = Router();
 
@@ -7,7 +8,7 @@ teamsRouter.post('/set/:userId?/:teamIndex', async (req, res) => {
     const { teamIndex, userId: userIdStr } = req.params;
     const {
       srcdsApi,
-      sessionData: { permissions, userId: ownUserId },
+      sessionData: { permissions, userId: ownUserId, steamId },
     } = res.locals;
 
     const settingOwnTeam = userIdStr == null;
@@ -18,6 +19,17 @@ teamsRouter.post('/set/:userId?/:teamIndex', async (req, res) => {
     }
 
     srcdsApi.setPlayerTeam(userId, Number(teamIndex));
+
+    srcdsApi.getOnlinePlayers().then((players) => {
+      const player = players.find((p) => p.userId === userId);
+
+      if (player) {
+        db.logs.add('menu_force_player_team', steamId, {
+          steamId: player.steamId,
+          teamIndex,
+        });
+      }
+    });
 
     res.status(200).end();
   } catch {

@@ -1,4 +1,10 @@
-import { OnlinePlayerInfo, WsMessage, uuid } from '@motd-menu/common';
+import {
+  Cvar,
+  OnlinePlayerInfo,
+  WsMessage,
+  cvarsInfo,
+  uuid,
+} from '@motd-menu/common';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { WsClient } from 'src/util/ws';
@@ -26,6 +32,28 @@ wsClient.subscribe(
       type: 'motd_auth_response',
       data: player ?? {},
     };
+  },
+);
+
+const cvarValues: Partial<Record<Cvar, string>> = {};
+
+wsClient.subscribe<Cvar[]>('get_cvars_request', async ({ data: cvars }) => {
+  return {
+    type: 'get_cvars_response',
+    data: Object.fromEntries(
+      cvars.map((cvar) => {
+        cvarValues[cvar] ??= cvarsInfo[cvar].mockValue;
+
+        return [cvar, cvarValues[cvar]];
+      }),
+    ),
+  };
+});
+
+wsClient.subscribe<{ cvar: Cvar; value: string }>(
+  'set_cvar',
+  async ({ data: { cvar, value } }) => {
+    cvarValues[cvar] = value;
   },
 );
 

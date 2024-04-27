@@ -178,10 +178,14 @@ mapsRouter.post('/changelevel/:mapName', async (req, res) => {
   try {
     const {
       srcdsApi,
-      sessionData: { token },
+      sessionData: { token, steamId },
     } = res.locals;
 
-    await srcdsApi.changelevel(token, req.params.mapName);
+    const { mapName } = req.params;
+
+    srcdsApi.changelevel(token, mapName);
+
+    db.logs.add('menu_map_change', steamId, { mapName });
 
     res.status(200).end();
   } catch {

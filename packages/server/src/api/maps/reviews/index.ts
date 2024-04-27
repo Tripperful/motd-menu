@@ -88,6 +88,11 @@ reviewsRouter.delete('/:mapName/:authorSteamId?', async (req, res) => {
   try {
     await db.maps.reviews.delete(mapName, authorSteamId);
 
+    db.logs.add('menu_delete_review', steamId, {
+      mapName,
+      steamId: authorSteamId,
+    });
+
     res.status(200).end();
   } catch {
     res.status(500).end();

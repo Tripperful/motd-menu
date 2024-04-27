@@ -24,7 +24,7 @@ permissionsRouter.get('/:steamId', async (req, res) => {
 
 permissionsRouter.post('/:steamId/grant/:permission', async (req, res) => {
   try {
-    const { permissions } = res.locals.sessionData;
+    const { permissions, steamId: mySteamId } = res.locals.sessionData;
 
     if (!permissions.includes('permissions_edit')) {
       res.status(403).end();
@@ -34,6 +34,12 @@ permissionsRouter.post('/:steamId/grant/:permission', async (req, res) => {
     const { steamId, permission } = req.params;
     await db.permissions.grant(steamId, permission as Permission);
 
+    db.logs.add('menu_change_player_permissions', mySteamId, {
+      steamId,
+      action: 'grant',
+      permission,
+    });
+
     res.status(200).end();
   } catch {
     res.status(500).end();
@@ -42,7 +48,7 @@ permissionsRouter.post('/:steamId/grant/:permission', async (req, res) => {
 
 permissionsRouter.post('/:steamId/withdraw/:permission', async (req, res) => {
   try {
-    const { permissions } = res.locals.sessionData;
+    const { permissions, steamId: mySteamId } = res.locals.sessionData;
 
     if (!permissions.includes('permissions_edit')) {
       res.status(403).end();
@@ -51,6 +57,12 @@ permissionsRouter.post('/:steamId/withdraw/:permission', async (req, res) => {
 
     const { steamId, permission } = req.params;
     await db.permissions.withdraw(steamId, permission as Permission);
+
+    db.logs.add('menu_change_player_permissions', mySteamId, {
+      steamId,
+      action: 'withdraw',
+      permission,
+    });
 
     res.status(200).end();
   } catch {

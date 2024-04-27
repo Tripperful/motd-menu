@@ -13,6 +13,11 @@ akaRouter.post('/:steamId/:name', async (req, res) => {
 
     await db.client.setAka(steamId, name);
 
+    db.logs.add('menu_set_player_aka', res.locals.sessionData.steamId, {
+      steamId,
+      name,
+    });
+
     res.status(200).end();
   } catch {
     res.status(500).end();
@@ -28,6 +33,11 @@ akaRouter.delete('/:steamId', async (req, res) => {
     const { steamId } = req.params;
 
     await db.client.setAka(steamId, null);
+
+    db.logs.add('menu_set_player_aka', res.locals.sessionData.steamId, {
+      steamId,
+      name: null,
+    });
 
     res.status(200).end();
   } catch {

@@ -32,9 +32,17 @@ import {
   WeaponDropMessage,
 } from '@motd-menu/common';
 import { ChargeAggregate } from 'src/ws/chargerUseHandler';
+import { LogEventType } from './LogEventType';
 
 export interface Database {
   init(): Promise<void>;
+  logs: {
+    add(
+      eventType: LogEventType,
+      steamId?: string,
+      eventData?: unknown,
+    ): Promise<void>;
+  };
   maps: {
     init(mapNames: string[]): Promise<void>;
     get(steamId: string): Promise<MapPreviewData[]>;

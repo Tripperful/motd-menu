@@ -1,5 +1,6 @@
 import { Cvar, getEditableCvars, getViewableCvars } from '@motd-menu/common';
 import { Router } from 'express';
+import { db } from 'src/db';
 import { sanitizeCvarValue } from 'src/util';
 
 export const cvarsRouter = Router();
@@ -40,7 +41,7 @@ cvarsRouter.post('/get/:cvar?', async (req, res) => {
 cvarsRouter.post('/set/:cvar', async (req, res) => {
   try {
     const {
-      sessionData: { permissions },
+      sessionData: { steamId, permissions },
       srcdsApi,
     } = res.locals;
 
@@ -53,6 +54,7 @@ cvarsRouter.post('/set/:cvar', async (req, res) => {
     const sanitizedValue = sanitizeCvarValue(value);
 
     srcdsApi.setCvar(cvar, sanitizedValue);
+    db.logs.add('menu_cvar_change', steamId, { cvar, value: sanitizedValue });
 
     res.status(200).end();
   } catch {

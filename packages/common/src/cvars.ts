@@ -54,7 +54,6 @@ export type Cvar =
   | 'mm_new_shotgun'
   | 'mm_shotgun_tracehull_size'
   | 'mm_esp_teammates'
-  | 'mm_show_endmatch_rate'
   | 'mm_rpg_spawn_time';
 
 export interface BoolCvarProps {}
@@ -87,6 +86,7 @@ export type CvarInfo = {
   description: string;
   permissions: CvarPermissions;
   executeBeforeMatch?: boolean;
+  mockValue: string;
 } & CvarProps;
 
 export const cvarsInfo: Record<Cvar, CvarInfo> = {
@@ -96,6 +96,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     maxLength: 100,
     permissions: adminEditPermissions,
     executeBeforeMatch: true,
+    mockValue: 'Test server',
   },
   sv_password: {
     description: 'Server password',
@@ -103,64 +104,70 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     maxLength: 100,
     permissions: adminOnlyPermissions,
     executeBeforeMatch: true,
+    mockValue: '',
   },
   sv_cheats: {
     description: 'Cheats',
     type: 'bool',
     permissions: adminEditPermissions,
+    mockValue: '0',
   },
   mm_equalizer: {
     description: 'Equalizer',
     type: 'bool',
     permissions: matchmakingPermissions,
     executeBeforeMatch: true,
+    mockValue: '0',
   },
   mm_esp_teammates: {
     description: 'Allow teammates ESP',
     type: 'bool',
     permissions: matchmakingPermissions,
     executeBeforeMatch: true,
+    mockValue: '1',
   },
   mp_teamplay: {
     description: 'Team play',
     type: 'bool',
     permissions: adminEditPermissions,
     executeBeforeMatch: true,
+    mockValue: '1',
   },
   mp_friendlyfire: {
     description: 'Friendly fire',
     type: 'bool',
     permissions: matchmakingPermissions,
+    mockValue: '1',
   },
   sv_alltalk: {
     description: 'All talk',
     type: 'bool',
     permissions: matchmakingPermissions,
+    mockValue: '1',
   },
   mp_flashlight: {
     description: 'Allow flashlight',
     type: 'bool',
     permissions: matchmakingPermissions,
+    mockValue: '1',
   },
   sv_infinite_aux_power: {
     description: 'Infinite suit power',
     type: 'bool',
     permissions: adminEditPermissions,
+    mockValue: '0',
   },
   mp_footsteps: {
     description: 'Foot steps',
     type: 'bool',
     permissions: matchmakingPermissions,
+    mockValue: '1',
   },
   mp_forcerespawn: {
     description: 'Force palyer respawn',
     type: 'bool',
     permissions: matchmakingPermissions,
-  },
-  mm_show_endmatch_rate: {
-    description: 'Show map rate menu after matches',
-    type: 'bool',
-    permissions: adminOnlyPermissions,
+    mockValue: '1',
   },
   mm_hotbolt_fix: {
     description: 'Crossbow bolt boosting',
@@ -171,11 +178,13 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
       { title: 'Enhanced', value: '2' },
     ],
     permissions: matchmakingPermissions,
+    mockValue: '1',
   },
   mm_new_shotgun: {
     description: 'Improved shotgun behavior',
     type: 'bool',
     permissions: matchmakingPermissions,
+    mockValue: '1',
   },
   mm_shotgun_tracehull_size: {
     description: 'Shotgun trace hull size',
@@ -183,6 +192,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     min: 0,
     max: 24,
     permissions: adminEditPermissions,
+    mockValue: '1.5',
   },
   mp_timelimit: {
     description: 'Time limit (minutes)',
@@ -190,6 +200,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     min: 0,
     max: 240,
     permissions: matchmakingPermissions,
+    mockValue: '30',
   },
   mp_fraglimit: {
     description: 'Frag limit',
@@ -197,6 +208,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     min: 0,
     max: 1000,
     permissions: matchmakingPermissions,
+    mockValue: '0',
   },
   mm_overtime: {
     description: 'Overtime in case of draw (seconds)',
@@ -204,6 +216,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     min: 0,
     max: 300,
     permissions: matchmakingPermissions,
+    mockValue: '60',
   },
   sv_gravity: {
     description: 'Gravity',
@@ -211,6 +224,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     min: -1000,
     max: 1000,
     permissions: adminEditPermissions,
+    mockValue: '600',
   },
   sv_hl2mp_item_respawn_time: {
     description: 'Items respawn time (seconds)',
@@ -218,6 +232,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     min: 0,
     max: 300,
     permissions: matchmakingPermissions,
+    mockValue: '30',
   },
   sv_hl2mp_weapon_respawn_time: {
     description: 'Weapons respawn time (seconds)',
@@ -225,6 +240,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     min: 0,
     max: 300,
     permissions: matchmakingPermissions,
+    mockValue: '20',
   },
   mm_rpg_spawn_time: {
     description: 'RPG respawn time (seconds)',
@@ -232,6 +248,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     min: 0,
     max: 300,
     permissions: matchmakingPermissions,
+    mockValue: '20',
   },
 };
 
