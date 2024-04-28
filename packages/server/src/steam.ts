@@ -70,7 +70,7 @@ const debounceProfilesFetch = () => {
     clearTimeout(fetchTimeout);
   }
 
-  fetchTimeout = setTimeout(flushProfiles, 500);
+  fetchTimeout = setTimeout(flushProfiles, 100);
 };
 
 export const getPlayersProfiles = async (steamIds64: string[]) =>
