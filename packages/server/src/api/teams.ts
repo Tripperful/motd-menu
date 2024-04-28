@@ -14,22 +14,24 @@ teamsRouter.post('/set/:userId?/:teamIndex', async (req, res) => {
     const settingOwnTeam = userIdStr == null;
     const userId = settingOwnTeam ? ownUserId : Number(userIdStr);
 
-    if (!settingOwnTeam && !permissions.includes('teams_others_edit')) {
-      return res.status(403).end();
+    if (!settingOwnTeam) {
+      if (!permissions.includes('teams_others_edit')) {
+        return res.status(403).end();
+      }
+
+      srcdsApi.getOnlinePlayers().then((players) => {
+        const player = players.find((p) => p.userId === userId);
+
+        if (player) {
+          db.logs.add('menu_force_player_team', steamId, {
+            steamId: player.steamId,
+            teamIndex,
+          });
+        }
+      });
     }
 
     srcdsApi.setPlayerTeam(userId, Number(teamIndex));
-
-    srcdsApi.getOnlinePlayers().then((players) => {
-      const player = players.find((p) => p.userId === userId);
-
-      if (player) {
-        db.logs.add('menu_force_player_team', steamId, {
-          steamId: player.steamId,
-          teamIndex,
-        });
-      }
-    });
 
     res.status(200).end();
   } catch {
