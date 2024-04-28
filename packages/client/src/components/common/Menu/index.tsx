@@ -119,6 +119,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
     <div className={c.root}>
       {permissions.includes('dev') && (
         <div className={c.dev}>
+          <div>User Agent: {navigator.userAgent}</div>
           <div>
             Build timestamp: {buildTimestampFormat.format(BUILD_TIMESTAMP)}
           </div>
