@@ -32,6 +32,7 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
+    textAlign: 'right',
   },
   items: {
     position: 'absolute',
