@@ -74,6 +74,23 @@ wsClient.subscribe('get_maps_request', async () => {
 let nextUserId = 1;
 let nextSteamId = BigInt('76561197960465565');
 
+const steamIdToPseudoUuid = (steamId: string) => {
+  const steamIdBigInt = BigInt(steamId);
+
+  // 16 random bytes generated from the steamId
+  const bytes = new Uint8Array(16);
+  const lastByteMask = BigInt(0xff);
+
+  for (let i = 0; i < 8; i++) {
+    bytes[i] = Number((steamIdBigInt >> BigInt(i * 8)) & lastByteMask);
+    bytes[i + 8] = Number((steamIdBigInt >> BigInt(i * 8)) & lastByteMask);
+  }
+
+  return uuid({
+    random: bytes,
+  });
+};
+
 const App: FC = () => {
   const [players, setPlayers] = useState<OnlinePlayer[]>(onlinePlayers);
   const [msgText, setMsgText] = useState('');
@@ -89,8 +106,8 @@ const App: FC = () => {
   }, [msgText]);
 
   const onAddPlayer = useCallback(() => {
-    const token = uuid();
     const steamId = (nextSteamId++).toString();
+    const token = steamIdToPseudoUuid(steamId);
     const userId = nextUserId++;
     const name = steamId.substring(steamId.length - 8);
 
