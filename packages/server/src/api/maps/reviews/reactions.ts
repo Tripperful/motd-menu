@@ -1,7 +1,6 @@
 import { ReactionName } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
-import { getPlayersProfiles } from 'src/steam';
 
 export const mapsReviewsReactionsRouter = Router();
 
@@ -14,20 +13,6 @@ mapsReviewsReactionsRouter.get(
       const reactions =
         (await db.maps.reviews.reactions.get(mapName, reviewAuthorSteamId)) ??
         [];
-
-      if (reactions.length > 0) {
-        const authorsSteamIds = new Set<string>();
-
-        for (const reaction of reactions) {
-          authorsSteamIds.add(reaction.steamId);
-        }
-
-        const authors = await getPlayersProfiles([...authorsSteamIds]);
-
-        for (const reaction of reactions) {
-          reaction.author = authors[reaction.steamId];
-        }
-      }
 
       res.status(200).end(JSON.stringify(reactions));
     } catch {

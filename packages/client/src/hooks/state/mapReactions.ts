@@ -39,7 +39,7 @@ export const useAddRemoveMapReaction = (mapName: string) => {
         async (cur) =>
           ((await cur) ?? []).filter(
             (reaction) =>
-              !(reaction.author?.steamId === steamId && reaction.name === name),
+              !(reaction.steamId === steamId && reaction.name === name),
           ),
         mapName,
       );

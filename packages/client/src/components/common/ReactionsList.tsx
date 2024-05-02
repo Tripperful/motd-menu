@@ -1,4 +1,4 @@
-import { ReactionData, ReactionName, SteamPlayerData } from '@motd-menu/common';
+import { ReactionData, ReactionName } from '@motd-menu/common';
 import classNames from 'classnames';
 import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
@@ -46,18 +46,17 @@ export const ReactionsList: FC<
 > = ({ reactions, onAddReaction, onRemoveReaction, className }) => {
   const c = useStyles();
 
-  const authorsByReaction = useMemo(() => {
-    const authorsByReaction: Partial<Record<ReactionName, SteamPlayerData[]>> =
-      {};
+  const authorsSteamIdsByReaction = useMemo(() => {
+    const authorsByReaction: Partial<Record<ReactionName, string[]>> = {};
 
     for (const reaction of reactions) {
-      const { name, author } = reaction;
+      const { name, steamId } = reaction;
 
       if (!authorsByReaction[name]) {
         authorsByReaction[name] = [];
       }
 
-      authorsByReaction[name].push(author);
+      authorsByReaction[name].push(steamId);
     }
 
     return authorsByReaction;
@@ -69,29 +68,29 @@ export const ReactionsList: FC<
   const onReactionClick = (reaction: ReactionName) => {
     setShowAddPopup(false);
 
-    const iReacted = authorsByReaction[reaction]?.some(
-      (a) => a.steamId === mySteamId,
-    );
+    const iReacted = authorsSteamIdsByReaction[reaction].includes(mySteamId);
 
     iReacted ? onRemoveReaction?.(reaction) : onAddReaction?.(reaction);
   };
 
   return (
     <div className={classNames(c.root, className)}>
-      {Object.entries(authorsByReaction).map(([name, authors]) => {
-        const reactionName = name as ReactionName;
-        const iReacted = authors.some((a) => a.steamId === mySteamId);
+      {Object.entries(authorsSteamIdsByReaction).map(
+        ([name, authorsSteamIds]) => {
+          const reactionName = name as ReactionName;
+          const iReacted = authorsSteamIds.includes(mySteamId);
 
-        return (
-          <Reaction
-            key={reactionName}
-            name={reactionName}
-            count={authors.length}
-            iReacted={iReacted}
-            onClick={() => onReactionClick(reactionName)}
-          />
-        );
-      })}
+          return (
+            <Reaction
+              key={reactionName}
+              name={reactionName}
+              count={authorsSteamIds.length}
+              iReacted={iReacted}
+              onClick={() => onReactionClick(reactionName)}
+            />
+          );
+        },
+      )}
       <div className={c.addButton} onClick={() => setShowAddPopup(true)}>
         <AddReactionIcon />
       </div>

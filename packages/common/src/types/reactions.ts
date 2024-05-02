@@ -1,9 +1,6 @@
-import { SteamPlayerData } from './steam';
-
 export interface ReactionData {
   steamId: string;
   name: ReactionName;
-  author?: SteamPlayerData;
 }
 
 const gLottieLink = (uid: string) =>
