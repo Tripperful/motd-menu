@@ -17,6 +17,20 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE FUNCTION client_find_by_name (name text) RETURNS json AS $$ BEGIN RETURN json_agg(DISTINCT steam_id::text)
+FROM (
+  SELECT DISTINCT client_names.steam_id AS steam_id
+  FROM client_names
+  WHERE client_names.name ILIKE '%' || client_find_by_name.name || '%'
+  UNION ALL
+  SELECT DISTINCT client_aka.steam_id AS steam_id
+  FROM client_aka
+  WHERE client_aka.name ILIKE '%' || client_find_by_name.name || '%'
+);
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE PROCEDURE client_connected (
   id text,
   steam_id text,
@@ -954,7 +968,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
-OR REPLACE FUNCTION match_json(match matches) RETURNS json AS $$ BEGIN RETURN json_build_object(
+OR REPLACE FUNCTION match_json (match matches) RETURNS json AS $$ BEGIN RETURN json_build_object(
   'id',
   match.id::text,
   'status',
@@ -1039,7 +1053,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
-OR REPLACE FUNCTION get_match_deaths(match_id text) RETURNS json AS $$
+OR REPLACE FUNCTION get_match_deaths (match_id text) RETURNS json AS $$
 DECLARE
   is_dm boolean;
 BEGIN
@@ -1110,7 +1124,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
-OR REPLACE FUNCTION get_match_damage(match_id text) RETURNS json AS $$
+OR REPLACE FUNCTION get_match_damage (match_id text) RETURNS json AS $$
 DECLARE
   is_dm boolean;
 BEGIN

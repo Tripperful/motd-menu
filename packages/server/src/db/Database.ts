@@ -123,6 +123,13 @@ export interface Database {
     ): Promise<void>;
     addName(steamId: string, name: string): Promise<void>;
     getNames(steamId: string): Promise<string[]>;
+
+    /**
+     * Find all steam ids that have a name that matches the given name partially.
+     * @param name The name to search for.
+     * @returns An array of steam ids.
+     */
+    findByName(name: string): Promise<string[]>;
     getSmurfSteamIds(steamId: string): Promise<string[]>;
     getTotalTimePlayed(steamId: string, token: string): Promise<number>;
     setAka(steamId: string, name: string): Promise<void>;

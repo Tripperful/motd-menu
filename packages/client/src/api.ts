@@ -99,6 +99,12 @@ class MotdApi {
     return JSON.parse(res) as string[];
   }
 
+  public async findPlayersByName(name: string) {
+    const res = await this.get('players/findByName/' + name);
+
+    return JSON.parse(res) as SteamPlayerData[];
+  }
+
   public async getPlayerSmurfSteamIds(steamId: string) {
     const res = await this.get('players/smurfs/' + steamId);
 

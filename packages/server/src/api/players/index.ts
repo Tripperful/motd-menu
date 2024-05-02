@@ -62,7 +62,7 @@ playersRouter.get('/smurfs/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
-    const smurfs = await db.client.getSmurfSteamIds(steamId);
+    const smurfs = (await db.client.getSmurfSteamIds(steamId)) ?? [];
 
     res.status(200).end(JSON.stringify(smurfs));
   } catch {
@@ -74,9 +74,28 @@ playersRouter.get('/names/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
-    const names = await db.client.getNames(steamId);
+    const names = (await db.client.getNames(steamId)) ?? [];
 
     res.status(200).end(JSON.stringify(names));
+  } catch {
+    res.status(500).end();
+  }
+});
+
+playersRouter.get('/findByName/:name', async (req, res) => {
+  try {
+    const { name } = req.params;
+
+    if (name.length < 3) {
+      return res.status(200).end(JSON.stringify([]));
+    }
+
+    const steamIds = await db.client.findByName(name);
+    const profiles = steamIds?.length
+      ? Object.values(await getPlayersProfiles(steamIds))
+      : [];
+
+    res.status(200).end(JSON.stringify(profiles));
   } catch {
     res.status(500).end();
   }

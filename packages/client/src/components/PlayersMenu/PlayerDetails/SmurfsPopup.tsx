@@ -16,7 +16,7 @@ import { PlayersListItem } from '../PlayersList/PlayersListItem';
 const useStyles = createUseStyles({
   root: {
     width: '50vw',
-    height: '50vh',
+    height: '70vh',
     overflow: 'hidden auto',
     display: 'flex',
     flexDirection: 'column',

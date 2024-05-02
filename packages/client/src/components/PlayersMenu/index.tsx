@@ -4,9 +4,11 @@ import { Link, Route, Routes } from 'react-router-dom';
 import { useMount } from 'react-use';
 import { resetOnlinePlayers } from 'src/hooks/state/players';
 import { Page } from '~components/common/Page';
-import RefreshIcon from '~icons/refresh.svg';
 import AddPersonIcon from '~icons/person-add.svg';
+import RefreshIcon from '~icons/refresh.svg';
+import SearchIcon from '~icons/search.svg';
 import { activeItem } from '~styles/elements';
+import { FindByName } from './FindByName';
 import { PlayerDetails } from './PlayerDetails';
 import { PlayersList } from './PlayersList';
 import { ViewBySteamId } from './ViewBySteamId';
@@ -31,6 +33,9 @@ export const PlayersMenu: FC = () => {
       title="Players"
       headerContent={
         <>
+          <Link className={c.button} to="byName">
+            <SearchIcon />
+          </Link>
           <Link className={c.button} to="bySteamId">
             <AddPersonIcon />
           </Link>
@@ -42,6 +47,7 @@ export const PlayersMenu: FC = () => {
     >
       <PlayersList />
       <Routes>
+        <Route path="/byName/*" element={<FindByName />} />
         <Route path="/bySteamId/*" element={<ViewBySteamId />} />
         <Route path="/:steamId/*" element={<PlayerDetails />} />
       </Routes>
