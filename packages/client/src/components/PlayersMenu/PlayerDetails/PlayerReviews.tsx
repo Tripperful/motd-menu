@@ -24,24 +24,24 @@ const PlayerReviewsContent: FC<PlayerReviewsProps> = ({ steamId }) => {
   const c = useStyles();
   const reviews = usePlayerReviews(steamId);
 
+  if (reviews.length === 0) return null;
+
   return (
-    <div className={c.list}>
-      {reviews?.map((r) => (
-        <MapReview key={r.mapName} review={r} mapDetailsMode />
-      ))}
+    <div className={c.root}>
+      Maps reviews
+      <div className={c.list}>
+        {reviews?.map((r) => (
+          <MapReview key={r.mapName} review={r} mapDetailsMode />
+        ))}
+      </div>
     </div>
   );
 };
 
 export const PlayerReviews: FC<PlayerReviewsProps> = ({ steamId }) => {
-  const c = useStyles();
-
   return (
-    <div className={c.root}>
-      Maps reviews
-      <Suspense>
-        <PlayerReviewsContent steamId={steamId} />
-      </Suspense>
-    </div>
+    <Suspense>
+      <PlayerReviewsContent steamId={steamId} />
+    </Suspense>
   );
 };
