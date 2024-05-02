@@ -2,7 +2,10 @@ import { steamId64ToLegacy } from '@motd-menu/common';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
-import { usePlayerSteamProfile } from 'src/hooks/state/players';
+import {
+  useIsPlayerOnline,
+  usePlayerSteamProfile,
+} from 'src/hooks/state/players';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { steamProfileLink } from 'src/util';
@@ -81,9 +84,10 @@ const PlayerDetailsContent: FC = () => {
 
   const { steamId } = useParams();
   const player = usePlayerSteamProfile(steamId);
+  const isOnline = useIsPlayerOnline(steamId);
   const profileLink = steamProfileLink(player.steamId);
   const canViewPermissions = useCheckPermission('permissions_view');
-  const canEditTeam = useCheckPermission('teams_others_edit');
+  const canEditTeam = useCheckPermission('teams_others_edit') && isOnline;
 
   return (
     <>

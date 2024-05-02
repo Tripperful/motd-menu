@@ -11,6 +11,9 @@ export const resetOnlinePlayers = () => onlinePlayersState.reset();
 
 export const getOnlinePlayers = () => onlinePlayersState.get();
 
+export const useIsPlayerOnline = (steamId: string) =>
+  useOnlinePlayers()?.some((p) => p.steamId === steamId);
+
 const fetchPlayerSteamProfile = async (steamId: string) =>
   (await onlinePlayersState.getRaw())?.find((p) => p.steamId === steamId)
     ?.steamProfile ?? (await motdApi.getPlayerSteamProfile(steamId));
