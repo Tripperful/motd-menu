@@ -1236,6 +1236,8 @@ OR REPLACE FUNCTION get_efps_stats (match_id text) RETURNS json AS $$ BEGIN RETU
   (SELECT servers.name FROM servers WHERE servers.id = server_id),
   'map',
   (SELECT maps.name FROM maps WHERE maps.id = map_id),
+  'demo',
+  demo_id,
   'teamplay',
   (CASE WHEN (
     SELECT COUNT(*)
