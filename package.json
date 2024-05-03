@@ -12,8 +12,8 @@
     "watch:server": "npm run watch -w packages/server",
     "watch:client": "npm run watch -w packages/client",
     "build": "npm run build --workspaces --if-present",
-    "start": "concurrently \"npm run start:server\" \"npm run build:client\"",
-    "watch": "concurrently \"npm run watch:server\" \"npm run watch:client\"",
+    "start": "concurrently -n sv,cl \"npm run start:server\" \"npm run build:client\"",
+    "watch": "concurrently -n sv,cl \"npm run watch:server\" \"npm run watch:client\"",
     "launch": "npm run launch -w packages/server"
   },
   "devDependencies": {
