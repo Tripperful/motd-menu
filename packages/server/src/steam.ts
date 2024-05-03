@@ -1,12 +1,14 @@
 import { SteamPlayerData } from '@motd-menu/common';
 
+interface PlayerSummary {
+  steamid: string;
+  personaname: string;
+  avatarfull: string;
+}
+
 interface GetPlayerSummariesResponse {
   response: {
-    players: {
-      steamid: string;
-      personaname: string;
-      avatarfull: string;
-    }[];
+    players: PlayerSummary[];
   };
 }
 
@@ -20,17 +22,33 @@ const errorProfile = (steamId: string) =>
 
 export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
   try {
-    const res = (await (
-      await fetch(
-        `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${
-          process.env.MOTD_STEAM_API_KEY
-        }&steamids=${steamIds64.join(',')}`,
-      )
-    ).json()) as GetPlayerSummariesResponse;
+    // Steam API only allows requesting up to 100 profiles at once
+    const batches = Array.from(
+      { length: Math.ceil(steamIds64.length / 100) },
+      (_, i) => steamIds64.slice(i * 100, i * 100 + 100),
+    );
+
+    const profilesBySteamId: Record<string, PlayerSummary> = {};
+
+    await Promise.all(
+      batches.map((batch) =>
+        fetch(
+          `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${
+            process.env.MOTD_STEAM_API_KEY
+          }&steamids=${batch.join(',')}`,
+        )
+          .then((r) => r.json())
+          .then((r: GetPlayerSummariesResponse) => {
+            for (const player of r.response.players) {
+              profilesBySteamId[player.steamid] = player;
+            }
+          }),
+      ),
+    );
 
     return Object.fromEntries(
       steamIds64.map((steamId) => {
-        const profile = res.response.players.find((p) => p.steamid === steamId);
+        const profile = profilesBySteamId[steamId];
 
         return [
           steamId,
