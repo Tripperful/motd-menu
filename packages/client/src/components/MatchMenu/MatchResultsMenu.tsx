@@ -1,6 +1,6 @@
-import { MatchSummary } from '@motd-menu/common';
-import classNames from 'classnames';
-import React, { FC, Suspense, useEffect, useRef } from 'react';
+import { MatchSummary, MatchSummaryTeam } from '@motd-menu/common';
+import Color from 'color';
+import React, { FC, Suspense, useEffect, useMemo, useRef } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
 import { useIntersection } from 'react-use';
@@ -16,7 +16,6 @@ import { ActionPage } from '~components/common/Page/ActionPage';
 import ArrowRightIcon from '~icons/thick-arrow-right.svg';
 import { theme } from '~styles/theme';
 import { MatchResultPopup } from './MatchResultPopup';
-import Color from 'color';
 
 const useStyles = createUseStyles({
   content: {
@@ -40,18 +39,32 @@ const useStyles = createUseStyles({
       backgroundColor: theme.bg2,
     },
   },
-  uncompleted: {
-    opacity: 0.5,
-  },
   matchDetails: {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
     alignItems: 'flex-start',
+    flex: '1 1 auto',
+  },
+  spaceBetween: {
+    alignSelf: 'stretch',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  chip: {
+    fontSize: '0.8em',
+    padding: '0.2em 0.5em',
+    backgroundColor: theme.bg2,
+    borderRadius: '0.5em',
+    textShadow: '0 0 4px #000b',
+  },
+  status: {
+    fontSize: '0.8em',
+    padding: '0.2em 0.5em',
+    borderRadius: '0.5em',
   },
   mapImageWrapper: {
     minWidth: '10em',
-    height: '5em',
     borderRadius: '0.5em',
     backgroundColor: theme.bg2,
     overflow: 'hidden',
@@ -82,6 +95,12 @@ const useStyles = createUseStyles({
     color: theme.fg2,
     textShadow: '0 0 4px #000b',
     position: 'relative',
+  },
+  playersChips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.5em',
+    fontSize: '0.8em',
   },
 });
 
@@ -128,33 +147,65 @@ const MatchScore: FC<{ data: MatchSummary }> = ({ data }) => {
   );
 };
 
+const PlayersChips: FC<{ teams: MatchSummaryTeam[] }> = ({ teams }) => {
+  const c = useStyles();
+
+  const players = useMemo(
+    () => teams.flatMap((t) => t.players.map((p) => ({ ...p, team: t.index }))),
+    [teams],
+  );
+
+  return (
+    <div className={c.playersChips}>
+      {players.map((p) => (
+        <span
+          key={p.steamId}
+          className={c.chip}
+          style={{ color: teamInfoByIdx[p.team].color }}
+        >
+          {p.profile.name}
+        </span>
+      ))}
+    </div>
+  );
+};
+
+const MatchStatusChip: FC<{ match: MatchSummary }> = ({ match }) => {
+  const c = useStyles();
+
+  return (
+    <div
+      className={c.chip}
+      style={{
+        color: match.status === 'completed' ? theme.fgSuccess : theme.fgError,
+      }}
+    >
+      {match.status}{' '}
+      {new Date(
+        match.startDate + (match.duration ?? 0) * 1000,
+      ).toLocaleString()}
+    </div>
+  );
+};
+
 const MatchResult: FC<{ data: MatchSummary }> = ({ data }) => {
   const c = useStyles();
 
   return (
-    <Link
-      to={data.id}
-      key={data.id}
-      className={classNames(
-        c.result,
-        data.status !== 'completed' && c.uncompleted,
-      )}
-    >
+    <Link to={data.id} key={data.id} className={c.result}>
       <div className={c.mapImageWrapper}>
         <MapPreviewImage className={c.mapImage} mapName={data.mapName} />
         <MatchScore data={data} />
       </div>
       <div className={c.matchDetails}>
-        <div>
-          {matchType(data)} - {data.mapName}
+        <div className={c.spaceBetween}>
+          <span>
+            <span className={c.chip}>{matchType(data)}</span> - {data.mapName}
+          </span>
+          <span className={c.chip}>{data.server}</span>
         </div>
-        <div>Server: {data.server}</div>
-        <div>
-          {data.status}{' '}
-          {new Date(
-            data.startDate + (data.duration ?? 0) * 1000,
-          ).toLocaleString()}
-        </div>
+        <MatchStatusChip match={data} />
+        <PlayersChips teams={data.teams} />
       </div>
     </Link>
   );

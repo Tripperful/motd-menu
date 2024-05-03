@@ -6,7 +6,7 @@ import {
 } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
-import { getPlayerProfile } from 'src/steam';
+import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
 import { sanitizeCvarValue } from 'src/util';
 
 export const matchRouter = Router();
@@ -16,6 +16,26 @@ matchRouter.get('/results/:offset?', async (req, res) => {
     const { offset } = req.params;
 
     const result = await db.matches.get(50, Number(offset ?? 0));
+
+    const playersSteamIds = [
+      ...new Set(
+        result.data.flatMap((match) =>
+          match.teams.flatMap((team) =>
+            team.players.map((player) => player.steamId),
+          ),
+        ),
+      ),
+    ];
+
+    const profiles = await getPlayersProfiles(playersSteamIds);
+
+    for (const match of result.data) {
+      for (const team of match.teams) {
+        for (const player of team.players) {
+          player.profile = profiles[player.steamId];
+        }
+      }
+    }
 
     res.status(200).end(JSON.stringify(result));
   } catch {

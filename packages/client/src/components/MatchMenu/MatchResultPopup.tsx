@@ -19,9 +19,7 @@ import {
 import { useMatchDamage } from 'src/hooks/state/matchDamage';
 import { useMatchDeaths } from 'src/hooks/state/matchDeaths';
 import { useMatchResult } from 'src/hooks/state/matchResults';
-import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { useGoBack } from 'src/hooks/useGoBack';
-import { usePlayersProfiles } from 'src/hooks/usePlayersProfiles';
 import { getContrastingColor } from 'src/util/color';
 import { IconGlyph, weaponIconsGlyphs } from 'src/util/iconGlyph';
 import { teamInfoByIdx } from 'src/util/teams';
@@ -128,7 +126,7 @@ const MatchTeamPlayer: FC<{ player: MatchSummaryTeamPlayer }> = ({
   player,
 }) => {
   const c = useStyles();
-  const profile = usePlayerSteamProfile(player.steamId);
+  const { profile } = player;
 
   return (
     <>
@@ -194,21 +192,19 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
   const deaths = useMatchDeaths(matchId);
   const damage = useMatchDamage(matchId);
 
-  const players = useMemo(() => {
-    const players: string[] = [];
+  const players = useMemo(
+    () => match?.teams?.flatMap((team) => team.players),
+    [match],
+  );
 
-    for (const team of match?.teams ?? []) {
-      for (const player of team.players) {
-        players.push(player.steamId);
-      }
-    }
-
-    return players;
-  }, [match]);
+  const playersBySteamId = useMemo(
+    () => Object.fromEntries(players.map((p) => [p.steamId, p])),
+    [players],
+  );
 
   const scoreDataPoints = useMemo(() => {
     const curKd: Record<string, number> = Object.fromEntries(
-      players.map((p) => [p, 0]),
+      players.map(({ steamId }) => [steamId, 0]),
     );
 
     const scoreDataPoints: ({
@@ -216,7 +212,9 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
     } & Record<string, number>)[] = [
       {
         curtime: 0,
-        ...Object.fromEntries(players.map((p) => [p, curKd[p]])),
+        ...Object.fromEntries(
+          players.map(({ steamId }) => [steamId, curKd[steamId]]),
+        ),
       },
     ];
 
@@ -233,7 +231,9 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
 
       scoreDataPoints.push({
         curtime: death.curtime - match.startCurtime,
-        ...Object.fromEntries(players.map((p) => [p, curKd[p]])),
+        ...Object.fromEntries(
+          players.map(({ steamId }) => [steamId, curKd[steamId]]),
+        ),
       });
     }
 
@@ -304,8 +304,6 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
       });
   }, [damage]);
 
-  const playersProfiles = usePlayersProfiles(players);
-
   const xTicks: number[] = [];
 
   for (let i = 0; i <= match.duration; i += 300) {
@@ -341,14 +339,16 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
       >
         <LineChart data={scoreDataPoints}>
           <Legend
-            formatter={(value: string) => playersProfiles[value]?.name ?? value}
+            formatter={(value: string) =>
+              playersBySteamId[value]?.profile?.name ?? value
+            }
           />
           <Tooltip
             labelFormatter={(v) => `Time: ${Math.round(v / 60)}m`}
             itemSorter={(item) => -item.value as number}
             formatter={(value: string, name: string) => [
               value,
-              playersProfiles[name]?.name ?? name,
+              playersBySteamId[name]?.profile?.name ?? name,
             ]}
             contentStyle={tooltipStyles}
           />
@@ -363,7 +363,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
             tickMargin={10}
           />
           <YAxis />
-          {players.map((steamId, idx) => (
+          {players.map(({ steamId }, idx) => (
             <Line
               key={steamId}
               dataKey={steamId}
@@ -387,13 +387,15 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
       >
         <BarChart data={killsByWeapon} margin={{ top: 30 }}>
           <Legend
-            formatter={(value: string) => playersProfiles[value]?.name ?? value}
+            formatter={(value: string) =>
+              playersBySteamId[value]?.profile?.name ?? value
+            }
           />
           <Tooltip
             itemSorter={(item) => -item.value as number}
             formatter={(value: string, name: string) => [
               value + ' kills',
-              playersProfiles[name]?.name ?? name,
+              playersBySteamId[name]?.profile?.name ?? name,
             ]}
             contentStyle={tooltipStyles}
             cursor={{ fill: '#fff2' }}
@@ -401,7 +403,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
           <CartesianGrid strokeDasharray="3 3" stroke="#fff2" />
           <XAxis dataKey="weapon" tick={false} />
           <YAxis />
-          {players.map((steamId, idx) => (
+          {players.map(({ steamId }, idx) => (
             <Bar
               key={steamId}
               dataKey={steamId}
@@ -443,13 +445,15 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
       >
         <BarChart data={damageByWeapon} margin={{ top: 30 }}>
           <Legend
-            formatter={(value: string) => playersProfiles[value]?.name ?? value}
+            formatter={(value: string) =>
+              playersBySteamId[value]?.profile?.name ?? value
+            }
           />
           <Tooltip
             itemSorter={(item) => -item.value as number}
             formatter={(value: string, name: string) => [
               value + ' hp',
-              playersProfiles[name]?.name ?? name,
+              playersBySteamId[name]?.profile?.name ?? name,
             ]}
             contentStyle={tooltipStyles}
             cursor={{ fill: '#fff2' }}
@@ -457,7 +461,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
           <CartesianGrid strokeDasharray="3 3" stroke="#fff2" />
           <XAxis dataKey="weapon" tick={false} />
           <YAxis />
-          {players.map((steamId, idx) => (
+          {players.map(({ steamId }, idx) => (
             <Bar
               key={steamId}
               dataKey={steamId}

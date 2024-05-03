@@ -8,6 +8,6 @@ export const theme = {
   fg1: '#ffb100',
   fg2: '#ffeeaa',
   fg3: '#7d7554',
-  fgError: '#cc2929',
-  fgSuccess: '#29cc31',
+  fgError: '#ee0000',
+  fgSuccess: '#00ee00',
 };

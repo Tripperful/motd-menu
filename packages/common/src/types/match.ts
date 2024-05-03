@@ -1,4 +1,5 @@
 import { Cvar } from '../cvars';
+import { SteamPlayerData } from './steam';
 
 export type StartMatchPlayerTeams = { [steamId: string]: number };
 
@@ -11,6 +12,7 @@ export interface MatchSummaryTeamPlayer {
   steamId: string;
   kills: number;
   deaths: number;
+  profile?: SteamPlayerData;
 }
 
 export interface MatchSummaryTeam {
@@ -19,9 +21,15 @@ export interface MatchSummaryTeam {
   players: MatchSummaryTeamPlayer[];
 }
 
+export type MatchStatus =
+  | 'completed'
+  | 'cancelled'
+  | 'votecancelled'
+  | 'timedout';
+
 export interface MatchSummary {
   id: string;
-  status: 'completed' | 'cancelled' | 'votecancelled' | 'timedout';
+  status: MatchStatus;
   server: string;
   mapName: string;
   demoName: string;
