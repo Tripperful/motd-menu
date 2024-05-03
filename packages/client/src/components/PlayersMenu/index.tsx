@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
-import { useMount } from 'react-use';
 import { resetOnlinePlayers } from 'src/hooks/state/players';
 import { Page } from '~components/common/Page';
 import AddPersonIcon from '~icons/person-add.svg';
@@ -25,8 +24,6 @@ const useStyles = createUseStyles({
 
 export const PlayersMenu: FC = () => {
   const c = useStyles();
-
-  useMount(resetOnlinePlayers);
 
   return (
     <Page
