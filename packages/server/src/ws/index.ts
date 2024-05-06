@@ -132,7 +132,7 @@ export class WsApi {
     data?: TData,
     guid?: string,
   ) {
-    const { ws } = this.remotesBySessionId[sessionId];
+    const ws = this.remotesBySessionId[sessionId]?.ws;
 
     if (!ws?.OPEN) {
       throw new Error(

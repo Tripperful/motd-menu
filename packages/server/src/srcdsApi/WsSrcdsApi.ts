@@ -36,11 +36,13 @@ export class WsSrcdsApi implements SrcdsApi {
     ...cvars: TCvars[]
   ): Promise<{ [cvar in TCvars]: string }> {
     return (
-      await this.request<TCvars[], { [cvar in TCvars]: string }>(
-        'get_cvars_request',
-        cvars,
-      )
-    ).data;
+      (
+        await this.request<TCvars[], { [cvar in TCvars]: string }>(
+          'get_cvars_request',
+          cvars,
+        )
+      ).data ?? ({} as { [cvar in TCvars]: string })
+    );
   }
 
   setCvar(cvar: Cvar, value: string): void {
@@ -52,7 +54,7 @@ export class WsSrcdsApi implements SrcdsApi {
   }
 
   async getMaps(): Promise<string[]> {
-    return (await this.request<never, string[]>('get_maps_request')).data;
+    return (await this.request<never, string[]>('get_maps_request')).data ?? [];
   }
 
   changelevel(token: string, mapName: string): void {
@@ -61,8 +63,9 @@ export class WsSrcdsApi implements SrcdsApi {
 
   async getOnlinePlayers(): Promise<OnlinePlayerInfo[]> {
     return (
-      await this.request<never, OnlinePlayerInfo[]>('get_players_request')
-    ).data;
+      (await this.request<never, OnlinePlayerInfo[]>('get_players_request'))
+        .data ?? []
+    );
   }
 
   startMatch(
