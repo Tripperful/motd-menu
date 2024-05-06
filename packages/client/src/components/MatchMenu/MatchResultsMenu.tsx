@@ -1,5 +1,6 @@
 import { MatchSummary, MatchSummaryTeam } from '@motd-menu/common';
 import Color from 'color';
+import range from 'lodash/range';
 import React, { FC, Suspense, useEffect, useMemo, useRef } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
@@ -13,9 +14,12 @@ import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { teamInfoByIdx } from 'src/util/teams';
 import { MapPreviewImage } from '~components/common/MapPreviewImage';
 import { ActionPage } from '~components/common/Page/ActionPage';
+import SearchIcon from '~icons/search.svg';
 import ArrowRightIcon from '~icons/thick-arrow-right.svg';
+import { activeItem, skeletonBg } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { MatchResultPopup } from './MatchResultPopup';
+import { MatchResultsFilters } from './MatchResultsFilters';
 
 const useStyles = createUseStyles({
   content: {
@@ -101,6 +105,26 @@ const useStyles = createUseStyles({
     flexWrap: 'wrap',
     gap: '0.5em',
     fontSize: '0.8em',
+  },
+  filtersButton: {
+    ...activeItem(),
+    display: 'flex',
+  },
+  '@keyframes bgShift': {
+    from: {
+      backgroundPositionX: '0vw',
+    },
+    to: {
+      backgroundPositionX: '100vw',
+    },
+  },
+  tileSkeleton: {
+    ...skeletonBg(),
+    animation: '$bgShift 1s linear infinite',
+    height: '5.66em',
+    flex: '0 0 auto',
+    backgroundColor: theme.bg2,
+    borderRadius: '0.5em',
   },
 });
 
@@ -227,12 +251,26 @@ const ResultsFetcher: FC = () => {
 const MatchResultsContent: FC = () => {
   const { results, hasMore } = useMatchResults();
 
-  return (
+  return (results?.length ?? 0) === 0 ? (
+    'No matches found'
+  ) : (
     <>
       {results.map((result) => (
         <MatchResult key={result.id} data={result} />
       ))}
       {hasMore && <ResultsFetcher />}
+    </>
+  );
+};
+
+const MatchResultsSkeleton: FC = () => {
+  const c = useStyles();
+
+  return (
+    <>
+      {range(10).map((i) => (
+        <div key={i} className={c.tileSkeleton}></div>
+      ))}
     </>
   );
 };
@@ -246,6 +284,11 @@ export const MatchResultsMenu: FC = () => {
     <ActionPage
       title="Match results"
       refreshAction={resetMatchResults}
+      headerContent={
+        <Link to="filters" className={c.filtersButton}>
+          <SearchIcon />
+        </Link>
+      }
       actions={
         isMatchOrganizer
           ? [
@@ -263,12 +306,13 @@ export const MatchResultsMenu: FC = () => {
       }
     >
       <div className={c.content}>
-        <Suspense>
+        <Suspense fallback={<MatchResultsSkeleton />}>
           <MatchResultsContent />
-          <Routes>
-            <Route path="/:matchId/*" element={<MatchResultPopup />} />
-          </Routes>
         </Suspense>
+        <Routes>
+          <Route path="filters/*" element={<MatchResultsFilters />} />
+          <Route path="/:matchId/*" element={<MatchResultPopup />} />
+        </Routes>
       </div>
     </ActionPage>
   );

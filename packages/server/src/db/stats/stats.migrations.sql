@@ -18,3 +18,6 @@ ADD COLUMN IF NOT EXISTS distance float;
 -- Add dsp column to client_settings table if it doesn't exist
 ALTER TABLE client_settings
 ADD COLUMN IF NOT EXISTS dsp boolean DEFAULT true;
+
+-- Drop the old get_matches function without filters
+DROP FUNCTION IF EXISTS get_matches (lmt int, ofst int);

@@ -1,5 +1,6 @@
 export * from './cvars';
 export * from './types/data';
+export * from './types/filters';
 export * from './types/log';
 export * from './types/maps';
 export * from './types/match';

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
 import RefreshIcon from '~icons/refresh.svg';
@@ -76,19 +76,23 @@ export const ActionPage: FC<
     title: string;
     refreshAction?: () => void;
     actions?: ActionPageActionProps[];
+    headerContent?: ReactNode;
   }
-> = ({ title, refreshAction, actions, children }) => {
+> = ({ title, refreshAction, actions, headerContent, children }) => {
   const c = useStyles();
 
   return (
     <Page
       title={title}
       headerContent={
-        refreshAction && (
-          <div className={c.refreshButton} onClick={refreshAction}>
-            <RefreshIcon />
-          </div>
-        )
+        <>
+          {headerContent}
+          {refreshAction && (
+            <div className={c.refreshButton} onClick={refreshAction}>
+              <RefreshIcon />
+            </div>
+          )}
+        </>
       }
     >
       <div className={c.root}>

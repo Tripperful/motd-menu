@@ -22,10 +22,11 @@ export interface MatchSummaryTeam {
 }
 
 export type MatchStatus =
-  | 'completed'
-  | 'cancelled'
+  | 'interrupted'
   | 'votecancelled'
-  | 'timedout';
+  | 'timeout'
+  | 'started'
+  | 'completed';
 
 export interface MatchSummary {
   id: string;

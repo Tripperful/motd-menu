@@ -19,16 +19,25 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
-    padding: '1em',
-    overflow: 'hidden auto',
+    paddingRight: '0.25em',
+    marginRight: '-0.75em',
+    overflow: 'hidden scroll',
   },
 });
 
-export const FindByName: FC = () => {
+type OnPlayerPickedAction =
+  | {
+      onPlayerPicked: (steamId: string) => void;
+    }
+  | {
+      linkPrefix: string;
+    };
+
+export const FindPlayerByNamePopup: FC<OnPlayerPickedAction> = (props) => {
   const c = useStyles();
   const goBack = useGoBack();
   const [name, setName] = useState('');
-  const [profiles, setProfiles] = useState<SteamPlayerData[]>([]);
+  const [profiles, setProfiles] = useState<SteamPlayerData[]>(null);
 
   const fetchDebounced = useMemo(
     () =>
@@ -55,15 +64,28 @@ export const FindByName: FC = () => {
           placeholder="Player's name..."
           onChange={(e) => setName(e.currentTarget.value)}
         />
-        {(profiles?.length ?? 0) > 0 && (
+        {profiles === null ? null : profiles.length === 0 ? (
+          <div>No players found</div>
+        ) : (
           <div className={c.list}>
-            {profiles.map((profile) => (
-              <PlayerItem
-                key={profile.steamId}
-                profile={profile}
-                link={'../' + profile.steamId}
-              />
-            ))}
+            {profiles.map((profile) =>
+              'linkPrefix' in props ? (
+                <PlayerItem
+                  key={profile.steamId}
+                  profile={profile}
+                  link={props.linkPrefix + profile.steamId}
+                />
+              ) : (
+                <PlayerItem
+                  key={profile.steamId}
+                  profile={profile}
+                  onClick={() => {
+                    props.onPlayerPicked(profile.steamId);
+                    goBack();
+                  }}
+                />
+              ),
+            )}
           </div>
         )}
       </div>

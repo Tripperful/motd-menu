@@ -11,6 +11,7 @@ import {
   MatchDamageData,
   MatchDeathData,
   MatchEndedMessage,
+  MatchFilters,
   MatchStartedMessage,
   MatchSummary,
   MedkitPickupMessage,
@@ -279,11 +280,19 @@ export class PgDatabase extends BasePgDatabase implements Database {
   };
 
   matches = {
-    get: (async (limitOrId: number | string, offset?: number) =>
+    get: (async (
+      limitOrId: number | string,
+      offset?: number,
+      filters?: MatchFilters,
+    ) =>
       typeof limitOrId === 'string'
         ? await this.select<MatchSummary>('get_match', limitOrId)
         : (await this.select<PagedData<MatchSummary>>(
             'get_matches',
+            filters?.mapName,
+            filters?.players,
+            filters?.serverName,
+            filters?.matchStatuses,
             limitOrId,
             offset,
           )) ?? { data: [], total: 0 }) as Database['matches']['get'],

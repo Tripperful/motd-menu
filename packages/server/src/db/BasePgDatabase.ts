@@ -51,6 +51,8 @@ export class BasePgDatabase {
 
   private esc(arg: unknown) {
     switch (typeof arg) {
+      case 'undefined':
+        return 'NULL';
       case 'string':
         return this.pgEscText(arg);
       case 'object':

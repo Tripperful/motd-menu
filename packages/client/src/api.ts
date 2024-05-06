@@ -6,6 +6,7 @@ import {
   MapReviewData,
   MatchDamageData,
   MatchDeathData,
+  MatchFilters,
   MatchSummary,
   OnlinePlayerInfo,
   PagedData,
@@ -25,10 +26,11 @@ class MotdApi {
     method: 'GET' | 'POST' | 'DELETE',
     endpoint: string,
     body?: string,
+    search?: URLSearchParams,
   ): Promise<string> {
     const url = new URL(
       `${location.protocol}//${location.host}/api/${endpoint}`,
-    );
+    ).toString();
 
     const cacheKey = method + url + (body ?? '');
 
@@ -36,7 +38,9 @@ class MotdApi {
 
     if (cachedRequest) return cachedRequest;
 
-    const resPromise = fetch(url, {
+    const searchStr = search ? '?' + search.toString() : '';
+
+    const resPromise = fetch(url + searchStr, {
       method,
       body,
       headers: body
@@ -63,8 +67,11 @@ class MotdApi {
     return result;
   }
 
-  protected async get(endpoint: string, body?: string): Promise<string> {
-    return this.query('GET', endpoint, body);
+  protected async get(
+    endpoint: string,
+    search?: URLSearchParams,
+  ): Promise<string> {
+    return this.query('GET', endpoint, undefined, search);
   }
 
   protected async post(endpoint: string, body?: string): Promise<string> {
@@ -295,8 +302,21 @@ class MotdApi {
     );
   }
 
-  public async getMatchResults(offset?: number) {
-    const res = await this.get('match/results/' + offset ?? '');
+  public async getMatchResults(offset?: number, filters?: MatchFilters) {
+    let search: URLSearchParams;
+
+    if (filters) {
+      search = new URLSearchParams();
+
+      if (filters.mapName) search.append('mapName', filters.mapName);
+      if (filters.players?.length)
+        search.append('players', JSON.stringify(filters.players));
+      if (filters.serverName) search.append('serverName', filters.serverName);
+      if (filters.matchStatuses?.length)
+        search.append('matchStatuses', JSON.stringify(filters.matchStatuses));
+    }
+
+    const res = await this.get('match/results/' + offset ?? '', search);
 
     return JSON.parse(res) as PagedData<MatchSummary>;
   }

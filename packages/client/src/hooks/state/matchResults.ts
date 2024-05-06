@@ -1,11 +1,38 @@
+import { MatchFilters } from '@motd-menu/common';
 import { motdApi } from 'src/api';
 import { createGlobalState } from './util';
 
-const matchResultsState = createGlobalState(() => motdApi.getMatchResults(0));
+const matchResultsFiltersState = createGlobalState({
+  matchStatuses: ['completed'],
+} as MatchFilters);
+
+export const resetMatchResultsFilters = () => {
+  matchResultsFiltersState.reset();
+};
+
+export const setMatchResultsFilters = (filters: MatchFilters) => {
+  matchResultsFiltersState.set(filters);
+};
+
+export const useMatchResultsFilters = () => {
+  return matchResultsFiltersState.useExternalState();
+};
+
+export const getMatchResultsFilters = () => {
+  return matchResultsFiltersState.get();
+};
+
+const matchResultsState = createGlobalState(async () =>
+  motdApi.getMatchResults(0, await getMatchResultsFilters()),
+);
 
 export const resetMatchResults = () => {
   matchResultsState.reset();
 };
+
+matchResultsFiltersState.subscribe(() => {
+  resetMatchResults();
+});
 
 let fetching = false;
 export const fetchMorematchResults = async () => {
@@ -16,7 +43,10 @@ export const fetchMorematchResults = async () => {
     const cur = await matchResultsState.get();
     if (cur.data.length >= cur.total) return;
 
-    const newResults = await motdApi.getMatchResults(cur.data.length);
+    const newResults = await motdApi.getMatchResults(
+      cur.data.length,
+      await getMatchResultsFilters(),
+    );
 
     matchResultsState.set({
       data: cur.data.concat(newResults.data),

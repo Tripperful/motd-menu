@@ -275,7 +275,10 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
     const damageByWeapon: Record<string, Record<string, number>> = {};
 
     for (const d of damage) {
-      const { steamId, damageDealtByWeapon } = d;
+      const { steamId } = d;
+      let { damageDealtByWeapon } = d;
+
+      damageDealtByWeapon ??= {} as Record<string, number>;
 
       for (const [weapon, damage] of Object.entries(damageDealtByWeapon)) {
         damageByWeapon[weapon] ??= {};

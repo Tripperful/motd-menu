@@ -14,30 +14,39 @@ export const createGlobalState = <
     | Promise<TValue>
     | ((key?: TStateKey) => TValue | Promise<TValue>),
 ) => {
-  type TValOrPromise = TValue | Promise<TValue>;
-  type TValOrUpdate = TValOrPromise | ((cur: TValOrPromise) => TValOrPromise);
+  type TValOrPromise<TValue> = TValue | Promise<TValue>;
+  type TValOrUpdate<TValue> =
+    | TValOrPromise<TValue>
+    | ((cur: TValOrPromise<TValue>) => TValOrPromise<TValue>);
 
-  type Setter = {
-    (valueOrSetter: TValOrUpdate, key?: TStateKey): TValOrPromise;
+  type Setter<TValue> = {
+    (
+      valueOrSetter: TValOrUpdate<TValue>,
+      key?: TStateKey,
+    ): TValOrPromise<TValue>;
   };
 
   type SubscriberCallback = (
-    newValue: TValOrPromise,
-    oldValue: TValOrPromise,
+    newValue: TValOrPromise<TValue>,
+    oldValue: TValOrPromise<TValue>,
   ) => void;
 
-  const stateMap = new Map<TStateKey, TValOrPromise>();
+  const stateMap = new Map<TStateKey, TValOrPromise<TValue>>();
   const subscribersMap = new Map<TStateKey, Set<SubscriberCallback>>();
 
   const getDefault = (key?: TStateKey) =>
     typeof defaultOrGetDefault === 'function'
-      ? (defaultOrGetDefault as (key?: TStateKey) => TValOrPromise)(key)
+      ? (defaultOrGetDefault as (key?: TStateKey) => TValOrPromise<TValue>)(key)
       : defaultOrGetDefault;
 
-  const set: Setter = async (valueOrSetter, key) => {
+  const set: Setter<TValue> = async (valueOrSetter, key) => {
     let newValue =
       typeof valueOrSetter === 'function'
-        ? (valueOrSetter as (cur: TValOrPromise) => TValOrPromise)(getRaw(key))
+        ? (
+            valueOrSetter as (
+              cur: TValOrPromise<TValue>,
+            ) => TValOrPromise<TValue>
+          )(getRaw(key))
         : valueOrSetter;
 
     const oldValue = getRaw(key);
@@ -82,7 +91,8 @@ export const createGlobalState = <
     return newValue;
   };
 
-  const reset = (key?: TStateKey) => set(emptyState as TValOrUpdate, key);
+  const reset = (key?: TStateKey) =>
+    set(emptyState as TValOrUpdate<TValue>, key);
 
   const getRaw = (key?: TStateKey) => stateMap.get(key);
 

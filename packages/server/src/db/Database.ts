@@ -11,6 +11,7 @@ import {
   MatchDamageData,
   MatchDeathData,
   MatchEndedMessage,
+  MatchFilters,
   MatchStartedMessage,
   MatchSummary,
   MedkitPickupMessage,
@@ -168,7 +169,11 @@ export interface Database {
     entityTeleport(data: EntityTeleportMessage): Promise<void>;
   };
   matches: {
-    get(limit: number, offset: number): Promise<PagedData<MatchSummary>>;
+    get(
+      limit: number,
+      offset: number,
+      filters?: MatchFilters,
+    ): Promise<PagedData<MatchSummary>>;
     get(matchId: string): Promise<MatchSummary>;
     getMatchDeaths(matchId: string): Promise<MatchDeathData[]>;
     getMatchDamage(matchId: string): Promise<MatchDamageData[]>;

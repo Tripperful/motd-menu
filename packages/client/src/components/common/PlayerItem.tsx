@@ -33,19 +33,36 @@ export const useStyles = createUseStyles({
   },
 });
 
-export const PlayerItem: FC<{ profile: SteamPlayerData; link: string }> = ({
-  profile,
-  link,
-}) => {
+type PlayerItemActionProps =
+  | {
+      link: string;
+    }
+  | {
+      onClick: (steamId: string) => void;
+    };
+
+export const PlayerItem: FC<
+  { profile: SteamPlayerData } & PlayerItemActionProps
+> = ({ profile, ...action }) => {
   const c = useStyles();
 
-  return (
-    <Link className={c.root} to={link}>
+  const content = (
+    <>
       <img className={c.avatar} src={profile.avatar} />
       <div className={c.playerInfo}>
         <div>{profile.name}</div>
         <div className={c.steamId}>{profile.steamId}</div>
       </div>
+    </>
+  );
+
+  return 'link' in action ? (
+    <Link className={c.root} to={action.link}>
+      {content}
     </Link>
+  ) : (
+    <div className={c.root} onClick={() => action.onClick(profile.steamId)}>
+      {content}
+    </div>
   );
 };

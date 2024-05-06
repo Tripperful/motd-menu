@@ -1,5 +1,6 @@
 import {
   Cvar,
+  MatchFilters,
   StartMatchSettings,
   cvarsInfo,
   matchCvars,
@@ -14,8 +15,17 @@ export const matchRouter = Router();
 matchRouter.get('/results/:offset?', async (req, res) => {
   try {
     const { offset } = req.params;
+    const { mapName, players, serverName, matchStatuses } = req.query;
 
-    const result = await db.matches.get(50, Number(offset ?? 0));
+    const filters: MatchFilters = {};
+
+    if (mapName) filters.mapName = mapName as string;
+    if (players) filters.players = JSON.parse(players as string);
+    if (serverName) filters.serverName = serverName as string;
+    if (matchStatuses)
+      filters.matchStatuses = JSON.parse(matchStatuses as string);
+
+    const result = await db.matches.get(50, Number(offset ?? 0), filters);
 
     const playersSteamIds = [
       ...new Set(
@@ -48,6 +58,22 @@ matchRouter.get('/:matchId', async (req, res) => {
     const { matchId } = req.params;
 
     const result = await db.matches.get(matchId);
+
+    const playersSteamIds = [
+      ...new Set(
+        result.teams.flatMap((team) =>
+          team.players.map((player) => player.steamId),
+        ),
+      ),
+    ];
+
+    const profiles = await getPlayersProfiles(playersSteamIds);
+
+    for (const team of result.teams) {
+      for (const player of team.players) {
+        player.profile = profiles[player.steamId];
+      }
+    }
 
     res.status(200).end(JSON.stringify(result));
   } catch {

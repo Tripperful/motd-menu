@@ -10,7 +10,7 @@ export const activeItem: () => JssStyle = () => ({
   transition: 'all 0.1s ease-out',
   '&:hover': {
     filter: 'drop-shadow(0 0 0.15rem #0008) saturate(2)',
-    transform: 'scale(1.05)',
+    transform: 'scale(0.975)',
   },
   '&:active, &[data-active=true]': {
     filter: 'drop-shadow(0 0 0.1rem #000b) saturate(2) brightness(2)',

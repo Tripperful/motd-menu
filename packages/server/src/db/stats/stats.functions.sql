@@ -1031,24 +1031,62 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
-OR REPLACE FUNCTION get_matches (lmt int, ofst int) RETURNS json AS $$
+OR REPLACE FUNCTION get_matches (
+  map_name_filter text,
+  players_filter json,
+  server_filter text,
+  status_filter json,
+  lmt int,
+  ofst int
+) RETURNS json AS $$
 DECLARE
   total int;
   match_json json;
 BEGIN
-SELECT COUNT(*) INTO total FROM matches WHERE matches.status != 'started';
-RETURN json_build_object(
-  'total',
-  total,
-  'data',
-  json_agg(match_json(matches_record))
-)
-FROM (
-  SELECT * FROM matches
-  WHERE matches.status != 'started'
-  ORDER BY start_time DESC
-  LIMIT lmt OFFSET ofst
-) AS matches_record;
+RETURN (
+  WITH found_matches AS (
+    SELECT * FROM matches
+    WHERE (
+      map_name_filter IS NULL
+      OR
+      map_id = (SELECT id FROM maps WHERE maps.name ILIKE '%' || map_name_filter || '%' LIMIT 1)
+    )
+    AND (
+      players_filter IS NULL
+      OR
+      (
+        SELECT COUNT(*)
+        FROM match_team_players
+        WHERE match_team_players.match_team_id IN (
+          SELECT id FROM match_teams WHERE match_teams.match_id = matches.id
+        )
+        AND match_team_players.steam_id::text = ANY(ARRAY(SELECT * FROM json_array_elements_text(players_filter)))
+      ) = json_array_length(players_filter)
+    )
+    AND (
+      server_filter IS NULL
+      OR
+      server_id = (SELECT id FROM servers WHERE servers.name ILIKE '%' || server_filter || '%' LIMIT 1)
+    )
+    AND (
+      status_filter IS NULL
+      OR
+      status = ANY(ARRAY(SELECT * FROM json_array_elements_text(status_filter)))
+    )
+    ORDER BY start_time DESC
+  )
+  SELECT json_build_object(
+    'total',
+    (SELECT COUNT(*) FROM found_matches),
+    'data',
+    (
+      SELECT COALESCE(json_agg(match_json(matches_page)), '[]'::json)
+      FROM (
+        SELECT * FROM found_matches LIMIT lmt OFFSET ofst
+      ) matches_page
+    )
+  )
+);
 END;
 $$ LANGUAGE plpgsql;
 

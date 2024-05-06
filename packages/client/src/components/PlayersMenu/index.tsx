@@ -7,7 +7,7 @@ import AddPersonIcon from '~icons/person-add.svg';
 import RefreshIcon from '~icons/refresh.svg';
 import SearchIcon from '~icons/search.svg';
 import { activeItem } from '~styles/elements';
-import { FindByName } from './FindByName';
+import { FindPlayerByNamePopup } from '../common/FindPlayerByNamePopup';
 import { PlayerDetails } from './PlayerDetails';
 import { PlayersList } from './PlayersList';
 import { ViewBySteamId } from './ViewBySteamId';
@@ -44,7 +44,10 @@ export const PlayersMenu: FC = () => {
     >
       <PlayersList />
       <Routes>
-        <Route path="/byName/*" element={<FindByName />} />
+        <Route
+          path="/byName/*"
+          element={<FindPlayerByNamePopup linkPrefix="../" />}
+        />
         <Route path="/bySteamId/*" element={<ViewBySteamId />} />
         <Route path="/:steamId/*" element={<PlayerDetails />} />
       </Routes>
