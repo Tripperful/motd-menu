@@ -19,7 +19,8 @@ srcdsRouter.post('/runCommand', async (req, res) => {
     db.logs.add('menu_rcon_command', steamId, { command });
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });

@@ -11,7 +11,8 @@ mapsReactionsRouter.get('/:mapName', async (req, res) => {
     const reactions = (await db.maps.reactions.get(mapName)) ?? [];
 
     res.status(200).end(JSON.stringify(reactions));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -27,7 +28,8 @@ mapsReactionsRouter.post('/:mapName/:reactionName', async (req, res) => {
     );
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -43,7 +45,8 @@ mapsReactionsRouter.delete('/:mapName/:reactionName', async (req, res) => {
     );
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });

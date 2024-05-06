@@ -26,7 +26,8 @@ playersRouter.get('/', async (_req, res) => {
     }
 
     res.status(200).end(JSON.stringify(Object.values(onlinePlayers)));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -38,7 +39,8 @@ playersRouter.get('/:steamId', async (req, res) => {
     const playerProfile = await getPlayerProfile(steamId);
 
     res.status(200).end(JSON.stringify(playerProfile));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -53,7 +55,8 @@ playersRouter.get('/timeplayed/:steamId', async (req, res) => {
     res
       .status(200)
       .end((await db.client.getTotalTimePlayed(steamId, token)).toString());
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -65,7 +68,8 @@ playersRouter.get('/smurfs/:steamId', async (req, res) => {
     const smurfs = (await db.client.getSmurfSteamIds(steamId)) ?? [];
 
     res.status(200).end(JSON.stringify(smurfs));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -77,7 +81,8 @@ playersRouter.get('/names/:steamId', async (req, res) => {
     const names = (await db.client.getNames(steamId)) ?? [];
 
     res.status(200).end(JSON.stringify(names));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -96,7 +101,8 @@ playersRouter.get('/findByName/:name', async (req, res) => {
       : [];
 
     res.status(200).end(JSON.stringify(profiles));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });

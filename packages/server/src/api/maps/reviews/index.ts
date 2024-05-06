@@ -28,7 +28,8 @@ reviewsRouter.get('/:mapName', async (req, res) => {
     }
 
     res.status(200).end(JSON.stringify(reviews));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -48,7 +49,8 @@ reviewsRouter.get('/player/:steamId', async (req, res) => {
     }
 
     res.status(200).end(JSON.stringify(reviews));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -68,7 +70,8 @@ reviewsRouter.post('/:mapName', async (req, res) => {
     review.timestamp = Number(timestamp);
 
     res.status(200).end(JSON.stringify(review));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -94,7 +97,8 @@ reviewsRouter.delete('/:mapName/:authorSteamId?', async (req, res) => {
     });
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });

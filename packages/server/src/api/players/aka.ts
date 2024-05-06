@@ -19,7 +19,8 @@ akaRouter.post('/:steamId/:name', async (req, res) => {
     });
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -40,7 +41,8 @@ akaRouter.delete('/:steamId', async (req, res) => {
     });
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -50,7 +52,8 @@ akaRouter.get('/:steamId', async (req, res) => {
     const { steamId } = req.params;
 
     res.status(200).end(await db.client.getAka(steamId));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });

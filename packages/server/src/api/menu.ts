@@ -12,7 +12,8 @@ menuRouter.post('/close', async (_req, res) => {
     srcdsApi.closeMenu(token);
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });

@@ -48,7 +48,8 @@ matchRouter.get('/results/:offset?', async (req, res) => {
     }
 
     res.status(200).end(JSON.stringify(result));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -76,7 +77,8 @@ matchRouter.get('/:matchId', async (req, res) => {
     }
 
     res.status(200).end(JSON.stringify(result));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -88,7 +90,8 @@ matchRouter.get('/deaths/:matchId', async (req, res) => {
     const result = await db.matches.getMatchDeaths(matchId);
 
     res.status(200).end(JSON.stringify(result));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -100,7 +103,8 @@ matchRouter.get('/damage/:matchId', async (req, res) => {
     const result = await db.matches.getMatchDamage(matchId);
 
     res.status(200).end(JSON.stringify(result));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -161,7 +165,8 @@ matchRouter.post('/start', async (req, res) => {
     }
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });

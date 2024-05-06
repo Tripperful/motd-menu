@@ -30,7 +30,8 @@ mapsRouter.get('/', async (_req, res) => {
     }
 
     res.status(200).end(JSON.stringify(mapPreviews));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -44,7 +45,8 @@ mapsRouter.get('/:mapName', async (req, res) => {
           await db.maps.get(res.locals.sessionData.steamId, req.params.mapName),
         ),
       );
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -155,7 +157,8 @@ mapsRouter.post('/favorite/:mapName', async (req, res) => {
     await db.maps.setFavorite(req.params.mapName, steamId, true);
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -169,7 +172,8 @@ mapsRouter.delete('/favorite/:mapName', async (req, res) => {
     await db.maps.setFavorite(req.params.mapName, steamId, false);
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -188,7 +192,8 @@ mapsRouter.post('/changelevel/:mapName', async (req, res) => {
     db.logs.add('menu_map_change', steamId, { mapName });
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });

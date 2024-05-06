@@ -9,7 +9,8 @@ playerSettingsRouter.get('/:steamId', async (req, res) => {
     const { steamId } = req.params;
 
     res.status(200).end(JSON.stringify(await db.client.settings.get(steamId)));
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
@@ -23,7 +24,8 @@ playerSettingsRouter.post('/', async (req, res) => {
     res.locals.srcdsApi.applySettings(steamId, settings);
 
     res.status(200).end();
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.status(500).end();
   }
 });
