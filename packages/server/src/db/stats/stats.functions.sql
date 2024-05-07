@@ -46,12 +46,14 @@ VALUES (
   port
 )
 ON CONFLICT DO NOTHING;
-INSERT INTO client_names (steam_id, name)
-VALUES (
-  steam_id::bigint,
-  name
-)
-ON CONFLICT DO NOTHING;
+IF name IS NOT NULL THEN
+  INSERT INTO client_names (steam_id, name)
+  VALUES (
+    steam_id::bigint,
+    name
+  )
+  ON CONFLICT DO NOTHING;
+END IF;
 END;
 $$ LANGUAGE plpgsql;
 
