@@ -31,7 +31,9 @@ export const OnlineServers: FC = () => {
         <Link
           key={serverInfo.id}
           className={c.link}
-          to={`/?guid=${sessionId}`}
+          to={`/?guid=${sessionId}&token=${new URLSearchParams(
+            location.search,
+          ).get('token')}`}
           target="_blank"
         >
           {serverInfo.name} ({serverInfo.ip}:{serverInfo.port})
