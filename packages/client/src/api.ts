@@ -9,6 +9,7 @@ import {
   MatchFilters,
   MatchSummary,
   OnlinePlayerInfo,
+  OnlineServerInfo,
   PagedData,
   Permission,
   PlayerClientSettings,
@@ -345,6 +346,12 @@ class MotdApi {
 
   public async runCommand(command: string) {
     await this.post(`srcds/runCommand`, JSON.stringify({ command }));
+  }
+
+  public async getOnlineServers() {
+    const res = await this.get('srcds/onlineServers');
+
+    return JSON.parse(res) as OnlineServerInfo[];
   }
 }
 

@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { db } from './db';
 import { getSrcdsApi } from './srcdsApi';
 import { SrcdsApi } from './srcdsApi/SrcdsApi';
-import { dbgWarn } from './util';
+import { dbgWarn, logDbgInfo } from './util';
 
 export interface MotdSessionData {
   remoteId: string;
@@ -19,7 +19,7 @@ const authCache: Record<string, OnlinePlayerInfo> = {};
 
 const getUserCredentials = async (
   token: string,
-  srcdsApi: SrcdsApi,
+  srcdsApi?: SrcdsApi,
 ): Promise<OnlinePlayerInfo> => {
   let auth = authCache[token];
 
@@ -28,6 +28,9 @@ const getUserCredentials = async (
   }
 
   if (!auth?.steamId) {
+    if (!srcdsApi) {
+      throw 'Unauthorized';
+    }
     auth = await srcdsApi.auth(token);
   }
 
@@ -46,37 +49,32 @@ export const dropAuthCache = (token: string) => {
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   try {
-    if (
-      req.url.includes('srcds-mock.html') ||
-      req.headers?.referer?.includes('srcds-mock.html')
-    ) {
-      return next();
-    }
-
     const reqAuthVersion = req.cookies?.version ?? authVersion;
     const cookie = reqAuthVersion === authVersion ? req.cookies : null;
     const token: string = (req.query?.token as string) ?? cookie?.token;
     const remoteId: string = (req.query?.guid as string) ?? cookie?.remoteId;
 
-    if (!(token && remoteId)) {
+    if (!token) {
       dbgWarn(
-        `Missing required auth request parameters, request info: ${JSON.stringify(
-          {
-            reqAuthVersion,
-            cookie,
-            token,
-            remoteId,
-            query: req.query,
-            url: req.url,
-          },
-        )}`,
+        `Missing auth token, request info: ${JSON.stringify({
+          reqAuthVersion,
+          cookie,
+          token,
+          remoteId,
+          query: req.query,
+          url: req.url,
+        })}`,
       );
 
       throw 'Unauthorized';
     }
 
-    const srcdsApi = getSrcdsApi(remoteId);
-    res.locals.srcdsApi = srcdsApi;
+    let srcdsApi: SrcdsApi;
+
+    if (remoteId) {
+      srcdsApi = getSrcdsApi(remoteId);
+      res.locals.srcdsApi = srcdsApi;
+    }
 
     const { steamId, userId } = await getUserCredentials(token, srcdsApi);
     const permissions = await db.permissions.get(steamId);
@@ -89,18 +87,28 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       permissions,
     };
 
-    res.cookie('version', authVersion);
-    res.cookie('remoteId', remoteId);
-    res.cookie('token', token, { httpOnly: true });
-    res.cookie('steamId', steamId);
+    const queryAuth = Boolean(req.query?.token);
 
-    if (userId) {
-      res.cookie('userId', userId);
-    } else {
-      res.clearCookie('userId');
+    if (queryAuth) {
+      res.cookie('version', authVersion);
+      res.cookie('token', token, { httpOnly: true });
+      res.cookie('steamId', steamId);
+      res.cookie('sendLogs', JSON.stringify(logDbgInfo));
+
+      if (remoteId) {
+        res.cookie('remoteId', remoteId);
+      } else {
+        res.clearCookie('remoteId');
+      }
+
+      if (userId) {
+        res.cookie('userId', userId);
+      } else {
+        res.clearCookie('userId');
+      }
+
+      res.cookie('permissions', JSON.stringify(permissions));
     }
-
-    res.cookie('permissions', JSON.stringify(permissions));
 
     next();
   } catch {

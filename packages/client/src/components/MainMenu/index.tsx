@@ -1,4 +1,5 @@
 import React, { FC, Suspense } from 'react';
+import { getSessionData } from 'src/hooks/useSessionData';
 import { Menu, MenuItemInfo } from '~components/common/Menu';
 import TeamsIcon from '~icons/flag.svg';
 import KnobsIcon from '~icons/knobs.svg';
@@ -9,7 +10,12 @@ import TerrainIcon from '~icons/terrain.svg';
 
 const menuItems: MenuItemInfo[] = [
   { title: 'Maps', link: 'maps', Icon: <TerrainIcon /> },
-  { title: 'Teams', link: 'teams', Icon: <TeamsIcon /> },
+  {
+    title: 'Teams',
+    link: 'teams',
+    Icon: <TeamsIcon />,
+    shouldShow: () => getSessionData().userId != null,
+  },
   {
     title: 'Players',
     link: 'players',

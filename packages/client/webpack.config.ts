@@ -15,7 +15,6 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
   return {
     entry: {
       index: './src/index.tsx',
-      ['srcds-mock']: './src/srcds-mock/index.tsx',
     },
     output: {
       filename: '[name].js',
@@ -48,15 +47,6 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
         inject: false,
         template: './src/template.ejs',
         chunks: ['index'],
-      }),
-      new HtmlWebpackPlugin({
-        title: 'MOTD srcds mock',
-        minify: true,
-        hash: true,
-        inject: false,
-        filename: 'srcds-mock.html',
-        template: './src/srcds-mock/template.ejs',
-        chunks: ['srcds-mock'],
       }),
       new BundleAnalyzerPlugin({ analyzerMode: 'static', openAnalyzer: false }),
       ...(mode === 'production' ? [new GzipPlugin()] : []),

@@ -65,6 +65,7 @@ export interface MenuItemInfo {
   size?: number;
   color?: string;
   permissions?: Permission[];
+  shouldShow?: () => boolean;
 }
 
 const exitItem: MenuItemInfo = {
@@ -101,6 +102,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   const visibleItems = useMemo(
     () =>
       items.filter((item) => {
+        if (item.shouldShow && !item.shouldShow()) return false;
         if (!item.permissions) return true;
         if (item.permissions.some((p) => permissions.includes(p))) return true;
         return false;

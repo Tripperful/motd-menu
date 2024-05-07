@@ -5,3 +5,8 @@ export interface ServerInfo {
   port?: number;
   blocked?: boolean;
 }
+
+export interface OnlineServerInfo {
+  sessionId: string;
+  serverInfo: ServerInfo;
+}

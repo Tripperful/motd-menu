@@ -1,4 +1,5 @@
 import {
+  OnlineServerInfo,
   ServerInfo,
   WsMessage,
   WsMessageCallback,
@@ -32,6 +33,16 @@ export class WsApi {
     { ws: WebSocket; remoteId: number; serverInfo: ServerInfo }
   > = {};
 
+  public getConnectedServers() {
+    return Object.entries(this.remotesBySessionId).map(
+      ([sessionId, { serverInfo }]) =>
+        ({
+          sessionId,
+          serverInfo,
+        }) as OnlineServerInfo,
+    );
+  }
+
   private getSessionId(remoteWs: WebSocket) {
     for (const [id, { ws }] of Object.entries(this.remotesBySessionId)) {
       if (ws === remoteWs) {
@@ -56,8 +67,10 @@ export class WsApi {
       const sessionId = searchParams?.get('guid');
       const serverInfo = await authenticate(auth);
       const remoteId = serverInfo?.id;
-      const ip = req.socket.remoteAddress;
+      const ip = req.socket.remoteAddress.split(':').pop();
       const port = req.socket.remotePort;
+      serverInfo.ip = ip;
+      serverInfo.port = port;
 
       if (!(remoteId && sessionId)) {
         console.warn(

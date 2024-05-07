@@ -6,7 +6,6 @@ import {
   uuid,
 } from '@motd-menu/common';
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import { WsClient } from 'src/util/ws';
 
 const isHttps = location.protocol === 'https:';
@@ -91,7 +90,7 @@ const steamIdToPseudoUuid = (steamId: string) => {
   });
 };
 
-const App: FC = () => {
+export const SrcdsMock: FC = () => {
   const [players, setPlayers] = useState<OnlinePlayer[]>(onlinePlayers);
   const [msgText, setMsgText] = useState('');
 
@@ -164,8 +163,8 @@ const App: FC = () => {
         value={msgText}
         onChange={(e) => setMsgText(e.currentTarget.value)}
       ></input>
+      &nbsp;
       <button onClick={onSendWsMessage}>Send WS message</button>
-      <br />
       <br />
       <button onClick={onAddPlayer}>Add player</button>
       <div>
@@ -190,4 +189,4 @@ const App: FC = () => {
   );
 };
 
-createRoot(document.querySelector('#root')).render(<App />);
+export default SrcdsMock;

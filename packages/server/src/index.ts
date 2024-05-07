@@ -10,7 +10,7 @@ import { api } from './api';
 import { authMiddleware } from './auth';
 import './config';
 import { db } from './db';
-import { dbgWarn, logDbgInfo } from './util';
+import { dbgWarn } from './util';
 import { WsApi } from './ws';
 import { wsHandlers } from './ws/handlers';
 
@@ -22,10 +22,6 @@ const staticServer = expressStaticGzip(staticDir, {
 });
 
 app.set('x-powered-by', false);
-app.use((_, res, next) => {
-  res.cookie('sendLogs', JSON.stringify(logDbgInfo));
-  next();
-});
 app.use(cookieParser());
 app.use('/', authMiddleware);
 app.use(bodyParser.json({ strict: false }));
