@@ -1,4 +1,5 @@
 import {
+  ServerInfo,
   WsMessage,
   WsMessageCallback,
   WsMessageType,
@@ -16,7 +17,7 @@ export class WsApi {
 
   public static init(
     httpServer: http.Server,
-    authenticate: (authKey: string) => Promise<number>,
+    authenticate: (authKey: string) => Promise<ServerInfo>,
   ) {
     if (!wsApi) {
       wsApi = new WsApi(httpServer, authenticate);
@@ -28,7 +29,7 @@ export class WsApi {
   // Maps WS session IDs to their respective WS sockets and remote IDs
   private remotesBySessionId: Record<
     string,
-    { ws: WebSocket; remoteId: number }
+    { ws: WebSocket; remoteId: number; serverInfo: ServerInfo }
   > = {};
 
   private getSessionId(remoteWs: WebSocket) {
@@ -43,7 +44,7 @@ export class WsApi {
 
   private constructor(
     httpServer: http.Server,
-    authenticate: (authKey: string) => Promise<number>,
+    authenticate: (authKey: string) => Promise<ServerInfo>,
   ) {
     this.wsServer = new WebSocketServer({ noServer: true });
 
@@ -53,12 +54,12 @@ export class WsApi {
 
       const auth = searchParams?.get('auth')?.toLowerCase();
       const sessionId = searchParams?.get('guid');
-      const remoteId = await authenticate(auth);
+      const serverInfo = await authenticate(auth);
+      const remoteId = serverInfo?.id;
+      const ip = req.socket.remoteAddress;
+      const port = req.socket.remotePort;
 
       if (!(remoteId && sessionId)) {
-        const ip = req.socket.remoteAddress;
-        const port = req.socket.remotePort;
-
         console.warn(
           `Unauthorized WS upgrade request from ${ip}:${port}, request URL: ${req.url}`,
         );
@@ -66,18 +67,28 @@ export class WsApi {
         return socket.destroy();
       }
 
+      console.log(
+        `${serverInfo.name} server connected to WS: ${JSON.stringify(
+          {
+            sessionId,
+            remoteId,
+            address: ip + ':' + port,
+          },
+          undefined,
+          2,
+        )}`,
+      );
+
       this.wsServer.handleUpgrade(req, socket, head, (ws) => {
-        this.remotesBySessionId[sessionId] = { ws, remoteId: remoteId };
+        this.remotesBySessionId[sessionId] = { ws, remoteId, serverInfo };
         this.wsServer.emit('connection', ws, req);
+        console.log(
+          `Connected servers: ${Object.keys(this.remotesBySessionId).length}`,
+        );
       });
     });
 
-    this.wsServer.on('connection', (remoteWs, req) => {
-      const { remoteAddress, remotePort } = req.socket;
-      const remoteHost = `${remoteAddress}:${remotePort}`;
-
-      console.log(`New WS connection: ${remoteHost}`);
-
+    this.wsServer.on('connection', (remoteWs) => {
       remoteWs.on('message', (data, isBinary) => {
         try {
           this.onWsMessage(data, isBinary, remoteWs);
@@ -100,9 +111,13 @@ export class WsApi {
         const sessionId = this.getSessionId(remoteWs);
 
         if (sessionId) {
+          const { serverInfo } = this.remotesBySessionId[sessionId];
           delete this.remotesBySessionId[sessionId];
 
-          console.log(`Closed WS connection: ${remoteHost}`);
+          console.log(`${serverInfo.name} server disconnected from WS`);
+          console.log(
+            `Connected servers: ${Object.keys(this.remotesBySessionId).length}`,
+          );
         }
       });
     });

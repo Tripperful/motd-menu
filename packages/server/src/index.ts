@@ -96,9 +96,7 @@ db.init().then(() => {
         return null;
       }
 
-      console.log(serverInfo.name + ' server authenticated');
-
-      return serverInfo.id;
+      return serverInfo;
     });
 
     for (const [msgType, handler] of Object.entries(wsHandlers)) {

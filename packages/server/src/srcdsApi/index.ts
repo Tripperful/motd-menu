@@ -14,8 +14,6 @@ export const getSrcdsApi: (remoteId: string) => SrcdsApi = (remoteId) => {
   if (!api) {
     api = createSrcdsApi(remoteId);
     srcdsApis[remoteId] = api;
-
-    dbgInfo(`SRCDS API instance for ${remoteId} created`);
   }
 
   return api;
