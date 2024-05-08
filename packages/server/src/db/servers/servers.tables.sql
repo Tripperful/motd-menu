@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS
     ip inet,
     port int,
     api_key text,
+    demos_url text,
     blocked boolean
   );
 

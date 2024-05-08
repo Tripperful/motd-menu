@@ -981,6 +981,12 @@ OR REPLACE FUNCTION match_json (match matches) RETURNS json AS $$ BEGIN RETURN j
   (SELECT maps.name FROM maps WHERE maps.id = match.map_id),
   'demoName',
   match.demo_id,
+  'demoLink',
+  (
+    SELECT servers.demos_url
+    FROM servers
+    WHERE servers.id = match.server_id
+  ) || match.demo_id || '.dem.7z',
   'initiator',
   match.initiator::text,
   'duration',

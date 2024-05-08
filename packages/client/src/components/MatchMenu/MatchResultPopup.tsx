@@ -24,9 +24,11 @@ import { getContrastingColor } from 'src/util/color';
 import { IconGlyph, weaponIconsGlyphs } from 'src/util/iconGlyph';
 import { teamInfoByIdx } from 'src/util/teams';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
+import { CopyOnClick } from '~components/common/CopyOnClick';
 import { Popup } from '~components/common/Popup';
 import { Spinner } from '~components/common/Spinner';
-import { activeItem } from '~styles/elements';
+import LinkIcon from '~icons/link.svg';
+import { activeItem, outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
@@ -119,6 +121,10 @@ const useStyles = createUseStyles({
   weaponIcon: {
     fontSize: '3em',
     transform: 'translateX(-50%)',
+  },
+  demoLink: {
+    ...outlineButton(),
+    alignSelf: 'center',
   },
 });
 
@@ -326,12 +332,21 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
 
   return (
     <div className={c.content}>
-      <div className={c.title}>Score board</div>
       <div className={c.teams}>
         {sortedTeams.map((t) => (
           <MatchTeam key={t.index} team={t} />
         ))}
       </div>
+      {match.demoLink && (
+        <CopyOnClick
+          className={c.demoLink}
+          copyText={match.demoLink}
+          what="Match demo link"
+        >
+          <LinkIcon />
+          Copy Demo Link
+        </CopyOnClick>
+      )}
       <div className={c.title}>Kills minus deaths graph</div>
       <ResponsiveContainer
         width="100%"

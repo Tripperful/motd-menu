@@ -34,6 +34,7 @@ export interface MatchSummary {
   server: string;
   mapName: string;
   demoName: string;
+  demoLink?: string;
   initiator: string;
   duration: number;
   startDate: number;
