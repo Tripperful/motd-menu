@@ -1287,6 +1287,12 @@ OR REPLACE FUNCTION get_efps_stats (match_id text) RETURNS json AS $$ BEGIN RETU
     WHERE match_teams.match_id = get_efps_stats.match_id::uuid
     ) > 1 THEN true ELSE false END
   ),
+  'startTime',
+  ROUND(EXTRACT(EPOCH FROM start_time)),
+  'endTime',
+  ROUND(EXTRACT(EPOCH FROM end_time)),
+  'initiator',
+  initiator::text,
   'matchDuration',
   ROUND(duration),
   'kills',
