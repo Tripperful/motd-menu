@@ -51,7 +51,7 @@ const handlerMap: Partial<
           body: JSON.stringify(efpsStats),
         });
       } catch {
-        dbgErr('Failed to post EFPS stats');
+        dbgErr('Failed to post EFPS stats (match id: ' + data.id + ')');
       }
     }
   },
