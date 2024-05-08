@@ -1272,6 +1272,8 @@ $$ LANGUAGE plpgsql;
 
 CREATE
 OR REPLACE FUNCTION get_efps_stats (match_id text) RETURNS json AS $$ BEGIN RETURN json_build_object(
+  'id',
+  get_efps_stats.match_id,
   'server',
   (SELECT servers.name FROM servers WHERE servers.id = server_id),
   'map',

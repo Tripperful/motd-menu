@@ -77,6 +77,7 @@ export interface EfpsMatchSummaryStat {
 }
 
 export interface EfpsMatchSummary {
+  id: string;
   server: string;
   map: string;
   teamplay: boolean;
