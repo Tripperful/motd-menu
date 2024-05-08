@@ -80,6 +80,18 @@ export class WsApi {
         return socket.destroy();
       }
 
+      const existingRemote = Object.values(this.remotesBySessionId).find(
+        (r) => r.remoteId === remoteId,
+      );
+
+      if (existingRemote) {
+        console.warn(
+          `Duplicate connection from ${existingRemote.serverInfo.name}, dropping the old connection`,
+        );
+
+        existingRemote.ws.close();
+      }
+
       console.log(
         `${serverInfo.name} server connected to WS: ${JSON.stringify(
           {
