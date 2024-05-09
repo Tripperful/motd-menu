@@ -982,11 +982,13 @@ OR REPLACE FUNCTION match_json (match matches) RETURNS json AS $$ BEGIN RETURN j
   'demoName',
   match.demo_id,
   'demoLink',
-  (
-    SELECT servers.demos_url
-    FROM servers
-    WHERE servers.id = match.server_id
-  ) || match.demo_id || '.dem.7z',
+  REPLACE(
+    (
+      SELECT servers.demos_url
+      FROM servers
+      WHERE servers.id = match.server_id
+    ), '<demo_id>', match.demo_id
+  ),
   'initiator',
   match.initiator::text,
   'duration',
