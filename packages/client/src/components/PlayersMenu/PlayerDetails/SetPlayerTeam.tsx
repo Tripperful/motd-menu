@@ -66,7 +66,7 @@ export const SetPlayerTeam: FC<{ steamId: string }> = ({ steamId }) => {
           <SetTeamButton
             key={t.index}
             teamIndex={t.index}
-            onClick={() => setTeam(t.index)}
+            onClick={() => setTeam(t.joinIndex)}
           >
             {t.icon}
             {t.name}
