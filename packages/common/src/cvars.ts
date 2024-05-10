@@ -41,6 +41,7 @@ export type Cvar =
   | 'sv_infinite_aux_power'
   | 'sv_hl2mp_item_respawn_time'
   | 'sv_hl2mp_weapon_respawn_time'
+  | 'sv_showlagcompensation'
   | 'mp_teamplay'
   | 'mp_friendlyfire'
   | 'mp_flashlight'
@@ -108,6 +109,12 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
   },
   sv_cheats: {
     description: 'Cheats',
+    type: 'bool',
+    permissions: adminEditPermissions,
+    mockValue: '0',
+  },
+  sv_showlagcompensation: {
+    description: 'Show server-side hitboxes',
     type: 'bool',
     permissions: adminEditPermissions,
     mockValue: '0',
