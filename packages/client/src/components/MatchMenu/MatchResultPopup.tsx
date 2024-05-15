@@ -25,8 +25,10 @@ import { IconGlyph, weaponIconsGlyphs } from 'src/util/iconGlyph';
 import { teamInfoByIdx } from 'src/util/teams';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
 import { CopyOnClick } from '~components/common/CopyOnClick';
+import { IFramePopup } from '~components/common/IFramePopup';
 import { Popup } from '~components/common/Popup';
 import { Spinner } from '~components/common/Spinner';
+import EfpsIcon from '~icons/efps.svg';
 import LinkIcon from '~icons/link.svg';
 import { activeItem, outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
@@ -108,21 +110,17 @@ const useStyles = createUseStyles({
     margin: '0.25em',
     borderRadius: '0.5em',
   },
-  radars: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '1em',
-  },
-  radarGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
   weaponIcon: {
     fontSize: '3em',
     transform: 'translateX(-50%)',
   },
-  demoLink: {
+  linkButtons: {
+    display: 'flex',
+    gap: '0.5em',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  linkButton: {
     ...outlineButton(),
     alignSelf: 'center',
   },
@@ -337,16 +335,22 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
           <MatchTeam key={t.index} team={t} />
         ))}
       </div>
-      {match.demoLink && (
-        <CopyOnClick
-          className={c.demoLink}
-          copyText={match.demoLink}
-          what="Match demo link"
-        >
-          <LinkIcon />
-          Copy Demo Link
-        </CopyOnClick>
-      )}
+      <div className={c.linkButtons}>
+        {match.demoLink && (
+          <CopyOnClick
+            className={c.linkButton}
+            copyText={match.demoLink}
+            what="Match demo link"
+          >
+            <LinkIcon />
+            Copy Demo Link
+          </CopyOnClick>
+        )}
+        <Link className={c.linkButton} to="efps">
+          <EfpsIcon />
+          eFPS stats
+        </Link>
+      </div>
       <div className={c.title}>Kills minus deaths graph</div>
       <ResponsiveContainer
         width="100%"
@@ -526,6 +530,16 @@ export const MatchResultPopup: FC = () => {
         <MatchResultPopupContent matchId={matchId} />
       </Suspense>
       <Routes>
+        <Route
+          path="efps"
+          element={
+            <IFramePopup
+              title="eFPS match stats"
+              url={`https://hl2dm.everythingfps.com/match.php?sfid=${matchId}`}
+              onClose={goBack}
+            />
+          }
+        />
         <Route
           path="player/:steamId/*"
           element={<PlayerDetails backPath="../.." />}
