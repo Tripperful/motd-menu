@@ -1,8 +1,8 @@
 import { PlayerClientSettings } from '@motd-menu/common';
 import classNames from 'classnames';
+import isEqual from 'lodash/isEqual';
 import React, { FC, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { useFirstMountState } from 'react-use';
 import { motdApi } from 'src/api';
 import { addNotification } from 'src/hooks/state/notifications';
 import {
@@ -63,12 +63,10 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     }
   };
 
-  const firstMount = useFirstMountState();
-
   useEffect(() => {
-    if (firstMount || disabled) return;
+    if (disabled) return;
 
-    const settings: PlayerClientSettings = {
+    const newSettings: PlayerClientSettings = {
       hitSound,
       killSound,
       esp,
@@ -77,10 +75,12 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
       fov,
     };
 
+    if (isEqual(settings, newSettings)) return;
+
     motdApi
-      .setPlayerSettings(settings)
+      .setPlayerSettings(newSettings)
       .then(() => {
-        setPlayerSettings(steamId, settings);
+        setPlayerSettings(steamId, newSettings);
       })
       .catch(() => {
         addNotification('error', 'Failed to save settings');
@@ -90,11 +90,11 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     drawViewmodel,
     esp,
     dsp,
-    firstMount,
     fov,
     hitSound,
     killSound,
     steamId,
+    settings,
   ]);
 
   return (
