@@ -57,7 +57,6 @@ const useStyles = createUseStyles({
   },
   editButton: {
     ...outlineButton(),
-    backgroundColor: theme.bg1,
     fontSize: '0.75em',
     float: 'right',
     marginLeft: '0.5em',
