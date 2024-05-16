@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS
     end_curtime float,
     end_time timestamp,
     duration float,
-    status text
+    status text,
+    sent_to_efps boolean DEFAULT false
   );
 
 CREATE TABLE IF NOT EXISTS

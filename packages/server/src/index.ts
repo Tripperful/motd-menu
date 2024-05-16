@@ -11,6 +11,7 @@ import { authMiddleware } from './auth';
 import './config';
 import { db } from './db';
 import { dbgWarn } from './util';
+import { EfpsWatchdog } from './util/efps';
 import { WsApi } from './ws';
 import { wsHandlers } from './ws/handlers';
 
@@ -79,6 +80,8 @@ db.init().then(() => {
     console.log(
       `${protocol.toUpperCase()} server is listening on port ${port}`,
     );
+
+    new EfpsWatchdog();
 
     const wsApi = WsApi.init(server, async (authKey: string) => {
       const serverInfo = await db.server.getByApiKey(authKey);

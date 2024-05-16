@@ -21,3 +21,11 @@ ADD COLUMN IF NOT EXISTS dsp boolean DEFAULT true;
 
 -- Drop the old get_matches function without filters
 DROP FUNCTION IF EXISTS get_matches (lmt int, ofst int);
+
+-- Add sent_to_efps column to matches table if it doesn't exist
+-- setting all existing matches to true, but changing the default to false
+-- so that all new matches aren't considered sent to efps until they are
+ALTER TABLE matches
+ADD COLUMN IF NOT EXISTS sent_to_efps boolean DEFAULT true;
+ALTER TABLE matches
+ALTER COLUMN sent_to_efps SET DEFAULT false;

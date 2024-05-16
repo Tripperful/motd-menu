@@ -1366,3 +1366,20 @@ WHERE matches.id = get_efps_stats.match_id::uuid
 LIMIT 1;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE mark_sent_to_efps (match_id text) AS $$ BEGIN
+  UPDATE matches
+  SET sent_to_efps = true
+  WHERE matches.id = mark_sent_to_efps.match_id::uuid;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_not_sent_to_efps () RETURNS json AS $$ BEGIN
+  RETURN json_agg(matches.id::text)
+  FROM matches
+  WHERE matches.sent_to_efps != true
+  AND matches.status = 'completed';
+END;
+$$ LANGUAGE plpgsql;

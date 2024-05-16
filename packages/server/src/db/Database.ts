@@ -178,5 +178,7 @@ export interface Database {
     getMatchDeaths(matchId: string): Promise<MatchDeathData[]>;
     getMatchDamage(matchId: string): Promise<MatchDamageData[]>;
     getEfpsStats(matchId: string): Promise<EfpsMatchSummary>;
+    markSentToEfps(matchId: string): Promise<void>;
+    getNotSentToEfps(): Promise<string[]>;
   };
 }

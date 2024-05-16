@@ -302,6 +302,9 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.select<MatchDamageData[]>('get_match_damage', matchId),
     getEfpsStats: async (matchId: string) =>
       this.select<EfpsMatchSummary>('get_efps_stats', matchId),
+    markSentToEfps: async (matchId: string) =>
+      this.call('mark_sent_to_efps', matchId),
+    getNotSentToEfps: async () => this.select<string[]>('get_not_sent_to_efps'),
   };
 
   override async init() {
