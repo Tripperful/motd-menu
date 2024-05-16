@@ -32,14 +32,12 @@ class MotdApi {
     const url = new URL(
       `${location.protocol}//${location.host}/api/${endpoint}`,
     ).toString();
-
-    const cacheKey = method + url + (body ?? '');
+    const searchStr = search ? '?' + search.toString() : '';
+    const cacheKey = method + url + searchStr + (body ?? '');
 
     const cachedRequest = this.requestCache[cacheKey];
 
     if (cachedRequest) return cachedRequest;
-
-    const searchStr = search ? '?' + search.toString() : '';
 
     const resPromise = fetch(url + searchStr, {
       method,
