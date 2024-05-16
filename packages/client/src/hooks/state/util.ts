@@ -1,7 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
 const emptyState = Symbol('EmptyState');
-const noQuickRes = Symbol('NoQuickRes');
 
 type StateKey = string | number;
 
@@ -39,8 +38,12 @@ export const createGlobalState = <
       ? (defaultOrGetDefault as (key?: TStateKey) => TValOrPromise<TValue>)(key)
       : defaultOrGetDefault;
 
+  const getRaw = (key?: TStateKey) => stateMap.get(key);
+
   const set: Setter<TValue> = async (valueOrSetter, key) => {
-    let newValue =
+    const oldValue = getRaw(key);
+
+    const newValue =
       typeof valueOrSetter === 'function'
         ? (
             valueOrSetter as (
@@ -49,29 +52,23 @@ export const createGlobalState = <
           )(getRaw(key))
         : valueOrSetter;
 
-    const oldValue = getRaw(key);
+    if (oldValue === newValue) {
+      return newValue;
+    }
 
     if (newValue === emptyState) {
       stateMap.delete(key);
     } else {
-      if (stateMap.has(key)) {
-        const quickRes = await Promise.race([
-          newValue,
-          new Promise<typeof noQuickRes>((r) => {
-            setTimeout(() => r(noQuickRes), 100);
-          }),
-        ]);
-
-        if (quickRes !== noQuickRes) {
-          newValue = quickRes;
-        }
-      }
-
       stateMap.set(key, newValue);
 
       if (newValue instanceof Promise) {
         newValue.then((res) => {
-          set(res, key);
+          // If our original promise is still the current
+          // value, then  set the resolved value
+          const curValue = getRaw(key);
+          if (curValue === newValue) {
+            set(res, key);
+          }
         });
       }
     }
@@ -93,8 +90,6 @@ export const createGlobalState = <
 
   const reset = (key?: TStateKey) =>
     set(emptyState as TValOrUpdate<TValue>, key);
-
-  const getRaw = (key?: TStateKey) => stateMap.get(key);
 
   const get = (key?: TStateKey) => {
     if (!stateMap.has(key)) {
