@@ -11,7 +11,7 @@ import { PageHeader } from './PageHeader';
 const useStyles = createUseStyles({
   bg: {
     ...fullscreen(),
-    backgroundColor: theme.bg2,
+    backgroundColor: theme.backdrop,
     display: 'flex',
     justifyContent: 'flex-end',
   },

@@ -11,7 +11,7 @@ import { ClassNameProps } from '~types/props';
 export const usePopupStyles = createUseStyles({
   bg: {
     ...fullscreen(),
-    backgroundColor: theme.bg2,
+    backgroundColor: theme.backdrop,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -43,7 +43,7 @@ export const usePopupStyles = createUseStyles({
 export const Popup: FC<
   {
     children?: React.ReactNode;
-    title: string;
+    title: React.ReactNode;
     onClose: () => void;
   } & ClassNameProps
 > = ({ children, title, onClose, className }) => {

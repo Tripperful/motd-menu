@@ -10,4 +10,5 @@ export const theme = {
   fg3: '#7d7554',
   fgError: '#ee0000',
   fgSuccess: '#00ee00',
+  backdrop: '#888b',
 };
