@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
 import { simpleButton } from 'src/styles/elements';
@@ -26,9 +26,9 @@ const useStyles = createUseStyles({
 });
 
 export const PageHeader: FC<{
-  title: string;
+  title: ReactNode;
   backPath?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }> = ({ title, backPath = '..', children }) => {
   const c = useStyles();
 

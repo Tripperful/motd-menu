@@ -13,7 +13,7 @@ const useStyles = createUseStyles({
 });
 
 export const Page: FC<
-  { title: string; headerContent?: ReactNode } & ChildrenProps
+  { title: ReactNode; headerContent?: ReactNode } & ChildrenProps
 > = ({ title, headerContent, children }) => {
   const c = useStyles();
 

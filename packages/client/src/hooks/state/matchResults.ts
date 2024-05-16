@@ -6,29 +6,21 @@ const matchResultsFiltersState = createGlobalState({
   matchStatuses: ['completed'],
 } as MatchFilters);
 
-export const resetMatchResultsFilters = () => {
-  matchResultsFiltersState.reset();
-};
+export const resetMatchResultsFilters = () => matchResultsFiltersState.reset();
 
-export const setMatchResultsFilters = (filters: MatchFilters) => {
+export const setMatchResultsFilters = (filters: MatchFilters) =>
   matchResultsFiltersState.set(filters);
-};
 
-export const useMatchResultsFilters = () => {
-  return matchResultsFiltersState.useExternalState();
-};
+export const useMatchResultsFilters = () =>
+  matchResultsFiltersState.useExternalState();
 
-export const getMatchResultsFilters = () => {
-  return matchResultsFiltersState.get();
-};
+export const getMatchResultsFilters = () => matchResultsFiltersState.get();
 
 const matchResultsState = createGlobalState(async () =>
   motdApi.getMatchResults(0, await getMatchResultsFilters()),
 );
 
-export const resetMatchResults = () => {
-  matchResultsState.reset();
-};
+export const resetMatchResults = () => matchResultsState.reset();
 
 matchResultsFiltersState.subscribe(() => {
   resetMatchResults();
@@ -64,6 +56,7 @@ export const useMatchResults = () => {
 
   return {
     results,
+    total,
     hasMore: results.length < total,
   };
 };

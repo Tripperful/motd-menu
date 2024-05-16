@@ -1,7 +1,14 @@
 import { MatchSummary, MatchSummaryTeam } from '@motd-menu/common';
 import Color from 'color';
 import range from 'lodash/range';
-import React, { FC, Suspense, useEffect, useMemo, useRef } from 'react';
+import React, {
+  FC,
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
 import { useIntersection } from 'react-use';
@@ -22,6 +29,11 @@ import { MatchResultPopup } from './MatchResultPopup';
 import { MatchResultsFilters } from './MatchResultsFilters';
 
 const useStyles = createUseStyles({
+  pageHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5em',
+  },
   content: {
     display: 'flex',
     flexDirection: 'column',
@@ -248,8 +260,14 @@ const ResultsFetcher: FC = () => {
   return <div ref={ref}>Loading more...</div>;
 };
 
-const MatchResultsContent: FC = () => {
-  const { results, hasMore } = useMatchResults();
+export const MatchResultsContent: FC<{
+  setTotal?: (total: number) => void;
+}> = ({ setTotal }) => {
+  const { results, hasMore, total } = useMatchResults();
+
+  useEffect(() => {
+    setTotal?.(total);
+  }, [setTotal, total]);
 
   return (results?.length ?? 0) === 0 ? (
     'No matches found'
@@ -263,7 +281,7 @@ const MatchResultsContent: FC = () => {
   );
 };
 
-const MatchResultsSkeleton: FC = () => {
+export const MatchResultsSkeleton: FC = () => {
   const c = useStyles();
 
   return (
@@ -277,12 +295,18 @@ const MatchResultsSkeleton: FC = () => {
 
 export const MatchResultsMenu: FC = () => {
   const c = useStyles();
+  const [total, setTotal] = useState(null as number);
 
   const isMatchOrganizer = useCheckPermission('match_organizer');
 
   return (
     <ActionPage
-      title="Match results"
+      title={
+        <span className={c.pageHeader}>
+          Match results
+          {total != null && <span className={c.chip}>{total}</span>}
+        </span>
+      }
       refreshAction={resetMatchResults}
       headerContent={
         <Link to="filters" className={c.filtersButton}>
@@ -307,7 +331,7 @@ export const MatchResultsMenu: FC = () => {
     >
       <div className={c.content}>
         <Suspense fallback={<MatchResultsSkeleton />}>
-          <MatchResultsContent />
+          <MatchResultsContent setTotal={setTotal} />
         </Suspense>
         <Routes>
           <Route path="filters/*" element={<MatchResultsFilters />} />

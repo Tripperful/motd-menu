@@ -73,7 +73,7 @@ export const ActionPageAction: FC<ActionPageActionProps> = (props) => {
 
 export const ActionPage: FC<
   ChildrenProps & {
-    title: string;
+    title: ReactNode;
     refreshAction?: () => void;
     actions?: ActionPageActionProps[];
     headerContent?: ReactNode;

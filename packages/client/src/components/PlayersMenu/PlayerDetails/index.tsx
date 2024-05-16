@@ -15,9 +15,11 @@ import { LineWithCopy } from '~components/common/LineWithCopy';
 import { PlayerSettings } from '~components/common/PlayerSettings';
 import { SidePanel } from '~components/common/SidePanel';
 import EfpsIcon from '~icons/efps.svg';
+import MatchesIcon from '~icons/playlist.svg';
 import UserInspectIcon from '~icons/user-inspect.svg';
 import { outlineButton } from '~styles/elements';
 import { PlayerAka } from './PlayerAka';
+import { PlayerMatchesPopup } from './PlayerMatchesPopup';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
 import { PlayerTimePlayed } from './PlayerTimePlayed';
@@ -119,6 +121,10 @@ const PlayerDetailsContent: FC = () => {
               <EfpsIcon />
               eFPS stats
             </Link>
+            <Link className={c.profileButton} to="matches">
+              <MatchesIcon />
+              Matches
+            </Link>
           </div>
         </div>
       </div>
@@ -154,8 +160,12 @@ export const PlayerDetails: FC<{ backPath?: string }> = ({ backPath }) => {
       <Routes>
         <Route path="/smurfs/*" element={<SmurfsPopup />} />
         <Route path="/efps/*" element={<EfpsStatsPopup />} />
-        <Route path="/:mapName/*" element={<RatedMapDetails />} />
         <Route path="/setAka/*" element={<SetAkaPopup steamId={steamId} />} />
+        <Route
+          path="/matches/*"
+          element={<PlayerMatchesPopup steamId={steamId} />}
+        />
+        <Route path="/:mapName/*" element={<RatedMapDetails />} />
       </Routes>
     </SidePanel>
   );

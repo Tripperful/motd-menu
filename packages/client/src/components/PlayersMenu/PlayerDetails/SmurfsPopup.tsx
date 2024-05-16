@@ -94,7 +94,7 @@ export const SmurfsPopup: FC = () => {
         </Suspense>
       </div>
       <Routes>
-        <Route path=":steamId" element={<PlayerDetails />} />
+        <Route path=":steamId/*" element={<PlayerDetails />} />
       </Routes>
     </Popup>
   );
