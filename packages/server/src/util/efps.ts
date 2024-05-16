@@ -1,6 +1,9 @@
 import { db } from 'src/db';
 import { dbgErr } from '.';
 
+/**
+ * @returns success
+ */
 export const sendMatchToEfps = async (matchId: string) => {
   try {
     const efpsStats = await db.matches.getEfpsStats(matchId);
@@ -17,9 +20,13 @@ export const sendMatchToEfps = async (matchId: string) => {
     }
 
     await db.matches.markSentToEfps(matchId);
+
+    return true;
   } catch {
     dbgErr('Failed to post eFPS stats (match id: ' + matchId + ')');
   }
+
+  return false;
 };
 
 const checkInterval = 60_000;
@@ -54,7 +61,17 @@ export class EfpsWatchdog {
           `Sending a missing match ${matchId} to eFPS, attempt #${this.attempts[matchId]}`,
         );
 
-        await sendMatchToEfps(matchId);
+        const success = await sendMatchToEfps(matchId);
+
+        if (success) {
+          delete this.attempts[matchId];
+        }
+
+        console.warn(
+          `${
+            success ? 'Successfully sent' : 'Failed to send'
+          } match ${matchId} to eFPS`,
+        );
       }),
     );
   }

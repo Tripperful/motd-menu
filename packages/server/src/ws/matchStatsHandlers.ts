@@ -40,7 +40,13 @@ const handlerMap: Partial<
     await db.matchStats.matchEnded(data);
 
     if (process.env.MOTD_EFPS_STATS_POST_URL && data.status === 'completed') {
-      sendMatchToEfps(data.id);
+      const success = sendMatchToEfps(data.id);
+
+      console.warn(
+        `${success ? 'Successfully sent' : 'Failed to send'} match ${
+          data.id
+        } to eFPS`,
+      );
     }
   },
 
