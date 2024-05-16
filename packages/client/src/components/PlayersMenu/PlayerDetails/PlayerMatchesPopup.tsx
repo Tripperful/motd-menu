@@ -1,11 +1,13 @@
 import React, { FC, Suspense, useEffect, useRef, useState } from 'react';
 import { createUseStyles } from 'react-jss';
+import { Route, Routes } from 'react-router-dom';
 import {
   getMatchResultsFilters,
   setMatchResultsFilters,
 } from 'src/hooks/state/matchResults';
 import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { useGoBack } from 'src/hooks/useGoBack';
+import { MatchResultPopup } from '~components/MatchMenu/MatchResultPopup';
 import {
   MatchResultsContent,
   MatchResultsSkeleton,
@@ -115,6 +117,9 @@ export const PlayerMatchesPopup: FC<{ steamId: string }> = ({ steamId }) => {
           <PlayerMatchesContent steamId={steamId} setTotal={setTotal} />
         </Suspense>
       </div>
+      <Routes>
+        <Route path="/:matchId/*" element={<MatchResultPopup />} />
+      </Routes>
     </Popup>
   );
 };
