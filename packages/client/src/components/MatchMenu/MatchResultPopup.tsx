@@ -244,7 +244,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
     return scoreDataPoints;
   }, [deaths, match.startCurtime, players]);
 
-  const killsByWeapon = useMemo(() => {
+  const { killsByWeapon, totalKillsByWeapon } = useMemo(() => {
     const killsByWeapon: Record<string, Record<string, number | string>> = {};
 
     for (const death of deaths) {
@@ -258,24 +258,33 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
       (killsByWeapon[weapon][attacker] as number)++;
     }
 
-    const res = Object.values(killsByWeapon).sort((a, b) => {
-      const aTotal = Object.values(a).reduce(
-        (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
-        0,
-      ) as number;
+    return {
+      killsByWeapon: Object.values(killsByWeapon).sort((a, b) => {
+        const aTotal = Object.values(a).reduce(
+          (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+          0,
+        ) as number;
 
-      const bTotal = Object.values(b).reduce(
-        (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
-        0,
-      ) as number;
+        const bTotal = Object.values(b).reduce(
+          (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+          0,
+        ) as number;
 
-      return bTotal - aTotal;
-    });
-
-    return res;
+        return bTotal - aTotal;
+      }),
+      totalKillsByWeapon: Object.fromEntries(
+        Object.entries(killsByWeapon).map(([weapon, kills]) => [
+          weapon,
+          Object.values(kills).reduce(
+            (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+            0,
+          ),
+        ]),
+      ),
+    };
   }, [deaths]);
 
-  const damageByWeapon = useMemo(() => {
+  const { damageByWeapon, totalDamageByWeapon } = useMemo(() => {
     const damageByWeapon: Record<string, Record<string, number>> = {};
 
     for (const d of damage) {
@@ -291,24 +300,35 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
       }
     }
 
-    return Object.entries(damageByWeapon)
-      .map(([weapon, damage]) => ({
-        weapon,
-        ...damage,
-      }))
-      .sort((a, b) => {
-        const aTotal = Object.values(a).reduce(
-          (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
-          0,
-        ) as number;
+    return {
+      damageByWeapon: Object.entries(damageByWeapon)
+        .map(([weapon, damage]) => ({
+          weapon,
+          ...damage,
+        }))
+        .sort((a, b) => {
+          const aTotal = Object.values(a).reduce(
+            (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+            0,
+          ) as number;
 
-        const bTotal = Object.values(b).reduce(
-          (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
-          0,
-        ) as number;
+          const bTotal = Object.values(b).reduce(
+            (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+            0,
+          ) as number;
 
-        return bTotal - aTotal;
-      });
+          return bTotal - aTotal;
+        }),
+      totalDamageByWeapon: Object.fromEntries(
+        Object.entries(damageByWeapon).map(([weapon, damage]) => [
+          weapon,
+          Object.values(damage).reduce(
+            (acc: number, v) => acc + (typeof v === 'number' ? v : 0),
+            0,
+          ),
+        ]),
+      ),
+    };
   }, [damage]);
 
   const xTicks: number[] = [];
@@ -414,6 +434,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
             }
           />
           <Tooltip
+            labelFormatter={(v) => `${v}: ${totalKillsByWeapon[v]} kills total`}
             itemSorter={(item) => -item.value as number}
             formatter={(value: string, name: string) => [
               value + ' kills',
@@ -472,6 +493,7 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
             }
           />
           <Tooltip
+            labelFormatter={(v) => `${v}: ${totalDamageByWeapon[v]} hp total`}
             itemSorter={(item) => -item.value as number}
             formatter={(value: string, name: string) => [
               value + ' hp',
