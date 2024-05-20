@@ -80,9 +80,10 @@ export class WsApi {
         return socket.destroy();
       }
 
-      const existingRemote = Object.values(this.remotesBySessionId).find(
-        (r) => r.remoteId === remoteId,
-      );
+      const [existingSessionId, existingRemote] =
+        Object.entries(this.remotesBySessionId).find(
+          ([, r]) => r.remoteId === remoteId,
+        ) ?? [];
 
       if (existingRemote) {
         console.warn(
@@ -90,6 +91,8 @@ export class WsApi {
         );
 
         existingRemote.ws.close();
+
+        delete this.remotesBySessionId[existingSessionId];
       }
 
       console.log(
