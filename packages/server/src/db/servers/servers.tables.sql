@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS
     port int,
     api_key text,
     demos_url text,
-    blocked boolean
+    blocked boolean,
+    is_dev boolean DEFAULT false
   );
 
 CREATE TABLE IF NOT EXISTS

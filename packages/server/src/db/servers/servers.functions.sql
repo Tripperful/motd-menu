@@ -9,7 +9,9 @@ OR REPLACE FUNCTION server_json (server servers) RETURNS json AS $$ BEGIN RETURN
   'name',
   server.name,
   'blocked',
-  server.blocked
+  server.blocked,
+  'isDev',
+  server.is_dev
 );
 END;
 $$ LANGUAGE plpgsql;

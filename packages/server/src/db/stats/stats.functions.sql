@@ -1380,6 +1380,7 @@ OR REPLACE FUNCTION get_not_sent_to_efps () RETURNS json AS $$ BEGIN
   RETURN json_agg(matches.id::text)
   FROM matches
   WHERE matches.sent_to_efps != true
+  AND (SELECT is_dev FROM servers WHERE servers.id = matches.server_id LIMIT 1) != true
   AND matches.status = 'completed';
 END;
 $$ LANGUAGE plpgsql;

@@ -4,6 +4,7 @@ export interface ServerInfo {
   ip?: string;
   port?: number;
   blocked?: boolean;
+  isDev: boolean;
 }
 
 export interface OnlineServerInfo {

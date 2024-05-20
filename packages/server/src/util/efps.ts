@@ -8,8 +8,6 @@ export const sendMatchToEfps = async (matchId: string) => {
   try {
     const efpsStats = await db.matches.getEfpsStats(matchId);
 
-    if (efpsStats.server?.toLowerCase()?.includes('dev')) return;
-
     const res = await fetch(process.env.MOTD_EFPS_STATS_POST_URL, {
       method: 'POST',
       body: JSON.stringify(efpsStats),
@@ -70,7 +68,7 @@ export class EfpsWatchdog {
         console.warn(
           `${
             success ? 'Successfully sent' : 'Failed to send'
-          } match ${matchId} to eFPS`,
+          } a missing match ${matchId} to eFPS`,
         );
       }),
     );

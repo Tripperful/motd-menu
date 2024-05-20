@@ -36,17 +36,15 @@ const handlerMap: Partial<
   match_started: async (data: MatchStartedMessage, serverId) =>
     db.matchStats.matchStarted(serverId, data),
 
-  match_ended: async (data: MatchEndedMessage) => {
+  match_ended: async (data: MatchEndedMessage, serverId) => {
     await db.matchStats.matchEnded(data);
 
     if (process.env.MOTD_EFPS_STATS_POST_URL && data.status === 'completed') {
-      const success = sendMatchToEfps(data.id);
+      const { isDev } = await db.server.getById(serverId);
 
-      console.warn(
-        `${success ? 'Successfully sent' : 'Failed to send'} match ${
-          data.id
-        } to eFPS`,
-      );
+      if (isDev) return;
+
+      sendMatchToEfps(data.id);
     }
   },
 
