@@ -4,6 +4,7 @@ declare namespace Express {
     command?: string;
     parseCommandRes?: (res: string) => Promise<readonly [number, unknown]>;
     srcdsApi?: import('src/srcdsApi/SrcdsApi').SrcdsApi;
+    tgService?: import('src/telegram').TelegramService;
   }
 }
 

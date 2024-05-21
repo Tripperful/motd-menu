@@ -89,6 +89,12 @@ class MotdApi {
     await this.post('menu/close');
   }
 
+  public async getTgJoinLink() {
+    const res = await this.get('menu/tgLink');
+
+    return JSON.parse(res)?.link as string;
+  }
+
   public async getOnlinePlayers() {
     const res = await this.get('players');
 

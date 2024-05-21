@@ -3,11 +3,15 @@ import debounce from 'lodash/debounce';
 import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useLocation } from 'react-router-dom';
+import { motdApi } from 'src/api';
 import { useMyPermissions } from 'src/hooks/state/permissions';
 import BackIcon from '~icons/chevron-left.svg';
 import CrossIcon from '~icons/close.svg';
+import TelegramIcon from '~icons/telegram.svg';
+import { activeItem } from '~styles/elements';
 import { filterShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
+import { QrCodePopup } from '../QrCodePopup';
 import { MenuItem } from './MenuItem';
 
 const useStyles = createUseStyles({
@@ -56,6 +60,14 @@ const useStyles = createUseStyles({
     bottom: '50%',
     transform: 'translateY(50%)',
   },
+  tgLink: {
+    ...activeItem(),
+    position: 'absolute',
+    right: '1em',
+    bottom: '1em',
+    display: 'flex',
+    alignItems: 'center',
+  },
 });
 
 export interface MenuItemInfo {
@@ -97,6 +109,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
 }) => {
   const c = useStyles();
   const [hoveredItem, setHoveredItem] = useState<MenuItemInfo>();
+  const [joinTgLink, setJoinTgLink] = useState(null as string);
 
   const permissions = useMyPermissions();
   const visibleItems = useMemo(
@@ -118,9 +131,11 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
 
   const centerItem = pathname === '/' ? exitItem : backItem;
 
+  const isDev = permissions.includes('dev');
+
   return (
     <div className={c.root}>
-      {permissions.includes('dev') && (
+      {isDev && (
         <div className={c.dev}>
           <div>
             Build timestamp: {buildTimestampFormat.format(BUILD_TIMESTAMP)}
@@ -160,6 +175,23 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
           />
         ))}
       </div>
+      {isDev && (
+        <div
+          className={c.tgLink}
+          onClick={() => {
+            motdApi.getTgJoinLink().then((link) => setJoinTgLink(link));
+          }}
+        >
+          <TelegramIcon /> Telegram
+        </div>
+      )}
+      {joinTgLink && (
+        <QrCodePopup
+          title="Connect to telegram"
+          link={joinTgLink}
+          onClose={() => setJoinTgLink(null)}
+        />
+      )}
     </div>
   );
 };
