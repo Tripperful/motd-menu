@@ -14,14 +14,17 @@ export const sendMatchToEfps = async (matchId: string) => {
     });
 
     if (!res.ok) {
-      throw new Error('Failed to post eFPS stats');
+      dbgErr('Error response from eFPS stats post endpoint');
+      dbgErr('Response status: ' + res.status);
+      dbgErr('Response body: ' + (await res.text()));
+      throw new Error('Failed to send eFPS stats');
     }
 
     await db.matches.markSentToEfps(matchId);
 
     return true;
   } catch {
-    dbgErr('Failed to post eFPS stats (match id: ' + matchId + ')');
+    dbgErr('Failed to send eFPS stats (match id: ' + matchId + ')');
   }
 
   return false;
@@ -63,13 +66,8 @@ export class EfpsWatchdog {
 
         if (success) {
           delete this.attempts[matchId];
+          console.warn(`Successfully sent a missing match ${matchId} to eFPS`);
         }
-
-        console.warn(
-          `${
-            success ? 'Successfully sent' : 'Failed to send'
-          } a missing match ${matchId} to eFPS`,
-        );
       }),
     );
   }
