@@ -34,6 +34,7 @@ import {
   allPermissions,
   allReactionNames,
 } from '@motd-menu/common';
+import { TelegramClientInfo } from 'src/telegram/types';
 import { ChargeAggregate } from 'src/ws/chargerUseHandler';
 import { BasePgDatabase } from './BasePgDatabase';
 import { Database } from './Database';
@@ -305,6 +306,16 @@ export class PgDatabase extends BasePgDatabase implements Database {
     markSentToEfps: async (matchId: string) =>
       this.call('mark_sent_to_efps', matchId),
     getNotSentToEfps: async () => this.select<string[]>('get_not_sent_to_efps'),
+  };
+
+  telegram = {
+    linkClient: (steamId: string, userId: number, chatId: number) =>
+      this.call('tg_link_client', steamId, userId, chatId),
+    unlinkClient: (steamId: string) => this.call('tg_unlink_client', steamId),
+    getClientBySteamId: (steamId: string) =>
+      this.select<TelegramClientInfo>('tg_get_client_by_steam_id', steamId),
+    getClientByClientId: (clientId: number) =>
+      this.select<TelegramClientInfo>('tg_get_client_by_client_id', clientId),
   };
 
   override async init() {

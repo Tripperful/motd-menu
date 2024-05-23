@@ -1,7 +1,9 @@
 import { randomBytes } from 'crypto';
 import { RequestHandler } from 'express';
 import TelegramBot from 'node-telegram-bot-api';
+import { db } from 'src/db';
 import { getPlayerProfile } from 'src/steam';
+import { TelegramClientInfo } from './types';
 
 interface JoinCodeInfo {
   steamId: string;
@@ -9,61 +11,118 @@ interface JoinCodeInfo {
   generatedAt: number;
 }
 
-interface TelegramUserInfo {
-  steamId: string;
-  chatId: number;
-}
-
 export class TelegramService {
-  private static instance: TelegramService;
   private static joinCodeLifetime = 1000 * 60 * 5;
 
   private bot: TelegramBot;
   private joinLinksBySteamId: Record<string, string> = {};
   private joinLinks: Record<string, JoinCodeInfo> = {};
-  private users: Record<string, TelegramUserInfo> = {};
 
   constructor(botToken: string) {
+    if (this.bot) {
+      this.bot.stopPolling();
+      this.bot.removeAllListeners();
+    }
+
     this.bot = new TelegramBot(botToken, { polling: true });
+    this.bot.setMyCommands([
+      {
+        command: 'stop',
+        description:
+          'Disconnect your account from the bot and stop receiving messages',
+      },
+      {
+        command: 'online',
+        description: 'Show online servers and players',
+      },
+    ]);
+
     this.bot.on('message', (msg) => this.onMessage(msg));
 
-    TelegramService.instance = this;
+    TelegramService._instance = this;
   }
 
-  public async sendMessage(chatId: number, message: string) {
-    return await this.bot.sendMessage(chatId, message, {
-      parse_mode: 'MarkdownV2',
-    });
+  private static _instance: TelegramService = null;
+  public static get instance() {
+    return TelegramService._instance;
+  }
+
+  private async onUnauthorized(msg: TelegramBot.Message) {
+    return await this.bot.sendMessage(
+      msg.chat.id,
+      'You need to authenticate via the in-game menu first to use this bot',
+    );
   }
 
   private async onMessage(msg: TelegramBot.Message) {
-    const chatId = msg.chat.id;
+    const clientInfo = await db.telegram.getClientByClientId(msg.from.id);
 
-    if (msg.text.startsWith('/start ')) {
-      const code = msg.text.slice(7);
-
-      const joinCode = this.joinLinks[code];
-
-      if (!joinCode) {
-        return await this.sendMessage(chatId, 'Invalid join link');
-      }
-
-      if (
-        Date.now() - joinCode.generatedAt >
-        TelegramService.joinCodeLifetime
-      ) {
-        return await this.sendMessage(chatId, 'Join link has expired');
-      }
-
-      delete this.joinLinks[code];
-      const steamId = joinCode.steamId;
-
-      this.users[steamId] = { steamId, chatId };
-
-      const profile = await getPlayerProfile(steamId);
-
-      return await this.sendMessage(chatId, `Welcome, ${profile.name}\\!`);
+    if (msg.text?.startsWith('/')) {
+      return await this.onCommand(msg, clientInfo);
     }
+
+    if (!clientInfo) {
+      await this.onUnauthorized(msg);
+    }
+  }
+
+  private async onCommand(
+    msg: TelegramBot.Message,
+    clientInfo: TelegramClientInfo,
+  ) {
+    const cmd = msg.text.slice(1).split(' ')[0];
+    const args = msg.text.slice(1).split(' ').slice(1);
+
+    if (cmd === 'start') {
+      return await this.onStarted(args[0], msg);
+    }
+
+    if (!clientInfo) {
+      return await this.onUnauthorized(msg);
+    }
+
+    switch (cmd) {
+      case 'stop':
+        return await this.onStopped(msg);
+    }
+  }
+
+  private async onStarted(code: string, msg: TelegramBot.Message) {
+    const chatId = msg.chat.id;
+    const joinCode = this.joinLinks[code];
+
+    if (!joinCode) {
+      return await this.bot.sendMessage(chatId, 'Invalid join link');
+    }
+
+    if (Date.now() - joinCode.generatedAt > TelegramService.joinCodeLifetime) {
+      return await this.bot.sendMessage(chatId, 'Join link has expired');
+    }
+
+    delete this.joinLinks[code];
+    const steamId = joinCode.steamId;
+
+    const clientId = msg.from.id;
+    await db.telegram.linkClient(steamId, clientId, chatId);
+
+    const profile = await getPlayerProfile(steamId);
+
+    return await this.bot.sendMessage(chatId, `Welcome, ${profile.name}!`);
+  }
+
+  private async onStopped(msg: TelegramBot.Message) {
+    const clientInfo = await db.telegram.getClientByClientId(msg.from.id);
+
+    if (!clientInfo) {
+      return await this.bot.sendMessage(msg.chat.id, 'You are not connected');
+    }
+
+    await db.telegram.unlinkClient(clientInfo.steamId);
+
+    return await this.bot.sendMessage(
+      msg.chat.id,
+      'You will no longer receive messages from us',
+    );
   }
 
   public async getJoinLink(steamId: string) {
@@ -93,8 +152,13 @@ export class TelegramService {
     await this.bot.stopPolling();
   }
 
-  public static middleware: RequestHandler = async (req, res, next) => {
+  public static middleware: RequestHandler = async (_req, res, next) => {
     res.locals.tgService = TelegramService.instance;
+    res.locals.tgClientInfo = await db.telegram.getClientBySteamId(
+      res.locals.sessionData.steamId,
+    );
+
+    res.cookie('tgConnected', !!res.locals.tgClientInfo?.clientId);
 
     next();
   };

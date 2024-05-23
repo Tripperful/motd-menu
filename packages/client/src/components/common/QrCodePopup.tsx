@@ -13,6 +13,11 @@ const useStyles = createUseStyles({
     flexDirection: 'column',
     alignItems: 'center',
     gap: '1em',
+    width: '15em',
+  },
+  description: {
+    textAlign: 'center',
+    fontSize: '0.8em',
   },
   qrBg: {
     backgroundColor: 'white',
@@ -29,15 +34,17 @@ const useStyles = createUseStyles({
 
 export const QrCodePopup: FC<{
   title: ReactNode;
+  description?: ReactNode;
   link: string;
   onClose?: () => void;
-}> = ({ title, link, onClose }) => {
+}> = ({ title, description, link, onClose }) => {
   const c = useStyles();
   const goBack = useGoBack();
 
   return (
     <Popup title={title} onClose={onClose ?? goBack}>
       <div className={c.content}>
+        {description && <div className={c.description}>{description}</div>}
         <div className={c.qrBg}>
           <QrCode value={link} className={c.qr} />
         </div>

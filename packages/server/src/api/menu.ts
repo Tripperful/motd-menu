@@ -22,12 +22,8 @@ menuRouter.get('/tgLink', async (_req, res) => {
   try {
     const {
       tgService,
-      sessionData: { steamId, permissions },
+      sessionData: { steamId },
     } = res.locals;
-
-    if (!permissions.includes('dev')) {
-      return res.status(403).end();
-    }
 
     const link = (await tgService?.getJoinLink(steamId)) ?? null;
 

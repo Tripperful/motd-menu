@@ -8,6 +8,7 @@ export const getSessionData = () => {
   const sessionData: SessionData = {
     steamId: cookies.steamId ?? 'Unknown',
     permissions: cookies.permissions ? JSON.parse(cookies.permissions) : [],
+    tgConnected: cookies.tgConnected === 'true',
   };
 
   if (cookies.userId) {

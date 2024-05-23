@@ -5,6 +5,7 @@ import { createUseStyles } from 'react-jss';
 import { useLocation } from 'react-router-dom';
 import { motdApi } from 'src/api';
 import { useMyPermissions } from 'src/hooks/state/permissions';
+import { useSessionData } from 'src/hooks/useSessionData';
 import BackIcon from '~icons/chevron-left.svg';
 import CrossIcon from '~icons/close.svg';
 import TelegramIcon from '~icons/telegram.svg';
@@ -62,10 +63,12 @@ const useStyles = createUseStyles({
   },
   tgLink: {
     ...activeItem(),
+    fontSize: '0.8em',
     position: 'absolute',
     right: '1em',
     bottom: '1em',
     display: 'flex',
+    gap: '0.25em',
     alignItems: 'center',
   },
 });
@@ -132,6 +135,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   const centerItem = pathname === '/' ? exitItem : backItem;
 
   const isDev = permissions.includes('dev');
+  const { tgConnected } = useSessionData();
 
   return (
     <div className={c.root}>
@@ -175,19 +179,20 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
           />
         ))}
       </div>
-      {isDev && (
+      {!tgConnected && (
         <div
           className={c.tgLink}
           onClick={() => {
             motdApi.getTgJoinLink().then((link) => setJoinTgLink(link));
           }}
         >
-          <TelegramIcon /> Telegram
+          <TelegramIcon /> Connect Telegram
         </div>
       )}
       {joinTgLink && (
         <QrCodePopup
-          title="Connect to telegram"
+          title="Connect to Telegram"
+          description="Scan the QR code with your phone or copy the link and paste it to your browser to start receiving notifications from us."
           link={joinTgLink}
           onClose={() => setJoinTgLink(null)}
         />

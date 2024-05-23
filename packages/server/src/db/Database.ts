@@ -32,6 +32,7 @@ import {
   ServerInfo,
   WeaponDropMessage,
 } from '@motd-menu/common';
+import { TelegramClientInfo } from 'src/telegram/types';
 import { ChargeAggregate } from 'src/ws/chargerUseHandler';
 import { LogEventType } from './LogEventType';
 
@@ -180,5 +181,11 @@ export interface Database {
     getEfpsStats(matchId: string): Promise<EfpsMatchSummary>;
     markSentToEfps(matchId: string): Promise<void>;
     getNotSentToEfps(): Promise<string[]>;
+  };
+  telegram: {
+    linkClient(steamId: string, userId: number, chatId: number): Promise<void>;
+    unlinkClient(steamId: string): Promise<void>;
+    getClientBySteamId(steamId: string): Promise<TelegramClientInfo>;
+    getClientByClientId(clientId: number): Promise<TelegramClientInfo>;
   };
 }
