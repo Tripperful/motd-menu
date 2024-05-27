@@ -53,8 +53,7 @@ export type Cvar =
   | 'mm_overtime'
   | 'mm_hotbolt_fix'
   | 'mm_new_shotgun'
-  | 'mm_shotgun_single_spread_angle'
-  | 'mm_shotgun_double_spread_angle'
+  | 'mm_shotgun_spread_angle'
   | 'mm_shotgun_tracehull_size'
   | 'mm_esp_teammates'
   | 'mm_rpg_spawn_time';
@@ -203,16 +202,8 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     permissions: adminEditPermissions,
     mockValue: '1.5',
   },
-  mm_shotgun_single_spread_angle: {
-    description: 'Shotgun single shot spread (deg)',
-    type: 'number',
-    min: 0,
-    max: 90,
-    permissions: adminEditPermissions,
-    mockValue: '10',
-  },
-  mm_shotgun_double_spread_angle: {
-    description: 'Shotgun double shot spread (deg)',
+  mm_shotgun_spread_angle: {
+    description: 'Shotgun spread angle (deg)',
     type: 'number',
     min: 0,
     max: 90,
