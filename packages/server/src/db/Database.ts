@@ -185,6 +185,7 @@ export interface Database {
   telegram: {
     linkClient(steamId: string, userId: number, chatId: number): Promise<void>;
     unlinkClient(steamId: string): Promise<void>;
+    getAllClients(): Promise<TelegramClientInfo[]>;
     getClientBySteamId(steamId: string): Promise<TelegramClientInfo>;
     getClientByClientId(clientId: number): Promise<TelegramClientInfo>;
   };

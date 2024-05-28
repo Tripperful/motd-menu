@@ -51,3 +51,18 @@ OR REPLACE FUNCTION tg_get_client_by_client_id (_client_id bigint) RETURNS json 
   );
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION tg_get_all_clients () RETURNS json AS $$ BEGIN
+  RETURN (
+    SELECT json_agg(
+      json_build_object(
+        'steamId', steam_id::text,
+        'clientId', client_id,
+        'chatId', chat_id
+      )
+    )
+    FROM tg_clients
+  );
+END;
+$$ LANGUAGE plpgsql;

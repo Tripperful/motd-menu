@@ -314,6 +314,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
     unlinkClient: (steamId: string) => this.call('tg_unlink_client', steamId),
     getClientBySteamId: (steamId: string) =>
       this.select<TelegramClientInfo>('tg_get_client_by_steam_id', steamId),
+    getAllClients: () =>
+      this.select<TelegramClientInfo[]>('tg_get_all_clients'),
     getClientByClientId: (clientId: number) =>
       this.select<TelegramClientInfo>('tg_get_client_by_client_id', clientId),
   };

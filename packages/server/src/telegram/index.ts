@@ -31,10 +31,6 @@ export class TelegramService {
         description:
           'Disconnect your account from the bot and stop receiving messages',
       },
-      {
-        command: 'online',
-        description: 'Show online servers and players',
-      },
     ]);
 
     this.bot.on('message', (msg) => this.onMessage(msg));
@@ -55,6 +51,24 @@ export class TelegramService {
   }
 
   private async onMessage(msg: TelegramBot.Message) {
+    await Promise.all(
+      (await db.telegram.getAllClients()).map((client) =>
+        client.clientId !== msg.from.id
+          ? db.permissions.get(client.steamId).then((permissions) => {
+              if (permissions.includes('tg_admin')) {
+                return this.bot.sendMessage(
+                  client.chatId,
+                  `Message from @${msg.from.username}\nhttps://steamcommunity.com/profiles/${client.steamId}\n\n${msg.text}`,
+                  {
+                    disable_web_page_preview: true,
+                  },
+                );
+              }
+            })
+          : null,
+      ),
+    );
+
     const clientInfo = await db.telegram.getClientByClientId(msg.from.id);
 
     if (msg.text?.startsWith('/')) {
@@ -84,6 +98,17 @@ export class TelegramService {
     switch (cmd) {
       case 'stop':
         return await this.onStopped(msg);
+      case 'broadcast':
+        return await this.onBroadcast(msg);
+    }
+  }
+
+  private async onBroadcast(msg: TelegramBot.Message) {
+    const clients = await db.telegram.getAllClients();
+    const txt = msg.text.substring('/broadcast'.length).trim();
+
+    for (const client of clients) {
+      await this.bot.sendMessage(client.chatId, txt);
     }
   }
 

@@ -8,6 +8,7 @@ export const permissionDescriptions = {
   cvars_matchmaking_edit: 'Edit matchmaking cvars',
   cvars_admin_view: 'View admin cvars',
   cvars_admin_edit: 'Edit admin cvars',
+  tg_admin: 'Administrate Telegram bot',
   permissions_view: "View players' permissions",
   permissions_edit: "Edit players' permissions",
   rcon: 'Run server concommands via the menu',
