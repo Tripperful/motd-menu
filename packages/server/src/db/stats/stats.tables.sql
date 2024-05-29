@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS
     hit_sound boolean,
     kill_sound boolean,
     fov int,
+    magnum_zoom_fov int,
+    crossbow_zoom_fov int,
     esp boolean,
     dsp boolean,
     draw_viewmodel boolean

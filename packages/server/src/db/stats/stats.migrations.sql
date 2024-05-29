@@ -15,9 +15,11 @@ $$ LANGUAGE plpgsql;
 ALTER TABLE player_deaths
 ADD COLUMN IF NOT EXISTS distance float;
 
--- Add dsp column to client_settings table if it doesn't exist
+-- Add client settings columns if they don't exist
 ALTER TABLE client_settings
-ADD COLUMN IF NOT EXISTS dsp boolean DEFAULT true;
+ADD COLUMN IF NOT EXISTS dsp boolean DEFAULT true,
+ADD COLUMN IF NOT EXISTS magnum_zoom_fov int DEFAULT 0,
+ADD COLUMN IF NOT EXISTS crossbow_zoom_fov int DEFAULT 20;
 
 -- Drop the old get_matches function without filters
 DROP FUNCTION IF EXISTS get_matches (lmt int, ofst int);

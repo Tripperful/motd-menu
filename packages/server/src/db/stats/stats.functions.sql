@@ -96,6 +96,10 @@ OR REPLACE FUNCTION get_client_settings (steam_id text) RETURNS json AS $$ BEGIN
   client_settings.kill_sound,
   'fov',
   client_settings.fov,
+  'magnumZoomFov',
+  client_settings.magnum_zoom_fov,
+  'crossbowZoomFov',
+  client_settings.crossbow_zoom_fov,
   'esp',
   client_settings.esp,
   'dsp',
@@ -114,6 +118,8 @@ OR REPLACE PROCEDURE set_client_settings (
   hit_sound boolean,
   kill_sound boolean,
   fov int,
+  magnum_zoom_fov int,
+  crossbow_zoom_fov int,
   esp boolean,
   dsp boolean,
   draw_viewmodel boolean
@@ -123,6 +129,8 @@ INSERT INTO client_settings (
   hit_sound,
   kill_sound,
   fov,
+  magnum_zoom_fov,
+  crossbow_zoom_fov,
   esp,
   dsp,
   draw_viewmodel
@@ -132,6 +140,8 @@ VALUES (
   hit_sound,
   kill_sound,
   fov,
+  magnum_zoom_fov,
+  crossbow_zoom_fov,
   esp,
   dsp,
   draw_viewmodel
@@ -140,6 +150,8 @@ SET
   hit_sound = EXCLUDED.hit_sound,
   kill_sound = EXCLUDED.kill_sound,
   fov = EXCLUDED.fov,
+  magnum_zoom_fov = EXCLUDED.magnum_zoom_fov,
+  crossbow_zoom_fov = EXCLUDED.crossbow_zoom_fov,
   esp = EXCLUDED.esp,
   dsp = EXCLUDED.dsp,
   draw_viewmodel = EXCLUDED.draw_viewmodel;

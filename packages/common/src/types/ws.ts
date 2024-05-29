@@ -90,6 +90,8 @@ export interface SetSettingsAction {
     esp: 0 | 1;
     dsp: 0 | 1;
     fov: number;
+    magnumZoomFov: number;
+    crossbowZoomFov: number;
     hitsound: 0 | 1;
     killsound: 0 | 1;
   };

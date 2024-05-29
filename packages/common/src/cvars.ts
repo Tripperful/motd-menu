@@ -41,6 +41,7 @@ export type Cvar =
   | 'sv_infinite_aux_power'
   | 'sv_hl2mp_item_respawn_time'
   | 'sv_hl2mp_weapon_respawn_time'
+  | 'sv_allow_357_alt_fire_zoom'
   | 'sv_showlagcompensation'
   | 'mp_teamplay'
   | 'mp_friendlyfire'
@@ -175,6 +176,12 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     description: 'Force palyer respawn',
     type: 'bool',
     permissions: matchmakingPermissions,
+    mockValue: '1',
+  },
+  sv_allow_357_alt_fire_zoom: {
+    description: 'Magnum alt fire zoom',
+    type: 'bool',
+    permissions: adminEditPermissions,
     mockValue: '1',
   },
   mm_hotbolt_fix: {

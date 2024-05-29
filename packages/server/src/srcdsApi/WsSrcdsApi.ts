@@ -82,14 +82,26 @@ export class WsSrcdsApi implements SrcdsApi {
 
   applySettings(
     steamId: string,
-    { drawViewmodel, esp, fov, hitSound, killSound }: PlayerClientSettings,
+    {
+      drawViewmodel,
+      esp,
+      dsp,
+      fov,
+      magnumZoomFov,
+      crossbowZoomFov,
+      hitSound,
+      killSound,
+    }: PlayerClientSettings,
   ): void {
     this.send('apply_settings', {
       steamId,
       settings: {
         drawviewmodel: drawViewmodel ? 1 : 0,
         esp: esp ? 1 : 0,
+        dsp: dsp ? 1 : 0,
         fov,
+        magnumZoomFov,
+        crossbowZoomFov,
         hitsound: hitSound ? 1 : 0,
         killsound: killSound ? 1 : 0,
       },

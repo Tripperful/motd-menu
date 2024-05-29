@@ -25,10 +25,18 @@ const useStyles = createUseStyles({
     flexDirection: 'column',
     gap: '0.5em',
   },
+  row: {
+    display: 'flex',
+    gap: '0.5em',
+    height: '2em',
+  },
 });
 
 const fovMin = 70;
 const fovMax = 110;
+
+const zoomFovMin = 15;
+const zoomFovMax = 70;
 
 export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   steamId,
@@ -48,6 +56,17 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   const [fov, setFov] = useState(settings.fov);
   const [fovStr, setFovStr] = useState(String(fov));
 
+  const [magZoomEnabled, setMagZoomEnabled] = useState(
+    settings.magnumZoomFov !== 0,
+  );
+  const [magnumZoomFov, setMagnumZoomFov] = useState(settings.magnumZoomFov);
+  const [magZFovStr, setMagZFovStr] = useState(String(magnumZoomFov));
+
+  const [crossbowZoomFov, setCrossbowZoomFov] = useState(
+    settings.crossbowZoomFov,
+  );
+  const [xbowZFovStr, setXbowZFovStr] = useState(String(crossbowZoomFov));
+
   const onFovBlur = () => {
     if (!fovStr) {
       setFovStr('90');
@@ -63,6 +82,42 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     }
   };
 
+  const onMagZFovBlur = () => {
+    if (!magZFovStr) {
+      setMagZFovStr('20');
+      setMagnumZoomFov(20);
+      return;
+    }
+
+    if (magZFovStr !== String(magnumZoomFov)) {
+      const clampedFov = Math.min(
+        zoomFovMax,
+        Math.max(zoomFovMin, Number(magZFovStr)),
+      );
+
+      setMagnumZoomFov(clampedFov);
+      setMagZFovStr(String(clampedFov));
+    }
+  };
+
+  const onXbowZFovBlur = () => {
+    if (!magZFovStr) {
+      setXbowZFovStr('20');
+      setCrossbowZoomFov(20);
+      return;
+    }
+
+    if (xbowZFovStr !== String(crossbowZoomFov)) {
+      const clampedFov = Math.min(
+        zoomFovMax,
+        Math.max(zoomFovMin, Number(xbowZFovStr)),
+      );
+
+      setCrossbowZoomFov(clampedFov);
+      setXbowZFovStr(String(clampedFov));
+    }
+  };
+
   useEffect(() => {
     if (disabled) return;
 
@@ -73,6 +128,8 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
       dsp,
       drawViewmodel,
       fov,
+      magnumZoomFov: magZoomEnabled ? magnumZoomFov : 0,
+      crossbowZoomFov,
     };
 
     if (isEqual(settings, newSettings)) return;
@@ -91,6 +148,9 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     esp,
     dsp,
     fov,
+    magZoomEnabled,
+    magnumZoomFov,
+    crossbowZoomFov,
     hitSound,
     killSound,
     steamId,
@@ -140,6 +200,40 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
           onChange={(e) => setFovStr(e.currentTarget.value)}
           label={`FOV (${fovMin} - ${fovMax})`}
         />
+        <LabeledInput
+          type="number"
+          min={zoomFovMin}
+          max={zoomFovMax}
+          value={xbowZFovStr}
+          disabled={disabled}
+          onBlur={onXbowZFovBlur}
+          onChange={(e) => setXbowZFovStr(e.currentTarget.value)}
+          label={`Crossbow zoom FOV (${zoomFovMin} - ${zoomFovMax})`}
+        />
+        <div className={c.row}>
+          <LabeledSwitch
+            active={magZoomEnabled}
+            setActive={(v) => {
+              setMagZoomEnabled(v);
+              setMagnumZoomFov(v ? 20 : 0);
+              setMagZFovStr(v ? '20' : '0');
+            }}
+            label="Magnum zoom"
+            disabled={disabled}
+          />
+          {magZoomEnabled && (
+            <LabeledInput
+              type="number"
+              min={zoomFovMin}
+              max={zoomFovMax}
+              value={magZFovStr}
+              disabled={disabled || !magZoomEnabled}
+              onBlur={onMagZFovBlur}
+              onChange={(e) => setMagZFovStr(e.currentTarget.value)}
+              label={`FOV (${zoomFovMin} - ${zoomFovMax})`}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

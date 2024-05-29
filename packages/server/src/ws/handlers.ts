@@ -43,8 +43,16 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
     },
 
     get_settings_request: async (msg: WsMessage<string>) => {
-      const { fov, drawViewmodel, esp, dsp, hitSound, killSound } =
-        await db.client.settings.get(msg.data);
+      const {
+        fov,
+        magnumZoomFov,
+        crossbowZoomFov,
+        drawViewmodel,
+        esp,
+        dsp,
+        hitSound,
+        killSound,
+      } = await db.client.settings.get(msg.data);
 
       const aka = (await db.client.getAka(msg.data)) ?? '';
 
@@ -52,6 +60,8 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
         type: 'get_settings_response',
         data: {
           fov,
+          magnumZoomFov,
+          crossbowZoomFov,
           drawviewmodel: drawViewmodel ? 1 : 0,
           esp: esp ? 1 : 0,
           dsp: dsp ? 1 : 0,
@@ -67,6 +77,8 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
 
       const settings: PlayerClientSettings = {
         fov: s.fov,
+        magnumZoomFov: s.magnumZoomFov,
+        crossbowZoomFov: s.crossbowZoomFov,
         drawViewmodel:
           s.drawviewmodel == null ? null : Boolean(s.drawviewmodel),
         esp: s.esp == null ? null : Boolean(s.esp),

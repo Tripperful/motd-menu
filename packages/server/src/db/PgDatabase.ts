@@ -42,6 +42,8 @@ import { LogEventType } from './LogEventType';
 
 const defaultSettings: PlayerClientSettings = {
   fov: 90,
+  magnumZoomFov: 0,
+  crossbowZoomFov: 20,
   drawViewmodel: true,
   esp: false,
   dsp: true,
@@ -216,6 +218,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
           hitSound,
           killSound,
           fov,
+          magnumZoomFov,
+          crossbowZoomFov,
           esp,
           dsp,
           drawViewmodel,
@@ -229,6 +233,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
           hitSound ?? curSettings.hitSound,
           killSound ?? curSettings.killSound,
           fov ?? curSettings.fov,
+          magnumZoomFov ?? curSettings.magnumZoomFov,
+          crossbowZoomFov ?? curSettings.crossbowZoomFov,
           esp ?? curSettings.esp,
           dsp ?? curSettings.dsp,
           drawViewmodel ?? curSettings.drawViewmodel,
