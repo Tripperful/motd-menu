@@ -51,6 +51,8 @@ export class TelegramService {
   }
 
   private async onMessage(msg: TelegramBot.Message) {
+    const sender = await db.telegram.getClientByClientId(msg.from.id);
+
     await Promise.all(
       (await db.telegram.getAllClients()).map((client) =>
         client.clientId !== msg.from.id
@@ -58,7 +60,7 @@ export class TelegramService {
               if (permissions.includes('tg_admin')) {
                 return this.bot.sendMessage(
                   client.chatId,
-                  `Message from @${msg.from.username}\nhttps://steamcommunity.com/profiles/${client.steamId}\n\n${msg.text}`,
+                  `Message from @${msg.from.username}\nhttps://steamcommunity.com/profiles/${sender.steamId}\n\n${msg.text}`,
                   {
                     disable_web_page_preview: true,
                   },
@@ -69,13 +71,11 @@ export class TelegramService {
       ),
     );
 
-    const clientInfo = await db.telegram.getClientByClientId(msg.from.id);
-
     if (msg.text?.startsWith('/')) {
-      return await this.onCommand(msg, clientInfo);
+      return await this.onCommand(msg, sender);
     }
 
-    if (!clientInfo) {
+    if (!sender) {
       await this.onUnauthorized(msg);
     }
   }
