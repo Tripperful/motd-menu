@@ -51,7 +51,19 @@ export class TelegramService {
   }
 
   private async onMessage(msg: TelegramBot.Message) {
-    const sender = await db.telegram.getClientByClientId(msg.from.id);
+    let sender = await db.telegram.getClientByClientId(msg.from.id);
+
+    if (msg.text?.startsWith('/')) {
+      return await this.onCommand(msg, sender);
+    }
+
+    if (!sender) {
+      sender = await db.telegram.getClientByClientId(msg.from.id);
+    }
+
+    if (!sender) {
+      await this.onUnauthorized(msg);
+    }
 
     await Promise.all(
       (await db.telegram.getAllClients()).map((client) =>
@@ -70,14 +82,6 @@ export class TelegramService {
           : null,
       ),
     );
-
-    if (msg.text?.startsWith('/')) {
-      return await this.onCommand(msg, sender);
-    }
-
-    if (!sender) {
-      await this.onUnauthorized(msg);
-    }
   }
 
   private async onCommand(
@@ -132,7 +136,10 @@ export class TelegramService {
 
     const profile = await getPlayerProfile(steamId);
 
-    return await this.bot.sendMessage(chatId, `Welcome, ${profile.name}!`);
+    return await this.bot.sendMessage(
+      chatId,
+      `Welcome, ${profile.name}!\n\nFor now, this bot doesn't do anything. We're waiting for more users to subscribe before putting in the work.\n\nYou are now registered with your steam account. You will start receiving updates and features as soon as they are implemented!`,
+    );
   }
 
   private async onStopped(msg: TelegramBot.Message) {
