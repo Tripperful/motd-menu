@@ -53,6 +53,30 @@ export class TelegramService {
   private async onMessage(msg: TelegramBot.Message) {
     let sender = await db.telegram.getClientByClientId(msg.from.id);
 
+    await Promise.all(
+      (await db.telegram.getAllClients())?.map((client) =>
+        client.clientId !== msg.from.id
+          ? db.permissions.get(client.steamId).then((permissions) => {
+              if (permissions.includes('tg_admin')) {
+                return this.bot.sendMessage(
+                  client.chatId,
+                  `Message from ${[
+                    msg.from.username && `@${msg.from.username}`,
+                    sender &&
+                      `https://steamcommunity.com/profiles/${sender.steamId}`,
+                  ]
+                    .filter(Boolean)
+                    .join('\n')}\n\n${msg.text}`,
+                  {
+                    disable_web_page_preview: true,
+                  },
+                );
+              }
+            })
+          : null,
+      ) ?? [],
+    );
+
     if (msg.text?.startsWith('/')) {
       return await this.onCommand(msg, sender);
     }
@@ -64,24 +88,6 @@ export class TelegramService {
     if (!sender) {
       await this.onUnauthorized(msg);
     }
-
-    await Promise.all(
-      (await db.telegram.getAllClients()).map((client) =>
-        client.clientId !== msg.from.id
-          ? db.permissions.get(client.steamId).then((permissions) => {
-              if (permissions.includes('tg_admin')) {
-                return this.bot.sendMessage(
-                  client.chatId,
-                  `Message from @${msg.from.username}\nhttps://steamcommunity.com/profiles/${sender.steamId}\n\n${msg.text}`,
-                  {
-                    disable_web_page_preview: true,
-                  },
-                );
-              }
-            })
-          : null,
-      ),
-    );
   }
 
   private async onCommand(
@@ -136,9 +142,12 @@ export class TelegramService {
 
     const profile = await getPlayerProfile(steamId);
 
-    return await this.bot.sendMessage(
+    return await this.bot.sendPhoto(
       chatId,
-      `Welcome, ${profile.name}!\n\nFor now, this bot doesn't do anything. We're waiting for more users to subscribe before putting in the work.\n\nYou are now registered with your steam account. You will start receiving updates and features as soon as they are implemented!`,
+      'https://i.pinimg.com/736x/b6/a6/d5/b6a6d50de7eb36065b98ebd254d46cd5.jpg',
+      {
+        caption: `Welcome, ${profile.name}!\n\nFor now, this bot doesn't do anything. We're waiting for more users to subscribe before putting in the work.\n\nYou are now registered with your steam account. You will start receiving updates and features as soon as they are implemented!`,
+      },
     );
   }
 
