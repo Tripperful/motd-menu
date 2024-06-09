@@ -31,3 +31,6 @@ ALTER TABLE matches
 ADD COLUMN IF NOT EXISTS sent_to_efps boolean DEFAULT true;
 ALTER TABLE matches
 ALTER COLUMN sent_to_efps SET DEFAULT false;
+
+ALTER TABLE client_connections
+ADD COLUMN IF NOT EXISTS server_id int REFERENCES servers (id);

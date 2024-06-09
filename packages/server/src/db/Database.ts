@@ -106,6 +106,7 @@ export interface Database {
     connected(
       token: string,
       steamId: string,
+      serverId: number,
       ip: string,
       port: number,
       name: string,

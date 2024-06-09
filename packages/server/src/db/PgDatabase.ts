@@ -148,10 +148,12 @@ export class PgDatabase extends BasePgDatabase implements Database {
     connected: (
       token: string,
       steamId: string,
+      serverId: number,
       ip: string,
       port: number,
       name: string,
-    ) => this.call('client_connected', token, steamId, ip, port, name),
+    ) =>
+      this.call('client_connected', token, steamId, serverId, ip, port, name),
     disconnected: (
       token: string,
       inAvgLatency: number,

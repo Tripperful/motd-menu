@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS
   client_connections (
     id uuid PRIMARY KEY,
     steam_id bigint NOT NULL,
+    server_id int REFERENCES servers (id),
     ip inet NOT NULL,
     port int NOT NULL,
     connected timestamp DEFAULT NOW(),

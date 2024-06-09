@@ -14,12 +14,22 @@ import { matchStatsHandlers } from './matchStatsHandlers';
 
 export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
   {
-    player_connected: async (msg: WsMessage<PlayerConnectedReqest>) => {
+    player_connected: async (
+      msg: WsMessage<PlayerConnectedReqest>,
+      serverId,
+    ) => {
       const { token, steamId, ip, port } = msg.data;
 
       const profile = await getPlayerProfile(steamId);
 
-      db.client.connected(token, steamId, ip, port, profile?.name || null);
+      db.client.connected(
+        token,
+        steamId,
+        serverId,
+        ip,
+        port,
+        profile?.name || null,
+      );
     },
 
     player_disconnected: (msg: WsMessage<PlayerDisconnectedReqest>) => {

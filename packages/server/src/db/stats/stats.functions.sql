@@ -34,14 +34,16 @@ CREATE
 OR REPLACE PROCEDURE client_connected (
   id text,
   steam_id text,
+  server_id int,
   ip text,
   port int,
   name text
 ) AS $$ BEGIN
-INSERT INTO client_connections (id, steam_id, ip, port)
+INSERT INTO client_connections (id, steam_id, server_id, ip, port)
 VALUES (
   id::uuid,
   steam_id::bigint,
+  server_id,
   ip::inet,
   port
 )
