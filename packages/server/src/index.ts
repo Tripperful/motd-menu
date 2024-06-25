@@ -26,7 +26,7 @@ const staticServer = expressStaticGzip(staticDir, {
 app.set('x-powered-by', false);
 app.use(cookieParser());
 app.use('/', authMiddleware);
-app.use(TelegramService.middleware);
+// app.use(TelegramService.middleware);
 app.use(bodyParser.json({ strict: false }));
 app.use('/api', api);
 app.use(staticServer);
@@ -85,9 +85,9 @@ db.init().then(() => {
 
     new EfpsWatchdog();
 
-    if (process.env.MOTD_TELEGRAM_BOT_TOKEN) {
-      new TelegramService(process.env.MOTD_TELEGRAM_BOT_TOKEN);
-    }
+    // if (process.env.MOTD_TELEGRAM_BOT_TOKEN) {
+    //   new TelegramService(process.env.MOTD_TELEGRAM_BOT_TOKEN);
+    // }
 
     const wsApi = WsApi.init(server, async (authKey: string) => {
       const serverInfo = await db.server.getByApiKey(authKey);

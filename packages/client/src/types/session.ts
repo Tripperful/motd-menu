@@ -4,5 +4,5 @@ export interface SessionData {
   steamId: string;
   userId?: number;
   permissions: Permission[];
-  tgConnected: boolean;
+  // tgConnected: boolean;
 }

@@ -135,7 +135,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   const centerItem = pathname === '/' ? exitItem : backItem;
 
   const isDev = permissions.includes('dev');
-  const { tgConnected } = useSessionData();
+  // const { tgConnected } = useSessionData();
 
   return (
     <div className={c.root}>
@@ -179,7 +179,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
           />
         ))}
       </div>
-      {!tgConnected && (
+      {/* {!tgConnected && (
         <div
           className={c.tgLink}
           onClick={() => {
@@ -188,7 +188,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
         >
           <TelegramIcon /> Connect Telegram
         </div>
-      )}
+      )} */}
       {joinTgLink && (
         <QrCodePopup
           title="Connect to Telegram"
