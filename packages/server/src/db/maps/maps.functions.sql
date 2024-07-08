@@ -180,3 +180,10 @@ WHERE maps_favorites.map_id = temp_map_id
 END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE delete_maps_tag (tag text) AS $$ BEGIN
+DELETE FROM maps_tags
+WHERE maps_tags.tag = delete_maps_tag.tag;
+END;
+$$ LANGUAGE plpgsql;

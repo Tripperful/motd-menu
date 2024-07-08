@@ -74,6 +74,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.call('map_set_images', mapName, images),
     setTags: (mapName: string, tags: string[]) =>
       this.call('map_set_tags', mapName, tags),
+    deleteTag: (tag: string) => this.call('delete_maps_tag', tag),
     setFavorite: (mapName: string, steamId: string, favorite: boolean) =>
       this.call('map_set_favorite', mapName, steamId, favorite),
     reactions: {

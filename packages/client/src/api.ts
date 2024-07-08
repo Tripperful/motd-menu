@@ -223,6 +223,10 @@ class MotdApi {
     await this.post('maps/tags/' + mapName, JSON.stringify(tags));
   }
 
+  public async deleteTag(tag: string) {
+    await this.delete('maps/tags/' + tag);
+  }
+
   public async setMapFavorite(mapName: string, favorite: boolean) {
     if (favorite) {
       await this.post('maps/favorite/' + mapName);

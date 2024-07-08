@@ -53,6 +53,7 @@ export interface Database {
     setDescription(mapName: string, description?: string): Promise<void>;
     setImages(mapName: string, images: string[]): Promise<void>;
     setTags(mapName: string, tags: string[]): Promise<void>;
+    deleteTag(tag: string): Promise<void>;
     setFavorite(
       mapName: string,
       steamId: string,

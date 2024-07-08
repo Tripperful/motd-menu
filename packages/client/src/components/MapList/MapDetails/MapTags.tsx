@@ -43,6 +43,7 @@ const useStyles = createUseStyles({
     ...activeItem(),
     color: theme.fgError,
     fontSize: '0.5em',
+    display: 'flex',
   },
   tagsDialog: {
     width: '20em',

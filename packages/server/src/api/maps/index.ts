@@ -148,6 +148,24 @@ mapsRouter.post('/tags/:mapName', async (req, res) => {
   }
 });
 
+mapsRouter.delete('/tags/:tag', async (req, res) => {
+  try {
+    const { permissions } = res.locals.sessionData;
+
+    if (!permissions.includes('maps_edit')) {
+      res.status(403).end();
+      return;
+    }
+
+    await db.maps.deleteTag(req.params.tag);
+
+    res.status(200).end();
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
 mapsRouter.post('/favorite/:mapName', async (req, res) => {
   try {
     const {
