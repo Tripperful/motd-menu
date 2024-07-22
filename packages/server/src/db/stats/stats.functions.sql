@@ -1073,7 +1073,7 @@ RETURN (
     WHERE (
       map_name_filter IS NULL
       OR
-      map_id = (SELECT id FROM maps WHERE maps.name ILIKE '%' || map_name_filter || '%' LIMIT 1)
+      map_id IN (SELECT id FROM maps WHERE maps.name ILIKE '%' || map_name_filter || '%')
     )
     AND (
       players_filter IS NULL
@@ -1090,7 +1090,7 @@ RETURN (
     AND (
       server_filter IS NULL
       OR
-      server_id = (SELECT id FROM servers WHERE servers.name ILIKE '%' || server_filter || '%' LIMIT 1)
+      server_id IN (SELECT id FROM servers WHERE servers.name ILIKE '%' || server_filter || '%')
     )
     AND (
       status_filter IS NULL
