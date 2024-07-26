@@ -17,6 +17,7 @@ services:
       timeout: 60s
       retries: 5
     network_mode: host
+    restart: unless-stopped
   server:
     build:
       context: .
@@ -44,3 +45,4 @@ services:
       timeout: 60s
       retries: 5
     network_mode: host
+    restart: unless-stopped
