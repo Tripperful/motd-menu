@@ -34,4 +34,13 @@ services:
       - MOTD_SSL_PRIVATE_KEY=${MOTD_SSL_PRIVATE_KEY}
       - MOTD_EFPS_STATS_POST_URL=${MOTD_EFPS_STATS_POST_URL}
       - MOTD_TELEGRAM_BOT_TOKEN=${MOTD_TELEGRAM_BOT_TOKEN}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -ksf https://localhost:${MOTD_WEB_PORT_HTTPS}/healthcheck || exit 1"
+        ]
+      interval: 1s
+      timeout: 60s
+      retries: 5
     network_mode: host
