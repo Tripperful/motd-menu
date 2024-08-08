@@ -139,7 +139,7 @@ export class WsApi {
         const sessionId = this.getSessionId(remoteWs);
 
         if (sessionId) {
-          const { serverInfo } = this.remotesBySessionId[sessionId];
+          const serverInfo = this.remotesBySessionId[sessionId]?.serverInfo;
           delete this.remotesBySessionId[sessionId];
 
           console.log(`${serverInfo.name} server disconnected from WS`);
@@ -248,7 +248,11 @@ export class WsApi {
       }
     } else {
       const sessionId = this.getSessionId(remoteWs);
-      const { remoteId } = this.remotesBySessionId[sessionId];
+      const remoteId = this.remotesBySessionId[sessionId]?.remoteId;
+
+      if (!(sessionId && remoteId)) {
+        return;
+      }
 
       let subCount = 0;
 
