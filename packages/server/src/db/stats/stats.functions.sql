@@ -1018,7 +1018,7 @@ OR REPLACE FUNCTION match_json (match matches) RETURNS json AS $$ BEGIN RETURN j
   match.end_curtime,
   'teams',
   (
-    SELECT json_agg(
+    SELECT COALESCE(json_agg(
       json_build_object(
         'name',
         match_teams.name,
@@ -1038,7 +1038,7 @@ OR REPLACE FUNCTION match_json (match matches) RETURNS json AS $$ BEGIN RETURN j
           ) FROM match_team_players WHERE match_team_players.match_team_id = match_teams.id
         )
       )
-    ) FROM match_teams WHERE match_teams.match_id = match.id
+    ), '[]'::json) FROM match_teams WHERE match_teams.match_id = match.id
   )
 );
 END;
