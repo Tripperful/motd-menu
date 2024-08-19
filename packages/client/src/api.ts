@@ -15,6 +15,7 @@ import {
   PlayerClientSettings,
   ReactionData,
   ReactionName,
+  ServerInfo,
   Severity,
   StartMatchSettings,
   SteamPlayerData,
@@ -360,6 +361,15 @@ class MotdApi {
     const res = await this.get('srcds/onlineServers');
 
     return JSON.parse(res) as OnlineServerInfo[];
+  }
+
+  public async getOnlineServersMaps() {
+    const res = await this.get('srcds/onlineServers/maps');
+
+    return JSON.parse(res) as {
+      serverInfo: ServerInfo;
+      maps: string[];
+    }[];
   }
 }
 

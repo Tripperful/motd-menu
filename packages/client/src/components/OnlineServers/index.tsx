@@ -1,7 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { Link } from 'react-router-dom';
+import { Link, Route, Routes } from 'react-router-dom';
 import { useOnlineServers } from 'src/hooks/state/onlineServers';
+import { useOnlineServersMaps } from 'src/hooks/state/onlineServersMaps';
+import { useGoBack } from 'src/hooks/useGoBack';
+import { Popup } from '~components/common/Popup';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 
@@ -14,11 +17,124 @@ const useStyles = createUseStyles({
     alignItems: 'flex-start',
     gap: '1em',
     height: '100%',
+    position: 'relative',
+  },
+  otherLinks: {
+    position: 'absolute',
+    top: '2em',
+    right: '2em',
   },
   link: {
     ...activeItem(),
   },
+  mapsPopup: {
+    width: 'calc(100vw - 2em)',
+    height: 'calc(100vh - 2em)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1em',
+  },
+  mapsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1em',
+    overflowY: 'auto',
+  },
+  mapItem: {
+    display: 'flex',
+    gap: '0.5em',
+    alignItems: 'center',
+  },
+  serverHas: {
+    color: theme.fgSuccess,
+    display: 'flex',
+  },
+  serverHasNot: {
+    color: theme.fgError,
+    display: 'flex',
+  },
+  mapServersList: {
+    display: 'flex',
+    gap: '0.5em',
+    fontSize: '0.65em',
+    flexWrap: 'wrap',
+  },
 });
+
+const MapListItem: FC<{
+  map: string;
+  serverNames: string[];
+  allServerNames: string[];
+}> = ({ map, serverNames, allServerNames }) => {
+  const c = useStyles();
+
+  return (
+    <div className={c.mapItem}>
+      <span>{map}</span>
+      <span className={c.mapServersList}>
+        {allServerNames.map((serverName) => (
+          <span
+            key={serverName}
+            className={
+              serverNames.includes(serverName) ? c.serverHas : c.serverHasNot
+            }
+          >
+            {serverName}
+          </span>
+        ))}
+      </span>
+    </div>
+  );
+};
+
+const MapsPopup: FC = () => {
+  const c = useStyles();
+  const goBack = useGoBack();
+  const maps = useOnlineServersMaps();
+
+  const allMaps = maps.reduce((acc, { maps }) => {
+    maps.forEach((map) => {
+      if (!acc.includes(map)) {
+        acc.push(map);
+      }
+    });
+
+    return acc;
+  }, [] as string[]);
+
+  const [search, setSearch] = useState('');
+
+  const filteredMaps = useMemo(
+    () =>
+      allMaps.filter((map) => map.toLowerCase().includes(search.toLowerCase())),
+    [allMaps, search],
+  );
+
+  const allServernames = maps.map(({ serverInfo }) => serverInfo.name);
+
+  return (
+    <Popup onClose={goBack} title="Maps" className={c.mapsPopup}>
+      <input
+        type="text"
+        placeholder="Search maps..."
+        value={search}
+        onChange={(e) => setSearch(e.currentTarget.value)}
+      />
+      <div className={c.mapsList}>
+        {filteredMaps.map((map) => (
+          <MapListItem
+            key={map}
+            map={map}
+            serverNames={maps
+              .filter(({ maps }) => maps.includes(map))
+              .map(({ serverInfo }) => serverInfo.name)}
+            allServerNames={allServernames}
+          />
+        ))}
+      </div>
+    </Popup>
+  );
+};
 
 export const OnlineServers: FC = () => {
   const c = useStyles();
@@ -39,6 +155,12 @@ export const OnlineServers: FC = () => {
           {serverInfo.name} ({serverInfo.ip}:{serverInfo.port})
         </Link>
       ))}
+      <Routes>
+        <Route path="maps" element={<MapsPopup />} />
+      </Routes>
+      <div className={c.otherLinks}>
+        <Link to="maps">Maps</Link>
+      </div>
     </div>
   );
 };
