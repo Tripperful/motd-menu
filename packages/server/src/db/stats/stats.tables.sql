@@ -316,3 +316,11 @@ CREATE TABLE IF NOT EXISTS
     prev_pos float[3],
     new_pos float[3]
   );
+
+CREATE TABLE IF NOT EXISTS
+  damage_attack_info (
+    damage_type TEXT PRIMARY KEY,
+    weapon TEXT,
+    is_secondary BOOLEAN,
+    attack_type TEXT
+  );

@@ -1287,7 +1287,75 @@ BEGIN
         WHERE match_team_players.steam_id = get_efps_accuracy.steam_id
         AND match_team_players.match_team_id = match_teams.id
       )
-    )
+    ),
+    'weaponStats',
+    (
+      WITH _distinct_attack_types AS (
+        SELECT DISTINCT attack_type
+        FROM damage_attack_info
+      ) SELECT json_object_agg(
+        attack_type,
+        json_build_object(
+          'fired',
+          COALESCE(
+            (
+              SELECT SUM(
+                CASE WHEN player_attacks.weapon = 'weapon_shotgun'
+                THEN
+                  CASE WHEN is_secondary = true THEN 12 ELSE 7 END
+                  ELSE 1
+                END
+              )
+              FROM player_attacks
+              WHERE player_attacks.match_id = get_efps_accuracy.match_id
+              AND player_attacks.steam_id = get_efps_accuracy.steam_id
+              AND player_attacks.weapon IN (
+                SELECT weapon
+                FROM damage_attack_info
+                WHERE player_attacks.weapon = damage_attack_info.weapon
+                AND damage_attack_info.attack_type = _distinct_attack_types.attack_type
+                AND (
+                  player_attacks.is_secondary = damage_attack_info.is_secondary
+                  OR damage_attack_info.is_secondary IS NULL
+                )
+                LIMIT 1
+              )
+            ),
+            0
+          ),
+          'hit',
+          (
+            WITH _hits_counts AS (
+              SELECT
+                SUM(hb) AS hits,
+                SUM(hs) AS headshots,
+                SUM(dmg) AS damage
+              FROM (
+                SELECT 
+                  ((json_each_text(COALESCE(player_damage.hitboxes, '{"0": 1}'::json))).value)::int AS hb,
+                  (hitboxes->>'1')::int AS hs,
+                  hp_before - hp_after + armor_before - armor_after AS dmg
+                FROM player_damage
+                WHERE player_damage.match_id = get_efps_accuracy.match_id
+                AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
+                AND player_damage.weapon IN (
+                  SELECT damage_type
+                  FROM damage_attack_info
+                  WHERE damage_attack_info.attack_type = _distinct_attack_types.attack_type
+                )
+              )
+            ) SELECT json_build_object(
+              'total',
+              COALESCE((SELECT hits FROM _hits_counts), 0),
+              'hs',
+              COALESCE((SELECT headshots FROM _hits_counts), 0),
+              'damage',
+              COALESCE((SELECT damage FROM _hits_counts), 0)
+            )
+          )
+        )
+      ) FROM _distinct_attack_types
+    ) 
   );
 END;
 $$ LANGUAGE plpgsql;
