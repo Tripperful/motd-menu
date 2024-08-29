@@ -55,9 +55,11 @@ const handlerMap: Partial<
           const srcdsApi = getSrcdsApi(sessionId);
           const players = await srcdsApi.getOnlinePlayers();
 
-          const playersRanks = await Promise.all(
-            players.map((player) => getEfpsRank(player.steamId)),
-          );
+          const playersRanks = (
+            await Promise.all(
+              players.map((player) => getEfpsRank(player.steamId)),
+            )
+          ).filter(Boolean);
 
           await db.matchStats.updateAfterMatchRanks(data.id, playersRanks);
           srcdsApi.rankUpdate(playersRanks);

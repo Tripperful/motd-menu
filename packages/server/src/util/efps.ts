@@ -25,13 +25,6 @@ export const getEfpsRank = async (steamId: string) => {
       efpsUrl('player_stats', { steamId: steamIdLegacy }),
     );
 
-    if (!res.ok) {
-      dbgErr('Error response from eFPS player stats endpoint');
-      dbgErr('Response status: ' + res.status);
-      dbgErr('Response body: ' + (await res.text()));
-      throw new Error('Failed to get eFPS player stats');
-    }
-
     const data = (await res.json()) as Record<string, string>;
 
     const [pos, max] = data.place.split(' of ').map(Number);
@@ -46,8 +39,6 @@ export const getEfpsRank = async (steamId: string) => {
       ...color,
     } as RankUpdateData;
   } catch {
-    dbgErr('Failed to get eFPS player stats (steam id: ' + steamId + ')');
-
     return null;
   }
 };
