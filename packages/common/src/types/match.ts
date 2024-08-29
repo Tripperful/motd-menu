@@ -13,6 +13,9 @@ export interface MatchSummaryTeamPlayer {
   kills: number;
   deaths: number;
   profile?: SteamPlayerData;
+  points: number;
+  rank: string;
+  rankPos: number;
 }
 
 export interface MatchSummaryTeam {

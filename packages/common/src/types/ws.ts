@@ -14,6 +14,7 @@ export type WsMessageType =
   | 'get_smurfs_request'
   | 'get_smurfs_response'
   | 'player_connected'
+  | 'rank_update'
   | 'changelevel'
   | 'get_players_request'
   | 'get_players_response'
@@ -58,6 +59,7 @@ export type WsMessageCallback<TData = unknown> = (
 export type WsSubscriberCallback<TData = unknown> = (
   msg: WsMessage<TData>,
   remoteId?: number,
+  sessionId?: string,
 ) => Promise<WsMessage | void> | void;
 
 export interface PlayerConnectedReqest {
@@ -276,4 +278,15 @@ export interface EntityTeleportMessage extends BaseStatsMessage {
   entityId: string;
   prevPos: Vec3;
   newPos: Vec3;
+}
+
+export interface RankUpdateData {
+  steamId: string;
+  points: number;
+  rank: string;
+  pos: number;
+  max: number;
+  r: number;
+  g: number;
+  b: number;
 }

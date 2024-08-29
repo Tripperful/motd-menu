@@ -2,6 +2,7 @@ import {
   Cvar,
   OnlinePlayerInfo,
   PlayerClientSettings,
+  RankUpdateData,
 } from '@motd-menu/common';
 
 export interface SrcdsApi {
@@ -22,4 +23,5 @@ export interface SrcdsApi {
   ): void;
   applySettings(steamId: string, settings: PlayerClientSettings): void;
   runCommand(command: string): void;
+  rankUpdate(ranksData: RankUpdateData[]): void;
 }

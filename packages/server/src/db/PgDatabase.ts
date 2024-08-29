@@ -27,6 +27,7 @@ import {
   ProjectileLifetimeResetMessage,
   ProjectileOwnerChangeMessage,
   ProjectileSpawnMessage,
+  RankUpdateData,
   ReactionData,
   ReactionName,
   ServerInfo,
@@ -259,6 +260,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
     matchStarted: (serverId: number, data: MatchStartedMessage) =>
       this.call('match_started', serverId, data),
     matchEnded: (data: MatchEndedMessage) => this.call('match_ended', data),
+    updateAfterMatchRanks: (matchId: string, data: RankUpdateData[]) =>
+      this.call('set_aftermatch_ranks', matchId, data),
     playerDeath: (data: PlayerDeathMessage) => this.call('player_death', data),
     playerRespawn: (data: PlayerRespawnMessage) =>
       this.call('player_respawn', data),

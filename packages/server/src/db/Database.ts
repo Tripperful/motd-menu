@@ -27,6 +27,7 @@ import {
   ProjectileLifetimeResetMessage,
   ProjectileOwnerChangeMessage,
   ProjectileSpawnMessage,
+  RankUpdateData,
   ReactionData,
   ReactionName,
   ServerInfo,
@@ -151,6 +152,7 @@ export interface Database {
   matchStats: {
     matchStarted(serverId: number, data: MatchStartedMessage): Promise<void>;
     matchEnded(data: MatchEndedMessage): Promise<void>;
+    updateAfterMatchRanks(matchId: string, data: RankUpdateData[]): Promise<void>;
     playerDeath(data: PlayerDeathMessage): Promise<void>;
     playerRespawn(data: PlayerRespawnMessage): Promise<void>;
     playerDamage(data: PlayerDamageMessage): Promise<void>;

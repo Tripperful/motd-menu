@@ -11,12 +11,17 @@ import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { getPlayerProfile } from 'src/steam';
 import { matchStatsHandlers } from './matchStatsHandlers';
+import { getEfpsRank } from 'src/util/efps';
+import { dbgErr } from 'src/util';
+import { wsApi } from '.';
+import { getSrcdsApi } from 'src/srcdsApi';
 
 export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
   {
     player_connected: async (
       msg: WsMessage<PlayerConnectedReqest>,
       serverId,
+      sessionId,
     ) => {
       const { token, steamId, ip, port } = msg.data;
 
@@ -30,6 +35,17 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
         port,
         profile?.name || null,
       );
+
+      try {
+        const rankData = await getEfpsRank(steamId);
+
+        if (rankData.rank) {
+          const srcdsApi = getSrcdsApi(sessionId);
+          srcdsApi.rankUpdate([rankData]);
+        }
+      } catch (e) {
+        dbgErr(e);
+      }
     },
 
     player_disconnected: (msg: WsMessage<PlayerDisconnectedReqest>) => {

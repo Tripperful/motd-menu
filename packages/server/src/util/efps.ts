@@ -1,5 +1,56 @@
 import { db } from 'src/db';
 import { dbgErr } from '.';
+import { RankUpdateData, steamId64ToLegacy } from '@motd-menu/common';
+import { colorByRank } from './ranks';
+
+const efpsUrl = (path: string, params?: Record<string, string>) => {
+  const url = new URL(`https://hl2dm.everythingfps.com/crons/${path}.php`);
+
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.append(key, value);
+    }
+  }
+
+  url.searchParams.append('key', process.env.MOTD_EFPS_KEY);
+
+  return url.toString();
+};
+
+export const getEfpsRank = async (steamId: string) => {
+  const steamIdLegacy = steamId64ToLegacy(steamId);
+
+  try {
+    const res = await fetch(
+      efpsUrl('player_stats', { steamId: steamIdLegacy }),
+    );
+
+    if (!res.ok) {
+      dbgErr('Error response from eFPS player stats endpoint');
+      dbgErr('Response status: ' + res.status);
+      dbgErr('Response body: ' + (await res.text()));
+      throw new Error('Failed to get eFPS player stats');
+    }
+
+    const data = (await res.json()) as Record<string, string>;
+
+    const [pos, max] = data.place.split(' of ').map(Number);
+    const color = colorByRank(data.rank);
+
+    return {
+      steamId,
+      points: Number(data.points),
+      rank: data.rank,
+      pos,
+      max,
+      ...color,
+    } as RankUpdateData;
+  } catch {
+    dbgErr('Failed to get eFPS player stats (steam id: ' + steamId + ')');
+
+    return null;
+  }
+};
 
 /**
  * @returns success
@@ -8,7 +59,7 @@ export const sendMatchToEfps = async (matchId: string) => {
   try {
     const efpsStats = await db.matches.getEfpsStats(matchId);
 
-    const res = await fetch(process.env.MOTD_EFPS_STATS_POST_URL, {
+    const res = await fetch(efpsUrl('data_new'), {
       method: 'POST',
       body: JSON.stringify(efpsStats),
     });

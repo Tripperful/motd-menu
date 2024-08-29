@@ -263,7 +263,7 @@ export class WsApi {
           subCount++;
 
           try {
-            const responsePromise = callback(msg, remoteId);
+            const responsePromise = callback(msg, remoteId, sessionId);
 
             if (responsePromise) {
               responsePromise.then((res) => {

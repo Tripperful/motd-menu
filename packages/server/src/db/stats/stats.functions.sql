@@ -314,6 +314,36 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE PROCEDURE set_aftermatch_ranks (match_id text, ranks_data json) AS $$
+DECLARE
+  player_rank_data json;
+BEGIN
+IF NOT EXISTS (
+  SELECT FROM matches m WHERE m.id = set_aftermatch_ranks.match_id::uuid
+) THEN
+  RETURN;
+END IF;
+FOR player_rank_data IN
+    SELECT * FROM json_array_elements(ranks_data)
+LOOP
+  UPDATE match_team_players
+    SET
+    points = (player_rank_data->>'points')::float,
+    rank = (player_rank_data->>'rank')::text,
+    rank_pos = (player_rank_data->>'pos')::int
+    WHERE
+      match_team_players.match_team_id IN (
+        SELECT id FROM match_teams
+        WHERE
+          match_teams.match_id = set_aftermatch_ranks.match_id::uuid
+      )
+      AND
+      match_team_players.steam_id = (player_rank_data->>'steamId')::bigint;
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE PROCEDURE match_ended (match_data json) AS $$
 DECLARE
   _match_team_id int;
@@ -1033,7 +1063,13 @@ OR REPLACE FUNCTION match_json (match matches) RETURNS json AS $$ BEGIN RETURN j
               'kills',
               match_team_players.kills,
               'deaths',
-              match_team_players.deaths
+              match_team_players.deaths,
+              'points',
+              match_team_players.points,
+              'rank',
+              match_team_players.rank,
+              'rankPos',
+              match_team_players.rank_pos
             )
           ) FROM match_team_players WHERE match_team_players.match_team_id = match_teams.id
         )

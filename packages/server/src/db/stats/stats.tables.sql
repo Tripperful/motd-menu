@@ -77,6 +77,9 @@ CREATE TABLE IF NOT EXISTS
     steam_id bigint,
     kills int,
     deaths int,
+    points float,
+    rank text,
+    rank_pos int,
     UNIQUE (match_team_id, steam_id)
   );
 

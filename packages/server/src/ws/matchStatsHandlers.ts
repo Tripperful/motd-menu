@@ -24,8 +24,10 @@ import {
 } from '@motd-menu/common';
 import { db } from 'src/db';
 import { dbgInfo } from 'src/util';
-import { sendMatchToEfps } from 'src/util/efps';
+import { getEfpsRank, sendMatchToEfps } from 'src/util/efps';
 import { chargerUseHandler } from './chargerUseHandler';
+import { wsApi } from '.';
+import { getSrcdsApi } from 'src/srcdsApi';
 
 const handlerMap: Partial<
   Record<
@@ -39,12 +41,28 @@ const handlerMap: Partial<
   match_ended: async (data: MatchEndedMessage, serverId) => {
     await db.matchStats.matchEnded(data);
 
-    if (process.env.MOTD_EFPS_STATS_POST_URL && data.status === 'completed') {
+    if (process.env.MOTD_EFPS_KEY && data.status === 'completed') {
       const { isDev } = await db.server.getById(serverId);
 
-      if (isDev) return;
+      if (!isDev) {
+        await sendMatchToEfps(data.id);
+      }
 
-      sendMatchToEfps(data.id);
+      const servers = wsApi.getConnectedServers();
+
+      await Promise.allSettled(
+        servers.map(async ({ sessionId }) => {
+          const srcdsApi = getSrcdsApi(sessionId);
+          const players = await srcdsApi.getOnlinePlayers();
+
+          const playersRanks = await Promise.all(
+            players.map((player) => getEfpsRank(player.steamId)),
+          );
+
+          await db.matchStats.updateAfterMatchRanks(data.id, playersRanks);
+          srcdsApi.rankUpdate(playersRanks);
+        }),
+      );
     }
   },
 

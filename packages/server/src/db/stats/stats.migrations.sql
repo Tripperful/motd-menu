@@ -16,8 +16,15 @@ DROP FUNCTION IF EXISTS get_matches (lmt int, ofst int);
 -- so that all new matches aren't considered sent to efps until they are
 ALTER TABLE IF EXISTS matches
 ADD COLUMN IF NOT EXISTS sent_to_efps boolean DEFAULT true;
+
 ALTER TABLE IF EXISTS matches
-ALTER COLUMN sent_to_efps SET DEFAULT false;
+ALTER COLUMN sent_to_efps
+SET DEFAULT false;
 
 ALTER TABLE IF EXISTS client_connections
 ADD COLUMN IF NOT EXISTS server_id int REFERENCES servers (id);
+
+ALTER TABLE IF EXISTS match_team_players
+ADD COLUMN IF NOT EXISTS points float DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS rank text DEFAULT NULL,
+ADD COLUMN IF NOT EXISTS rank_pos int DEFAULT NULL;

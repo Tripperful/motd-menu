@@ -23,6 +23,6 @@ declare namespace NodeJS {
     MOTD_DEBUG_LOG: string;
     MOTD_SSL_CERT: string;
     MOTD_SSL_PRIVATE_KEY: string;
-    MOTD_EFPS_STATS_POST_URL: string;
+    MOTD_EFPS_KEY: string;
   }
 }

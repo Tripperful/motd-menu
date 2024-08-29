@@ -2,6 +2,7 @@ import {
   Cvar,
   OnlinePlayerInfo,
   PlayerClientSettings,
+  RankUpdateData,
   SetSettingsAction,
   WsMessageType,
 } from '@motd-menu/common';
@@ -110,5 +111,9 @@ export class WsSrcdsApi implements SrcdsApi {
 
   runCommand(commands: string): void {
     this.send('run_command', { commands });
+  }
+
+  rankUpdate(ranksData: RankUpdateData[]): void {
+    this.send('rank_update', ranksData);
   }
 }
