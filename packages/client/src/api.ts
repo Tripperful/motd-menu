@@ -13,6 +13,7 @@ import {
   PagedData,
   Permission,
   PlayerClientSettings,
+  RankUpdateData,
   ReactionData,
   ReactionName,
   ServerInfo,
@@ -161,6 +162,14 @@ class MotdApi {
 
   public async getPlayerAka(steamId: string) {
     return (await this.get(`players/aka/${steamId}`)) || null;
+  }
+
+  public async getPlayerStats(steamId: string) {
+    return (
+      (JSON.parse(await this.get(`players/stats/${steamId}`)) as {
+        efpsRank: RankUpdateData;
+      }) || null
+    );
   }
 
   public async getPlayerSettings(steamId: string) {

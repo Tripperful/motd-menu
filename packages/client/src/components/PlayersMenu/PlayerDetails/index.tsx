@@ -22,6 +22,7 @@ import { PlayerAka } from './PlayerAka';
 import { PlayerMatchesPopup } from './PlayerMatchesPopup';
 import { PlayerPermissions } from './PlayerPermissions';
 import { PlayerReviews } from './PlayerReviews';
+import { PlayerStats } from './PlayerStats';
 import { PlayerTimePlayed } from './PlayerTimePlayed';
 import { SetAkaPopup } from './SetAkaPopup';
 import { SetPlayerTeam } from './SetPlayerTeam';
@@ -117,10 +118,6 @@ const PlayerDetailsContent: FC = () => {
               <UserInspectIcon />
               Who is..?
             </Link>
-            <Link className={c.profileButton} to="efps">
-              <EfpsIcon />
-              eFPS stats
-            </Link>
             <Link className={c.profileButton} to="matches">
               <MatchesIcon />
               Matches
@@ -130,6 +127,7 @@ const PlayerDetailsContent: FC = () => {
       </div>
       <PlayerTimePlayed steamId={steamId} />
       {canEditTeam && <SetPlayerTeam steamId={steamId} />}
+      <PlayerStats steamId={steamId} />
       <div className={c.playerInfoList}>
         <div>Client settings</div>
         <PlayerSettings steamId={steamId} />

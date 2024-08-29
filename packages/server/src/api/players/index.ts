@@ -4,6 +4,7 @@ import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
 import { akaRouter } from './aka';
 import { permissionsRouter } from './permissions';
 import { playerSettingsRouter } from './settings';
+import { getEfpsRank } from 'src/util/efps';
 
 export const playersRouter = Router();
 
@@ -39,6 +40,19 @@ playersRouter.get('/:steamId', async (req, res) => {
     const playerProfile = await getPlayerProfile(steamId);
 
     res.status(200).end(JSON.stringify(playerProfile));
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+playersRouter.get('/stats/:steamId', async (req, res) => {
+  try {
+    const { steamId } = req.params;
+
+    const efpsRank = await getEfpsRank(steamId);
+
+    res.status(200).end(JSON.stringify({ efpsRank }));
   } catch (e) {
     console.error(e);
     res.status(500).end();
