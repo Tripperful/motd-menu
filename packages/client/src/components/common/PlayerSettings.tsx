@@ -62,6 +62,9 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   const [magnumZoomFov, setMagnumZoomFov] = useState(settings.magnumZoomFov);
   const [magZFovStr, setMagZFovStr] = useState(String(magnumZoomFov));
 
+  const [crossbowZoomEnabled, setCrossbowZoomEnabled] = useState(
+    settings.crossbowZoomFov !== 0,
+  );
   const [crossbowZoomFov, setCrossbowZoomFov] = useState(
     settings.crossbowZoomFov,
   );
@@ -200,16 +203,30 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
           onChange={(e) => setFovStr(e.currentTarget.value)}
           label={`FOV (${fovMin} - ${fovMax})`}
         />
-        <LabeledInput
-          type="number"
-          min={zoomFovMin}
-          max={zoomFovMax}
-          value={xbowZFovStr}
-          disabled={disabled}
-          onBlur={onXbowZFovBlur}
-          onChange={(e) => setXbowZFovStr(e.currentTarget.value)}
-          label={`Crossbow zoom FOV (${zoomFovMin} - ${zoomFovMax})`}
-        />
+        <div className={c.row}>
+          <LabeledSwitch
+            active={crossbowZoomEnabled}
+            setActive={(v) => {
+              setCrossbowZoomEnabled(v);
+              setCrossbowZoomFov(v ? 20 : 0);
+              setXbowZFovStr(v ? '20' : '0');
+            }}
+            label="Crossbow zoom"
+            disabled={disabled}
+          />
+          {crossbowZoomEnabled && (
+            <LabeledInput
+              type="number"
+              min={zoomFovMin}
+              max={zoomFovMax}
+              value={xbowZFovStr}
+              disabled={disabled || !crossbowZoomEnabled}
+              onBlur={onXbowZFovBlur}
+              onChange={(e) => setXbowZFovStr(e.currentTarget.value)}
+              label={`FOV (${zoomFovMin} - ${zoomFovMax})`}
+            />
+          )}
+        </div>
         <div className={c.row}>
           <LabeledSwitch
             active={magZoomEnabled}
