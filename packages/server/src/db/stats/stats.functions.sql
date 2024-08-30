@@ -1257,6 +1257,19 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE FUNCTION hitboxes_total_hits (hitboxes json) RETURNS int AS $$
+DECLARE
+  total_hits int;
+BEGIN
+  SELECT 
+    SUM((value)::int) INTO total_hits
+  FROM 
+    json_each_text(hitboxes) AS kv(key, value);
+  RETURN total_hits;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE FUNCTION get_efps_accuracy (match_id uuid, steam_id bigint) RETURNS json AS $$
 DECLARE
   _hitscan_weapons text[];
@@ -1368,7 +1381,7 @@ BEGIN
                 SUM(dmg) AS damage
               FROM (
                 SELECT 
-                  ((json_each_text(COALESCE(player_damage.hitboxes, '{"0": 1}'::json))).value)::int AS hb,
+                  hitboxes_total_hits(hitboxes) AS hb,
                   (hitboxes->>'1')::int AS hs,
                   hp_before - hp_after + armor_before - armor_after AS dmg
                 FROM player_damage
