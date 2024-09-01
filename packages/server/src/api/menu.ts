@@ -35,6 +35,30 @@ menuRouter.post('/clientExec', async (req, res) => {
   }
 });
 
+menuRouter.post('/voteSpec/:targetSteamId', async (req, res) => {
+  try {
+    const {
+      srcdsApi,
+      sessionData: { steamId },
+    } = res.locals;
+
+    const targetSteamId = req.params.targetSteamId;
+    const players = await srcdsApi.getOnlinePlayers();
+    const voters = players
+      .filter((p) => p.steamId !== steamId && p.teamIdx !== 1)
+      .map((p) => p.steamId);
+
+    if (voters.length > 0) {
+      srcdsApi.openMenu(voters, 'vote/spec/' + targetSteamId);
+    }
+
+    res.status(200).end();
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
 menuRouter.get('/tgLink', async (_req, res) => {
   try {
     const {

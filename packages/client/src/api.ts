@@ -386,6 +386,10 @@ class MotdApi {
   public async clientExec(command: string) {
     await this.post(`menu/clientExec`, JSON.stringify({ command }));
   }
+
+  public async voteSpecPlayer(steamId: string) {
+    await this.post(`menu/voteSpec/` + steamId);
+  }
 }
 
 export const motdApi = new MotdApi();

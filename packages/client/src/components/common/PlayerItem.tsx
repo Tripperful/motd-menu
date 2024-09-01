@@ -9,11 +9,13 @@ import { ClassNameProps } from '~types/props';
 
 export const useStyles = createUseStyles({
   root: {
-    ...activeItem(),
     padding: '0.5em',
     display: 'flex',
     backgroundColor: theme.bg1,
     borderRadius: '0.5em',
+  },
+  active: {
+    ...activeItem(),
   },
   avatar: {
     display: 'inline-block',
@@ -35,16 +37,12 @@ export const useStyles = createUseStyles({
   },
 });
 
-type PlayerItemActionProps =
-  | {
-      link: string;
-    }
-  | {
-      onClick: (steamId: string) => void;
-    };
-
 export const PlayerItem: FC<
-  { profile: SteamPlayerData } & PlayerItemActionProps & ClassNameProps
+  {
+    profile: SteamPlayerData;
+    link?: string;
+    onClick?: (steamId: string) => void;
+  } & ClassNameProps
 > = ({ profile, className, ...action }) => {
   const c = useStyles();
 
@@ -58,14 +56,17 @@ export const PlayerItem: FC<
     </>
   );
 
-  return 'link' in action ? (
-    <Link className={classNames(c.root, className)} to={action.link}>
+  const { link, onClick } = action;
+  const cn = classNames(c.root, { [c.active]: link || onClick }, className);
+
+  return link ? (
+    <Link className={cn} to={link}>
       {content}
     </Link>
   ) : (
     <div
-      className={classNames(c.root, className)}
-      onClick={() => action.onClick(profile.steamId)}
+      className={cn}
+      onClick={onClick ? () => onClick(profile.steamId) : null}
     >
       {content}
     </div>

@@ -13,13 +13,19 @@ const useStyles = createUseStyles({
 });
 
 export const Page: FC<
-  { title: ReactNode; headerContent?: ReactNode } & ChildrenProps
-> = ({ title, headerContent, children }) => {
+  {
+    title: ReactNode;
+    headerContent?: ReactNode;
+    backPath?: string;
+  } & ChildrenProps
+> = ({ title, headerContent, backPath, children }) => {
   const c = useStyles();
 
   return (
     <div className={c.root}>
-      <PageHeader title={title}>{headerContent}</PageHeader>
+      <PageHeader title={title} backPath={backPath}>
+        {headerContent}
+      </PageHeader>
       {children}
     </div>
   );

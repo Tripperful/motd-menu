@@ -1,5 +1,6 @@
 import {
   Cvar,
+  MotdOpenAction,
   OnlinePlayerInfo,
   PlayerClientSettings,
   RankUpdateData,
@@ -27,6 +28,10 @@ export class WsSrcdsApi implements SrcdsApi {
     return (
       await this.request<string, OnlinePlayerInfo>('motd_auth_request', token)
     ).data;
+  }
+
+  openMenu(clients: string[], url: string): void {
+    this.send('motd_open', { clients, url } as MotdOpenAction);
   }
 
   closeMenu(token: string): void {

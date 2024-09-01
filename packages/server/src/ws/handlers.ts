@@ -70,17 +70,11 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       );
     },
 
-    player_chat: async (
-      msg: WsMessage<PlayerChatAction>,
-      _serverId,
-      sessionId,
-    ) => {
+    player_chat: async (msg: WsMessage<PlayerChatAction>) => {
       const { steamId } = msg.data;
       const cmd = msg.data.msg.toLowerCase();
 
       if (cmd === '!votespec') {
-        const srcdsApi = getSrcdsApi(sessionId);
-
         return {
           type: 'motd_open',
           data: {

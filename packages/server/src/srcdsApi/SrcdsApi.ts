@@ -8,6 +8,7 @@ import {
 export interface SrcdsApi {
   auth(token: string): Promise<OnlinePlayerInfo>;
   closeMenu(token: string): void;
+  openMenu(clients: string[], url: string): void;
   getCvars<TCvars extends Cvar>(
     ...cvars: TCvars[]
   ): Promise<{ [cvar in TCvars]: string }>;
