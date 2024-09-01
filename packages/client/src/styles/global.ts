@@ -98,7 +98,7 @@ export const useGlobalStyles = createUseStyles({
         backgroundColor: 'transparent',
       },
       '&::-webkit-scrollbar-track': {
-        backgroundColor: theme.bg1,
+        backgroundColor: 'transparent',
       },
       '&::-webkit-scrollbar-thumb': {
         backgroundColor: Color(theme.fg1).fade(0.2).hexa(),

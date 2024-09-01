@@ -114,7 +114,7 @@ class MotdApi {
   }
 
   public async findPlayersByName(name: string) {
-    const res = await this.get('players/findByName/' + name);
+    const res = await this.get('players/findByName/' + encodeURIComponent(name));
 
     return JSON.parse(res) as SteamPlayerData[];
   }
@@ -154,7 +154,7 @@ class MotdApi {
 
   public async setPlayerAka(steamId: string, name: string) {
     if (name) {
-      await this.post(`players/aka/${steamId}/${name}`);
+      await this.post(`players/aka/${steamId}/${encodeURIComponent(name)}`);
     } else {
       await this.delete(`players/aka/${steamId}`);
     }
