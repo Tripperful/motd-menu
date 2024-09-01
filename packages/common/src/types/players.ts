@@ -3,6 +3,7 @@ import { SteamPlayerData } from './steam';
 export interface OnlinePlayerInfo {
   steamId: string;
   userId?: number;
+  teamIdx?: number;
   steamProfile?: SteamPlayerData;
 }
 

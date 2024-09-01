@@ -116,4 +116,8 @@ export class WsSrcdsApi implements SrcdsApi {
   rankUpdate(ranksData: RankUpdateData[]): void {
     this.send('rank_update', ranksData);
   }
+
+  clientExec(steamId: string, command: string): void {
+    this.send('client_exec', { steamId, command });
+  }
 }

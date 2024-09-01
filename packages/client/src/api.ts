@@ -114,7 +114,9 @@ class MotdApi {
   }
 
   public async findPlayersByName(name: string) {
-    const res = await this.get('players/findByName/' + encodeURIComponent(name));
+    const res = await this.get(
+      'players/findByName/' + encodeURIComponent(name),
+    );
 
     return JSON.parse(res) as SteamPlayerData[];
   }
@@ -379,6 +381,10 @@ class MotdApi {
       serverInfo: ServerInfo;
       maps: string[];
     }[];
+  }
+
+  public async clientExec(command: string) {
+    await this.post(`menu/clientExec`, JSON.stringify({ command }));
   }
 }
 

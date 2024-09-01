@@ -46,6 +46,7 @@ export type WsMessageType =
   | 'projectile_owner_change'
   | 'projectile_lifetime_reset'
   | 'ent_teleport'
+  | 'motd_open'
   | 'motd_close';
 
 export interface WsMessage<TData = unknown> {
@@ -103,6 +104,7 @@ export interface SetSettingsAction {
 
 export interface PlayerChatAction {
   steamId: string;
+  teamIdx: number;
   msg: string;
 }
 
@@ -301,4 +303,9 @@ export interface RankUpdateData {
   r: number;
   g: number;
   b: number;
+}
+
+export interface MotdOpenAction {
+  url: string;
+  clients: string[];
 }

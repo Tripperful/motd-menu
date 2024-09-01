@@ -50,6 +50,7 @@ export type Cvar =
   | 'mp_forcerespawn'
   | 'mp_timelimit'
   | 'mp_fraglimit'
+  | 'mm_match'
   | 'mm_equalizer'
   | 'mm_overtime'
   | 'mm_hotbolt_fix'
@@ -92,7 +93,7 @@ export type CvarInfo = {
   mockValue: string;
 } & CvarProps;
 
-export const cvarsInfo: Record<Cvar, CvarInfo> = {
+const registeredCvarsInfo: Record<Cvar, CvarInfo> = {
   hostname: {
     description: 'Server host name',
     type: 'text',
@@ -121,6 +122,7 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     permissions: adminEditPermissions,
     mockValue: '0',
   },
+  mm_match: null, // Don't show in the UI
   mm_equalizer: {
     description: 'Equalizer',
     type: 'bool',
@@ -274,6 +276,10 @@ export const cvarsInfo: Record<Cvar, CvarInfo> = {
     mockValue: '20',
   },
 };
+
+export const cvarsInfo = Object.fromEntries(
+  Object.entries(registeredCvarsInfo).filter(([cvar, info]) => Boolean(info)),
+) as Record<Cvar, CvarInfo>;
 
 const getAccessibleCvars = (
   permissions: Permission[],

@@ -18,6 +18,23 @@ menuRouter.post('/close', async (_req, res) => {
   }
 });
 
+menuRouter.post('/clientExec', async (req, res) => {
+  try {
+    const {
+      srcdsApi,
+      sessionData: { steamId },
+    } = res.locals;
+
+    const { command } = req.body;
+    srcdsApi.clientExec(steamId, command);
+
+    res.status(200).end();
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
 menuRouter.get('/tgLink', async (_req, res) => {
   try {
     const {

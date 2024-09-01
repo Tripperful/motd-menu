@@ -23,5 +23,6 @@ export interface SrcdsApi {
   ): void;
   applySettings(steamId: string, settings: PlayerClientSettings): void;
   runCommand(command: string): void;
+  clientExec(steamId: string, command: string): void;
   rankUpdate(ranksData: RankUpdateData[]): void;
 }

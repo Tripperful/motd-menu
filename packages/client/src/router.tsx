@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Exit } from '~components/Exit';
 import { MainMenu } from '~components/MainMenu';
 import { TeamMenu } from '~components/TeamMenu';
+import { Vote } from '~components/Vote';
 
 const MapList = React.lazy(
   () => import(/* webpackChunkName: "lazy-main" */ '~components/MapList'),
@@ -98,6 +99,14 @@ export const Router: FC = () => {
             element={
               <Suspense>
                 <OnlineServers />
+              </Suspense>
+            }
+          />
+          <Route
+            path="vote/*"
+            element={
+              <Suspense>
+                <Vote />
               </Suspense>
             }
           />

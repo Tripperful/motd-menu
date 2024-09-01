@@ -1,4 +1,5 @@
 import {
+  MotdOpenAction,
   PlayerChatAction,
   PlayerClientSettings,
   PlayerConnectedReqest,
@@ -69,18 +70,23 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       );
     },
 
-    player_chat: async (msg: WsMessage<PlayerChatAction>) => {
-      const { steamId, msg: text } = msg.data;
+    player_chat: async (
+      msg: WsMessage<PlayerChatAction>,
+      _serverId,
+      sessionId,
+    ) => {
+      const { steamId } = msg.data;
+      const cmd = msg.data.msg.toLowerCase();
 
-      if (text.startsWith('!test333 ')) {
-        const command = text.slice(9).trim();
+      if (cmd === '!votespec') {
+        const srcdsApi = getSrcdsApi(sessionId);
 
         return {
-          type: 'client_exec',
+          type: 'motd_open',
           data: {
-            steamId,
-            command,
-          },
+            url: 'vote/spec',
+            clients: [steamId],
+          } as MotdOpenAction,
         };
       }
     },

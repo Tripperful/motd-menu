@@ -1,9 +1,11 @@
 import { SteamPlayerData } from '@motd-menu/common';
+import classNames from 'classnames';
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
+import { ClassNameProps } from '~types/props';
 
 export const useStyles = createUseStyles({
   root: {
@@ -42,8 +44,8 @@ type PlayerItemActionProps =
     };
 
 export const PlayerItem: FC<
-  { profile: SteamPlayerData } & PlayerItemActionProps
-> = ({ profile, ...action }) => {
+  { profile: SteamPlayerData } & PlayerItemActionProps & ClassNameProps
+> = ({ profile, className, ...action }) => {
   const c = useStyles();
 
   const content = (
@@ -57,11 +59,14 @@ export const PlayerItem: FC<
   );
 
   return 'link' in action ? (
-    <Link className={c.root} to={action.link}>
+    <Link className={classNames(c.root, className)} to={action.link}>
       {content}
     </Link>
   ) : (
-    <div className={c.root} onClick={() => action.onClick(profile.steamId)}>
+    <div
+      className={classNames(c.root, className)}
+      onClick={() => action.onClick(profile.steamId)}
+    >
       {content}
     </div>
   );
