@@ -14,6 +14,8 @@ export type WsMessageType =
   | 'get_smurfs_request'
   | 'get_smurfs_response'
   | 'player_connected'
+  | 'player_chat'
+  | 'client_exec'
   | 'rank_update'
   | 'changelevel'
   | 'get_players_request'
@@ -97,6 +99,16 @@ export interface SetSettingsAction {
     hitsound: 0 | 1;
     killsound: 0 | 1;
   };
+}
+
+export interface PlayerChatAction {
+  steamId: string;
+  msg: string;
+}
+
+export interface ClientCexecAction {
+  steamId: string;
+  command: string;
 }
 
 export interface BaseStatsMessage {

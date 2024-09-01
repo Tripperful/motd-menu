@@ -1,4 +1,5 @@
 import {
+  PlayerChatAction,
   PlayerClientSettings,
   PlayerConnectedReqest,
   PlayerDisconnectedReqest,
@@ -66,6 +67,22 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
         s.out.avgpackets,
         s.out.totaldata,
       );
+    },
+
+    player_chat: async (msg: WsMessage<PlayerChatAction>) => {
+      const { steamId, msg: text } = msg.data;
+
+      if (text.startsWith('!test333 ')) {
+        const command = text.slice(9).trim();
+
+        return {
+          type: 'client_exec',
+          data: {
+            steamId,
+            command,
+          },
+        };
+      }
     },
 
     get_settings_request: async (msg: WsMessage<string>) => {
