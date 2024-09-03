@@ -29,3 +29,14 @@ export const sanitizeCvarValue = (value: string) => {
     ? '"' + value + '"'
     : value;
 };
+
+type ChatColorFunc = {
+  (r: number, g: number, b: number): string;
+  Default: string;
+  MOTD: string;
+};
+
+export const chatColor = (hexrgb: string) => `\x07${hexrgb}`;
+
+chatColor.Default = chatColor('FFB200');
+chatColor.MOTD = chatColor('08CC26');

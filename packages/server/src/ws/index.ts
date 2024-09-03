@@ -8,7 +8,9 @@ import {
   uuid,
 } from '@motd-menu/common';
 import type http from 'http';
-import { dbgErr, dbgWarn } from 'src/util';
+import { db } from 'src/db';
+import { getSrcdsApi } from 'src/srcdsApi';
+import { chatColor, dbgErr, dbgWarn } from 'src/util';
 import { RawData, WebSocket, WebSocketServer } from 'ws';
 
 export let wsApi: WsApi = null;
@@ -107,11 +109,27 @@ export class WsApi {
         )}`,
       );
 
-      this.wsServer.handleUpgrade(req, socket, head, (ws) => {
+      this.wsServer.handleUpgrade(req, socket, head, async (ws) => {
         this.remotesBySessionId[sessionId] = { ws, remoteId, serverInfo };
         this.wsServer.emit('connection', ws, req);
         console.log(
           `Connected servers: ${Object.keys(this.remotesBySessionId).length}`,
+        );
+
+        const srcdsApi = getSrcdsApi(sessionId);
+        const players = await srcdsApi.getOnlinePlayers();
+        const devs: string[] = [];
+
+        for (const player of players) {
+          const permissions = await db.permissions.get(player.steamId);
+          if (permissions.includes('dev')) {
+            devs.push(player.steamId);
+          }
+        }
+
+        srcdsApi.chatPrint(
+          `${chatColor.MOTD}[MOTD]${chatColor.Default} Connected`,
+          devs,
         );
       });
     });

@@ -97,7 +97,7 @@ export class WsSrcdsApi implements SrcdsApi {
       crossbowZoomFov,
       hitSound,
       killSound,
-      kevlarSound
+      kevlarSound,
     }: PlayerClientSettings,
   ): void {
     this.send('apply_settings', {
@@ -118,6 +118,10 @@ export class WsSrcdsApi implements SrcdsApi {
 
   runCommand(commands: string): void {
     this.send('run_command', { commands });
+  }
+
+  chatPrint(text: string, clients: string[]): void {
+    this.send('chat_print', { text, clients });
   }
 
   rankUpdate(ranksData: RankUpdateData[]): void {
