@@ -167,14 +167,14 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     <div className={classNames(c.root, className)}>
       <div className={c.settings}>
         <LabeledSwitch
-          active={hitSound}
-          setActive={setHitSound}
+          active={killSound}
+          setActive={setKillSound}
           label="Kill sound"
           disabled={disabled}
         />
         <LabeledSwitch
-          active={killSound}
-          setActive={setKillSound}
+          active={hitSound}
+          setActive={setHitSound}
           label="Hit sound"
           disabled={disabled}
         />
