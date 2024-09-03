@@ -79,18 +79,10 @@ const VoteSpecConfirm: FC = () => {
         to spectators?
       </div>
       <div className={c.options}>
-        <div
-          className={c.option}
-          onClick={() => onVote(true)}
-          style={{ color: theme.fgSuccess }}
-        >
+        <div className={c.option} onClick={() => onVote(true)}>
           Yes
         </div>
-        <div
-          className={c.option}
-          onClick={() => onVote(false)}
-          style={{ color: theme.fgError }}
-        >
+        <div className={c.option} onClick={() => onVote(false)}>
           No
         </div>
       </div>
