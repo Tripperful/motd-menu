@@ -45,7 +45,12 @@ menuRouter.post('/voteSpec/:targetSteamId', async (req, res) => {
     const targetSteamId = req.params.targetSteamId;
     const players = await srcdsApi.getOnlinePlayers();
     const voters = players
-      .filter((p) => p.steamId !== steamId && p.teamIdx !== 1)
+      .filter(
+        (p) =>
+          p.steamId !== steamId &&
+          p.teamIdx !== 1 &&
+          p.steamId !== targetSteamId,
+      )
       .map((p) => p.steamId);
 
     if (voters.length > 0) {
