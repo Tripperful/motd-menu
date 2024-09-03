@@ -50,6 +50,7 @@ const defaultSettings: PlayerClientSettings = {
   dsp: true,
   hitSound: true,
   killSound: true,
+  kevlarSound: true,
 };
 
 export class PgDatabase extends BasePgDatabase implements Database {
@@ -221,6 +222,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
         {
           hitSound,
           killSound,
+          kevlarSound,
           fov,
           magnumZoomFov,
           crossbowZoomFov,
@@ -236,6 +238,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
           steamId,
           hitSound ?? curSettings.hitSound,
           killSound ?? curSettings.killSound,
+          kevlarSound ?? curSettings.kevlarSound,
           fov ?? curSettings.fov,
           magnumZoomFov ?? curSettings.magnumZoomFov,
           crossbowZoomFov ?? curSettings.crossbowZoomFov,

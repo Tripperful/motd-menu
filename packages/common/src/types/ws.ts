@@ -99,6 +99,7 @@ export interface SetSettingsAction {
     crossbowZoomFov: number;
     hitsound: 0 | 1;
     killsound: 0 | 1;
+    kevlarsound: 0 | 1;
   };
 }
 

@@ -49,6 +49,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
 
   const [hitSound, setHitSound] = useState(settings.hitSound);
   const [killSound, setKillSound] = useState(settings.killSound);
+  const [kevlarSound, setKevlarSound] = useState(settings.kevlarSound);
   const [esp, setEsp] = useState(settings.esp);
   const [dsp, setDsp] = useState(settings.dsp);
   const [drawViewmodel, setDrawViewmodel] = useState(settings.drawViewmodel);
@@ -127,6 +128,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     const newSettings: PlayerClientSettings = {
       hitSound,
       killSound,
+      kevlarSound,
       esp,
       dsp,
       drawViewmodel,
@@ -156,6 +158,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     crossbowZoomFov,
     hitSound,
     killSound,
+    kevlarSound,
     steamId,
     settings,
   ]);
@@ -173,6 +176,12 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
           active={killSound}
           setActive={setKillSound}
           label="Hit sound"
+          disabled={disabled}
+        />
+        <LabeledSwitch
+          active={kevlarSound}
+          setActive={setKevlarSound}
+          label="Kevlar sound"
           disabled={disabled}
         />
         <LabeledSwitch

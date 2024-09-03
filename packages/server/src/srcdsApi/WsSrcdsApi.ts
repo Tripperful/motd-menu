@@ -97,6 +97,7 @@ export class WsSrcdsApi implements SrcdsApi {
       crossbowZoomFov,
       hitSound,
       killSound,
+      kevlarSound
     }: PlayerClientSettings,
   ): void {
     this.send('apply_settings', {
@@ -110,6 +111,7 @@ export class WsSrcdsApi implements SrcdsApi {
         crossbowZoomFov,
         hitsound: hitSound ? 1 : 0,
         killsound: killSound ? 1 : 0,
+        kevlarsound: kevlarSound ? 1 : 0,
       },
     } as SetSettingsAction);
   }

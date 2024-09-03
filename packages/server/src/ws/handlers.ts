@@ -101,6 +101,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
         dsp,
         hitSound,
         killSound,
+        kevlarSound,
       } = await db.client.settings.get(msg.data);
 
       const aka = (await db.client.getAka(msg.data)) ?? '';
@@ -116,6 +117,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
           dsp: dsp ? 1 : 0,
           hitsound: hitSound ? 1 : 0,
           killsound: killSound ? 1 : 0,
+          kevlarsound: kevlarSound ? 1 : 0,
           aka,
         },
       };
@@ -134,6 +136,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
         dsp: s.dsp == null ? null : Boolean(s.dsp),
         hitSound: s.hitsound == null ? null : Boolean(s.hitsound),
         killSound: s.killsound == null ? null : Boolean(s.killsound),
+        kevlarSound: s.kevlarsound == null ? null : Boolean(s.kevlarsound),
       };
 
       db.client.settings.set(steamId, settings);

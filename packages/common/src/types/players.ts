@@ -10,6 +10,7 @@ export interface OnlinePlayerInfo {
 export interface PlayerClientSettings {
   hitSound: boolean;
   killSound: boolean;
+  kevlarSound: boolean;
   fov: number;
   magnumZoomFov: number;
   crossbowZoomFov: number;

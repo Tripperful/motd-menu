@@ -5,6 +5,7 @@ ADD COLUMN IF NOT EXISTS distance float;
 -- Add client settings columns if they don't exist
 ALTER TABLE IF EXISTS client_settings
 ADD COLUMN IF NOT EXISTS dsp boolean DEFAULT true,
+ADD COLUMN IF NOT EXISTS kevlar_sound boolean DEFAULT true,
 ADD COLUMN IF NOT EXISTS magnum_zoom_fov int DEFAULT 0,
 ADD COLUMN IF NOT EXISTS crossbow_zoom_fov int DEFAULT 20;
 
