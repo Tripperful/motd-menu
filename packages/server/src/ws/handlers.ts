@@ -70,11 +70,17 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       );
     },
 
-    player_chat: async (msg: WsMessage<PlayerChatAction>) => {
+    player_chat: async (msg: WsMessage<PlayerChatAction>, _serverId, sessionId) => {
       const { steamId } = msg.data;
       const cmd = msg.data.msg.toLowerCase();
 
       if (cmd === '!votespec') {
+        const srcdsApi = getSrcdsApi(sessionId);
+        const players = await srcdsApi.getOnlinePlayers();
+        const callee = players.find((p) => p.steamId === steamId);
+
+        if (callee?.teamIdx === 1) return;
+
         return {
           type: 'motd_open',
           data: {
