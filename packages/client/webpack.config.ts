@@ -12,6 +12,7 @@ const cd = (...args: string[]) => path.resolve(__dirname, ...args);
 const buildDir = cd('./dist');
 
 const config: ({}, { mode }) => Configuration = (_, { mode }) => {
+  const isProd = mode === 'production';
   return {
     entry: {
       index: './src/index.tsx',
@@ -78,8 +79,8 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
     devtool: 'source-map',
     target: ['web'],
     optimization: {
-      minimize: true,
-      minimizer: [new TerserPlugin()],
+      minimize: isProd,
+      minimizer: isProd ? [new TerserPlugin()] : [],
     },
   };
 };

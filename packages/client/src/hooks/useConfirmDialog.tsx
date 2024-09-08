@@ -26,7 +26,13 @@ export const useConfirmDialog = (title: string, onConfirm: () => void) => {
             <div className={c.actionButton} onClick={() => setShow(false)}>
               No
             </div>
-            <div className={c.actionButton} onClick={onConfirm}>
+            <div
+              className={c.actionButton}
+              onClick={() => {
+                setShow(false);
+                onConfirm();
+              }}
+            >
               Yes
             </div>
           </div>

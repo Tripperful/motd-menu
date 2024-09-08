@@ -42,75 +42,73 @@ export const Router: FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" ErrorBoundary={MainMenu}>
-          <Route path="" element={<MainMenu />} />
-          <Route path="exit" element={<Exit />} />
-          <Route
-            path="maps/:mapName?/*"
-            element={
-              <Suspense>
-                <MapList />
-              </Suspense>
-            }
-          />
-          <Route path="teams/:teamIndex?" element={<TeamMenu />} />
-          <Route
-            path="serverSettings/*"
-            element={
-              <Suspense>
-                <ServerSettings />
-              </Suspense>
-            }
-          />
-          <Route
-            path="clientSettings/*"
-            element={
-              <Suspense>
-                <ClientSettings />
-              </Suspense>
-            }
-          />
-          <Route
-            path="players/*"
-            element={
-              <Suspense>
-                <PlayersMenu />
-              </Suspense>
-            }
-          />
-          <Route
-            path="matches/*"
-            element={
-              <Suspense>
-                <MatchMenu />
-              </Suspense>
-            }
-          />
-          <Route
-            path="srcdsMock/*"
-            element={
-              <Suspense>
-                <SrcdsMock />
-              </Suspense>
-            }
-          />
-          <Route
-            path="onlineServers/*"
-            element={
-              <Suspense>
-                <OnlineServers />
-              </Suspense>
-            }
-          />
-          <Route
-            path="vote/*"
-            element={
-              <Suspense>
-                <Vote />
-              </Suspense>
-            }
-          />
-        </Route>
+        <Route path="exit" element={<Exit />} />
+        <Route
+          path="maps/:mapName?/*"
+          element={
+            <Suspense>
+              <MapList />
+            </Suspense>
+          }
+        />
+        <Route path="teams/*" element={<TeamMenu />} />
+        <Route
+          path="serverSettings/*"
+          element={
+            <Suspense>
+              <ServerSettings />
+            </Suspense>
+          }
+        />
+        <Route
+          path="clientSettings/*"
+          element={
+            <Suspense>
+              <ClientSettings />
+            </Suspense>
+          }
+        />
+        <Route
+          path="players/*"
+          element={
+            <Suspense>
+              <PlayersMenu />
+            </Suspense>
+          }
+        />
+        <Route
+          path="matches/*"
+          element={
+            <Suspense>
+              <MatchMenu />
+            </Suspense>
+          }
+        />
+        <Route
+          path="srcdsMock/*"
+          element={
+            <Suspense>
+              <SrcdsMock />
+            </Suspense>
+          }
+        />
+        <Route
+          path="onlineServers/*"
+          element={
+            <Suspense>
+              <OnlineServers />
+            </Suspense>
+          }
+        />
+        <Route
+          path="vote/*"
+          element={
+            <Suspense>
+              <Vote />
+            </Suspense>
+          }
+        />
+        <Route path="*" element={<MainMenu />} />
       </Routes>
     </BrowserRouter>
   );

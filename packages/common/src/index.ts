@@ -4,6 +4,7 @@ export * from './types/filters';
 export * from './types/log';
 export * from './types/maps';
 export * from './types/match';
+export * from './types/news';
 export * from './types/permissions';
 export * from './types/players';
 export * from './types/reactions';

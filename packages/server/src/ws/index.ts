@@ -116,21 +116,25 @@ export class WsApi {
           `Connected servers: ${Object.keys(this.remotesBySessionId).length}`,
         );
 
-        const srcdsApi = getSrcdsApi(sessionId);
-        const players = await srcdsApi.getOnlinePlayers();
-        const devs: string[] = [];
+        try {
+          const srcdsApi = getSrcdsApi(sessionId);
+          const players = await srcdsApi.getOnlinePlayers();
+          const devs: string[] = [];
 
-        for (const player of players) {
-          const permissions = await db.permissions.get(player.steamId);
-          if (permissions.includes('dev')) {
-            devs.push(player.steamId);
+          for (const player of players) {
+            const permissions = await db.permissions.get(player.steamId);
+            if (permissions.includes('dev')) {
+              devs.push(player.steamId);
+            }
           }
-        }
 
-        srcdsApi.chatPrint(
-          `${chatColor.MOTD}[MOTD]${chatColor.Default} Connected`,
-          devs,
-        );
+          srcdsApi.chatPrint(
+            `${chatColor.MOTD}[MOTD]${chatColor.Default} Connected`,
+            devs,
+          );
+        } catch (e) {
+          dbgErr(e);
+        }
       });
     });
 

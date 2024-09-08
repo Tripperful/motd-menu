@@ -1,11 +1,10 @@
 import React, { FC, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { motdApi } from 'src/api';
 import { useAvailableTeams } from 'src/hooks/useAvailableTeams';
 import { Menu } from '~components/common/Menu';
 
-export const TeamMenu: FC = () => {
-  const { teamIndex } = useParams();
+const JoinTeam: FC<{ teamIndex: number }> = ({ teamIndex }) => {
   const nav = useNavigate();
 
   useEffect(() => {
@@ -15,17 +14,32 @@ export const TeamMenu: FC = () => {
     }
   }, [nav, teamIndex]);
 
+  return null;
+};
+
+export const TeamMenu: FC = () => {
   const availableTeams = useAvailableTeams();
 
   return (
-    <Menu
-      items={availableTeams.map((t) => ({
-        title: t.name,
-        link: t.joinIndex.toString(),
-        Icon: t.icon,
-        color: t.color,
-      }))}
-      title="Select your team"
-    />
+    <>
+      <Menu
+        items={availableTeams.map((t) => ({
+          title: t.name,
+          link: t.joinIndex.toString(),
+          Icon: t.icon,
+          color: t.color,
+        }))}
+        title="Select your team"
+      />
+      <Routes>
+        {availableTeams.map((t) => (
+          <Route
+            key={t.joinIndex}
+            path={t.joinIndex.toString()}
+            element={<JoinTeam teamIndex={t.joinIndex} />}
+          />
+        ))}
+      </Routes>
+    </>
   );
 };

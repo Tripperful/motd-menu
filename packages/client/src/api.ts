@@ -8,6 +8,8 @@ import {
   MatchDeathData,
   MatchFilters,
   MatchSummary,
+  NewsData,
+  NewsPreviewsPagedData,
   OnlinePlayerInfo,
   OnlineServerInfo,
   PagedData,
@@ -26,7 +28,7 @@ class MotdApi {
   private requestCache: Record<string, Promise<string>> = {};
 
   protected async query(
-    method: 'GET' | 'POST' | 'DELETE',
+    method: 'GET' | 'POST' | 'PUT' | 'DELETE',
     endpoint: string,
     body?: string,
     search?: URLSearchParams,
@@ -77,6 +79,10 @@ class MotdApi {
 
   protected async post(endpoint: string, body?: string): Promise<string> {
     return this.query('POST', endpoint, body);
+  }
+
+  protected async put(endpoint: string, body?: string): Promise<string> {
+    return this.query('PUT', endpoint, body);
   }
 
   protected async delete(endpoint: string, body?: string): Promise<string> {
@@ -389,6 +395,45 @@ class MotdApi {
 
   public async voteSpecPlayer(steamId: string) {
     await this.post(`menu/voteSpec/` + steamId);
+  }
+
+  public async getNewsPreviews(offset: number) {
+    const res = await this.get('news/previews/' + offset);
+    return JSON.parse(res) as NewsPreviewsPagedData;
+  }
+
+  public async getNews(id: string) {
+    const res = await this.get('news/' + id);
+    return JSON.parse(res) as NewsData;
+  }
+
+  public async createNews(title: string, content: string) {
+    const res = await this.post('news', JSON.stringify({ title, content }));
+    return JSON.parse(res) as NewsData;
+  }
+
+  public async editNews(id: string, title: string, content: string) {
+    const res = await this.put(
+      'news/' + id,
+      JSON.stringify({ title, content }),
+    );
+    return JSON.parse(res) as NewsData;
+  }
+
+  public async publishNews(id: string) {
+    await this.post('news/publish/' + id);
+  }
+
+  public async markNewsRead(id: string) {
+    await this.post('news/markRead/' + id);
+  }
+
+  public async markNewsHidden(id: string) {
+    await this.post('news/markHidden/' + id);
+  }
+
+  public async deleteNews(id: string) {
+    await this.delete('news/' + id);
   }
 }
 

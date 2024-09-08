@@ -15,6 +15,8 @@ import {
   MatchStartedMessage,
   MatchSummary,
   MedkitPickupMessage,
+  NewsData,
+  NewsPreviewsPagedData,
   PagedData,
   Permission,
   PlayerAttackMessage,
@@ -152,7 +154,10 @@ export interface Database {
   matchStats: {
     matchStarted(serverId: number, data: MatchStartedMessage): Promise<void>;
     matchEnded(data: MatchEndedMessage): Promise<void>;
-    updateAfterMatchRanks(matchId: string, data: RankUpdateData[]): Promise<void>;
+    updateAfterMatchRanks(
+      matchId: string,
+      data: RankUpdateData[],
+    ): Promise<void>;
     playerDeath(data: PlayerDeathMessage): Promise<void>;
     playerRespawn(data: PlayerRespawnMessage): Promise<void>;
     playerDamage(data: PlayerDamageMessage): Promise<void>;
@@ -192,5 +197,24 @@ export interface Database {
     getAllClients(): Promise<TelegramClientInfo[]>;
     getClientBySteamId(steamId: string): Promise<TelegramClientInfo>;
     getClientByClientId(clientId: number): Promise<TelegramClientInfo>;
+  };
+  news: {
+    getPreviews(
+      steamId: string,
+      limit: number,
+      offset: number,
+      searchText: string,
+    ): Promise<NewsPreviewsPagedData>;
+    getById(newsId: string, steamId: string): Promise<NewsData>;
+    create(
+      authorSteamId: string,
+      title: string,
+      content: string,
+    ): Promise<string>;
+    edit(newsId: string, title: string, content: string): Promise<void>;
+    publish(newsId: string): Promise<void>;
+    markRead(newsId: string, steamId: string): Promise<void>;
+    markHidden(newsId: string, steamId: string): Promise<void>;
+    delete(newsId: string): Promise<void>;
   };
 }

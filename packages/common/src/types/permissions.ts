@@ -11,6 +11,8 @@ export const permissionDescriptions = {
   tg_admin: 'Administrate Telegram bot',
   permissions_view: "View players' permissions",
   permissions_edit: "Edit players' permissions",
+  news_create: 'Create news',
+  news_publish: 'Publish news',
   rcon: 'Run server concommands via the menu',
   dev: 'Developer',
 };

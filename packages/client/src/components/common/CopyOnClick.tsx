@@ -23,9 +23,10 @@ export const CopyOnClick: FC<
 
     copyToClipboard(copyText);
 
-    if (what) {
-      addNotification('success', what + ' copied to clipboard!');
-    }
+    addNotification(
+      'success',
+      what ? what + ' copied to clipboard!' : 'Copied to clipboard!',
+    );
   };
 
   return (

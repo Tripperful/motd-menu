@@ -27,7 +27,7 @@ matchResultsFiltersState.subscribe(() => {
 });
 
 let fetching = false;
-export const fetchMorematchResults = async () => {
+export const fetchMoreMatchResults = async () => {
   if (fetching) return;
   fetching = true;
 

@@ -1,18 +1,15 @@
 import { Permission } from '@motd-menu/common';
 import debounce from 'lodash/debounce';
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, Suspense, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { useLocation } from 'react-router-dom';
-import { motdApi } from 'src/api';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { useMyPermissions } from 'src/hooks/state/permissions';
-import { useSessionData } from 'src/hooks/useSessionData';
+import { NewsBadge } from '~components/News/NewsBadge';
 import BackIcon from '~icons/chevron-left.svg';
 import CrossIcon from '~icons/close.svg';
-import TelegramIcon from '~icons/telegram.svg';
-import { activeItem } from '~styles/elements';
 import { filterShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
-import { QrCodePopup } from '../QrCodePopup';
+import { SidePanel } from '../SidePanel';
 import { MenuItem } from './MenuItem';
 
 const useStyles = createUseStyles({
@@ -32,12 +29,11 @@ const useStyles = createUseStyles({
   },
   dev: {
     position: 'absolute',
-    right: '1em',
-    top: '1em',
+    left: '1em',
+    bottom: '1em',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end',
-    textAlign: 'right',
+    fontSize: '0.5em',
   },
   items: {
     position: 'absolute',
@@ -61,15 +57,10 @@ const useStyles = createUseStyles({
     bottom: '50%',
     transform: 'translateY(50%)',
   },
-  tgLink: {
-    ...activeItem(),
-    fontSize: '0.8em',
+  newsBadge: {
     position: 'absolute',
     right: '1em',
-    bottom: '1em',
-    display: 'flex',
-    gap: '0.25em',
-    alignItems: 'center',
+    top: '1em',
   },
 });
 
@@ -106,13 +97,14 @@ const buildTimestampFormat = Intl.DateTimeFormat(navigator.language, {
   second: '2-digit',
 });
 
+const LazyNews = React.lazy(() => import(/* webpackChunkName: "lazy-main" */ '~components/News'));
+
 export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   items,
   title,
 }) => {
   const c = useStyles();
   const [hoveredItem, setHoveredItem] = useState<MenuItemInfo>();
-  const [joinTgLink, setJoinTgLink] = useState(null as string);
 
   const permissions = useMyPermissions();
   const visibleItems = useMemo(
@@ -135,7 +127,6 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   const centerItem = pathname === '/' ? exitItem : backItem;
 
   const isDev = permissions.includes('dev');
-  // const { tgConnected } = useSessionData();
 
   return (
     <div className={c.root}>
@@ -179,24 +170,19 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
           />
         ))}
       </div>
-      {/* {!tgConnected && (
-        <div
-          className={c.tgLink}
-          onClick={() => {
-            motdApi.getTgJoinLink().then((link) => setJoinTgLink(link));
-          }}
-        >
-          <TelegramIcon /> Connect Telegram
-        </div>
-      )} */}
-      {joinTgLink && (
-        <QrCodePopup
-          title="Connect to Telegram"
-          description="Scan the QR code with your phone or copy the link and paste it to your browser to start receiving notifications from us."
-          link={joinTgLink}
-          onClose={() => setJoinTgLink(null)}
+      <NewsBadge className={c.newsBadge} to="news" />
+      <Routes>
+        <Route
+          path="news/*"
+          element={
+            <SidePanel title="News">
+              <Suspense>
+                <LazyNews />
+              </Suspense>
+            </SidePanel>
+          }
         />
-      )}
+      </Routes>
     </div>
   );
 };

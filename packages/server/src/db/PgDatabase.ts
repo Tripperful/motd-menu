@@ -15,6 +15,8 @@ import {
   MatchStartedMessage,
   MatchSummary,
   MedkitPickupMessage,
+  NewsData,
+  NewsPreviewsPagedData,
   PagedData,
   Permission,
   PlayerAttackMessage,
@@ -333,6 +335,34 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.select<TelegramClientInfo[]>('tg_get_all_clients'),
     getClientByClientId: (clientId: number) =>
       this.select<TelegramClientInfo>('tg_get_client_by_client_id', clientId),
+  };
+
+  news = {
+    getPreviews: (
+      steamId: string,
+      limit: number,
+      offset: number,
+      searchText: string,
+    ) =>
+      this.select<NewsPreviewsPagedData>(
+        'get_player_news_previews',
+        steamId,
+        limit,
+        offset,
+        searchText,
+      ),
+    getById: (newsId: string, steamId: string) =>
+      this.select<NewsData>('get_news_by_id', newsId, steamId),
+    create: (authorSteamId: string, title: string, content: string) =>
+      this.select<string>('create_news', authorSteamId, title, content),
+    edit: (newsId: string, title: string, content: string) =>
+      this.call('edit_news', newsId, title, content),
+    publish: (newsId: string) => this.call('publish_news', newsId),
+    markRead: (newsId: string, steamId: string) =>
+      this.call('mark_news_read', newsId, steamId),
+    markHidden: (newsId: string, steamId: string) =>
+      this.call('mark_news_hidden', newsId, steamId),
+    delete: (newsId: string) => this.call('delete_news', newsId),
   };
 
   override async init() {

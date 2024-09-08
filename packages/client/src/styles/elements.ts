@@ -1,6 +1,24 @@
 import { JssStyle } from 'jss';
 import { theme } from './theme';
 
+export const activeItemNoTransform: () => JssStyle = () => ({
+  color: theme.fg1,
+  cursor: 'pointer',
+  userSelect: 'none',
+  filter: 'drop-shadow(0rem 0rem 0rem transparent);',
+  transition: 'all 0.1s ease-out',
+  '&:hover': {
+    filter: 'drop-shadow(0 0 0.15rem #0008) saturate(2)',
+  },
+  '&:active, &[data-active=true]': {
+    filter: 'drop-shadow(0 0 0.1rem #000b) saturate(2) brightness(2)',
+  },
+  '&:disabled, &[data-disabled=true]': {
+    filter: 'grayscale(0.8)',
+    pointerEvents: 'none',
+  },
+});
+
 export const activeItem: () => JssStyle = () => ({
   color: theme.fg1,
   cursor: 'pointer',

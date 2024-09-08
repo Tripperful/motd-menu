@@ -1,19 +1,11 @@
 import { MatchSummary, MatchSummaryTeam } from '@motd-menu/common';
 import Color from 'color';
 import range from 'lodash/range';
-import React, {
-  FC,
-  Suspense,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { FC, Suspense, useEffect, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
-import { useIntersection } from 'react-use';
 import {
-  fetchMorematchResults,
+  fetchMoreMatchResults,
   resetMatchResults,
   useMatchResults,
 } from 'src/hooks/state/matchResults';
@@ -21,6 +13,7 @@ import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { teamInfoByIdx } from 'src/util/teams';
 import { MapPreviewImage } from '~components/common/MapPreviewImage';
 import { ActionPage } from '~components/common/Page/ActionPage';
+import { PageFetcher } from '~components/common/PageFetcher';
 import SearchIcon from '~icons/search.svg';
 import ArrowRightIcon from '~icons/thick-arrow-right.svg';
 import { activeItem, skeletonBg } from '~styles/elements';
@@ -247,19 +240,6 @@ const MatchResult: FC<{ data: MatchSummary }> = ({ data }) => {
   );
 };
 
-const ResultsFetcher: FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = (useIntersection(ref, {})?.intersectionRatio ?? 0) > 0;
-
-  useEffect(() => {
-    if (visible) {
-      fetchMorematchResults();
-    }
-  }, [visible]);
-
-  return <div ref={ref}>Loading more...</div>;
-};
-
 export const MatchResultsContent: FC<{
   setTotal?: (total: number) => void;
 }> = ({ setTotal }) => {
@@ -276,7 +256,7 @@ export const MatchResultsContent: FC<{
       {results.map((result) => (
         <MatchResult key={result.id} data={result} />
       ))}
-      {hasMore && <ResultsFetcher />}
+      <PageFetcher hasMore={hasMore} loadMore={fetchMoreMatchResults} />
     </>
   );
 };
