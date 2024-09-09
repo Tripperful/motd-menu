@@ -425,12 +425,15 @@ const NewsPopup: FC = () => {
 const News: FC = () => {
   const c = useStyles();
   const { news, hasMore } = useNewsPreviews();
+  const canCreate = useMyPermissions().includes('news_create');
 
   return (
     <div className={c.newsList}>
-      <Link to="create" className={c.createNewsButton}>
-        Create
-      </Link>
+      {canCreate && (
+        <Link to="create" className={c.createNewsButton}>
+          Create
+        </Link>
+      )}
       {news.length === 0 ? (
         <div>No news yet</div>
       ) : (
