@@ -1,15 +1,9 @@
 import { NewsData, NewsPreview, SteamPlayerData } from '@motd-menu/common';
 import classNames from 'classnames';
-import React, {
-  AnchorHTMLAttributes,
-  FC,
-  Suspense,
-  useEffect,
-  useState,
-} from 'react';
+import React, { FC, Suspense, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import Markdown from 'react-markdown';
-import { Element, JsxRuntimeComponents } from 'react-markdown/lib';
+import { JsxRuntimeComponents } from 'react-markdown/lib';
 import { Link, Route, Routes, useNavigate, useParams } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 import {
@@ -27,15 +21,18 @@ import { useMyPermissions } from 'src/hooks/state/permissions';
 import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { useConfirmDialog } from 'src/hooks/useConfirmDialog';
 import { useGoBack } from 'src/hooks/useGoBack';
+import { usePlayersProfiles } from 'src/hooks/usePlayersProfiles';
 import { dateFormat } from 'src/util';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
 import { CopyOnClick } from '~components/common/CopyOnClick';
 import { PageFetcher } from '~components/common/PageFetcher';
+import { PlayerItem } from '~components/common/PlayerItem';
 import { Popup } from '~components/common/Popup';
+import { SidePanel } from '~components/common/SidePanel';
+import CopyIcon from '~icons/copy.svg';
 import LoadingIcon from '~icons/loading.svg';
 import { activeItem, activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
-import CopyIcon from '~icons/copy.svg';
 
 const useStyles = createUseStyles({
   newsList: {
@@ -158,6 +155,16 @@ const useStyles = createUseStyles({
       ...activeItem(),
     },
   },
+  views: {
+    display: 'grid',
+    position: 'relative',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(15em, 1fr))',
+    alignContent: 'start',
+    gap: '0.5em',
+    flex: '1 1 auto',
+    overflow: 'hidden scroll',
+    padding: '0.5em',
+  },
   '@keyframes blink': {
     '0%': {
       opacity: 1,
@@ -224,13 +231,25 @@ const NewsRenderer: FC<{ news: NewsData; author: SteamPlayerData }> = ({
   author,
 }) => {
   const c = useStyles();
-  const { title, content, authorSteamId, publishedOn, createdOn } = news;
+  const permissions = useMyPermissions();
+
+  const { title, content, authorSteamId, publishedOn, createdOn, readBy } =
+    news;
+
+  const canEdit = permissions.includes('news_create');
+  const canPublish = permissions.includes('news_publish');
+  const isEditor = canEdit || canPublish;
 
   return (
     <div className={c.newsRenderer}>
       <div className={c.newsTitle}>
         <span>{title}</span>
       </div>
+      {isEditor && (
+        <Link to="views" className={c.editButton}>
+          Views ({readBy.length})
+        </Link>
+      )}
       <div className={c.newsPublishInfo}>
         <span>
           <span>{publishedOn ? 'Published by' : 'Created by'}</span>
@@ -393,6 +412,24 @@ const NewsContent: FC<{
   );
 };
 
+const NewsViews: FC = () => {
+  const c = useStyles();
+  const { newsId } = useParams();
+  const { readBy } = useNews(newsId);
+
+  const viewersProfiles = usePlayersProfiles(readBy);
+
+  return (
+    <div className={c.views}>
+      {Object.entries(viewersProfiles).map(([steamId, profile], i) => (
+        <Link key={i} to={steamId} className={c.activeNoTransform}>
+          <PlayerItem profile={profile} />
+        </Link>
+      ))}
+    </div>
+  );
+};
+
 const NewsPopup: FC = () => {
   const c = useStyles();
   const { newsId } = useParams();
@@ -416,6 +453,17 @@ const NewsPopup: FC = () => {
             path="author/:steamId/*"
             element={<PlayerDetails backPath="../.." />}
           />
+          <Route
+            path="views"
+            element={
+              <SidePanel title="News views">
+                <Suspense>
+                  <NewsViews />
+                </Suspense>
+              </SidePanel>
+            }
+          />
+          <Route path="views/:steamId" element={<PlayerDetails />} />
         </Routes>
       </Suspense>
     </Popup>

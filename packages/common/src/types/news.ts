@@ -11,6 +11,7 @@ export interface NewsPreview {
 
 export interface NewsData extends NewsPreview {
   content: string;
+  readBy: string[];
 }
 
 export interface NewsPreviewsPagedData extends PagedData<NewsPreview> {

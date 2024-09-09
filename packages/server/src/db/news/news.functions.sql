@@ -39,7 +39,12 @@ BEGIN
     'createdOn', ROUND(EXTRACT(EPOCH FROM _news.created_on) * 1000),
     'publishedOn', ROUND(EXTRACT(EPOCH FROM _news.published_on) * 1000),
     'readOn', ROUND(EXTRACT(EPOCH FROM _news.read_on) * 1000),
-    'hiddenOn', ROUND(EXTRACT(EPOCH FROM _news.hidden_on) * 1000)
+    'hiddenOn', ROUND(EXTRACT(EPOCH FROM _news.hidden_on) * 1000),
+    'readBy', (
+      SELECT COALESCE(json_agg(news_read.steam_id::text), '[]'::json)
+      FROM news_read
+      WHERE news_read.news_id = _news.id
+    )
   );
 END;
 $$ LANGUAGE plpgsql;
