@@ -43,7 +43,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
 
         if (rankData.rank) {
           const srcdsApi = getSrcdsApi(sessionId);
-          srcdsApi.rankUpdate([rankData]);
+          srcdsApi.rankUpdate([rankData], false);
         }
       } catch (e) {
         dbgErr(e);

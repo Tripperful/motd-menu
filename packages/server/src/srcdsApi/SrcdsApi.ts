@@ -26,5 +26,5 @@ export interface SrcdsApi {
   runCommand(command: string): void;
   chatPrint(text: string, clients: string[]): void;
   clientExec(steamId: string, command: string): void;
-  rankUpdate(ranksData: RankUpdateData[]): void;
+  rankUpdate(ranksData: RankUpdateData[], show?: boolean): void;
 }
