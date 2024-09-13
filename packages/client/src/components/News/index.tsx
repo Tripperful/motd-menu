@@ -245,7 +245,7 @@ const NewsRenderer: FC<{ news: NewsData; author: SteamPlayerData }> = ({
       <div className={c.newsTitle}>
         <span>{title}</span>
       </div>
-      {isEditor && (
+      {isEditor && readBy && (
         <Link to="views" className={c.editButton}>
           Views ({readBy.length})
         </Link>
