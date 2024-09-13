@@ -17,15 +17,14 @@ export const setMapReviews = async (
 ) => {
   const newReviews = await setMapReviewsRaw(valueOrUpdater, mapName);
 
-  setMapsPreviews(
-    async (cur) =>
-      (await cur)?.map((preview) =>
-        preview.name === mapName
-          ? {
-              ...preview,
-              rate: calcAvgRating(newReviews),
-            }
-          : preview,
-      ),
+  setMapsPreviews(async (cur) =>
+    (await cur)?.map((preview) =>
+      preview.name === mapName
+        ? {
+            ...preview,
+            rate: calcAvgRating(newReviews),
+          }
+        : preview,
+    ),
   );
 };

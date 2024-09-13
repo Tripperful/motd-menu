@@ -14,17 +14,16 @@ export const setMapDetails = async (
 ) => {
   const newDetails = await mapDetailsState.set(details, mapName);
 
-  setMapsPreviews(
-    async (c) =>
-      (await c)?.map((p) =>
-        p.name === mapName
-          ? {
-              ...p,
-              image: newDetails?.images?.[0] ?? null,
-              tags: newDetails.tags,
-              isFavorite: newDetails.isFavorite,
-            }
-          : p,
-      ),
+  setMapsPreviews(async (c) =>
+    (await c)?.map((p) =>
+      p.name === mapName
+        ? {
+            ...p,
+            image: newDetails?.images?.[0] ?? null,
+            tags: newDetails.tags,
+            isFavorite: newDetails.isFavorite,
+          }
+        : p,
+    ),
   );
 };

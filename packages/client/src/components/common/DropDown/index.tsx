@@ -93,12 +93,12 @@ export const DropDown = <TValue,>({
         a === selectedOption
           ? -1
           : b === selectedOption
-          ? 1
-          : a.title < b.title
-          ? -1
-          : a.title > b.title
-          ? 1
-          : 0,
+            ? 1
+            : a.title < b.title
+              ? -1
+              : a.title > b.title
+                ? 1
+                : 0,
       ),
     [options, selectedOption],
   );

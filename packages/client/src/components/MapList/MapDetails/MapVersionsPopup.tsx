@@ -45,16 +45,15 @@ const MapVersionItem: FC<{ mapName: string; parentMapName: string }> = ({
 
       await motdApi.setMapParent(mapName, parentMap);
 
-      setMapsPreviews(
-        async (cur) =>
-          (await cur)?.map((p) => {
-            if (p.name !== mapName) return p;
+      setMapsPreviews(async (cur) =>
+        (await cur)?.map((p) => {
+          if (p.name !== mapName) return p;
 
-            return {
-              ...p,
-              parentMap,
-            };
-          }),
+          return {
+            ...p,
+            parentMap,
+          };
+        }),
       );
 
       setMapDetails(parentMapName, async (cur) => {

@@ -97,7 +97,9 @@ const buildTimestampFormat = Intl.DateTimeFormat(navigator.language, {
   second: '2-digit',
 });
 
-const LazyNews = React.lazy(() => import(/* webpackChunkName: "lazy-main" */ '~components/News'));
+const LazyNews = React.lazy(
+  () => import(/* webpackChunkName: "lazy-main" */ '~components/News'),
+);
 
 export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   items,

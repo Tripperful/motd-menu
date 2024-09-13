@@ -305,7 +305,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
     ) =>
       typeof limitOrId === 'string'
         ? await this.select<MatchSummary>('get_match', limitOrId)
-        : (await this.select<PagedData<MatchSummary>>(
+        : ((await this.select<PagedData<MatchSummary>>(
             'get_matches',
             filters?.mapName,
             filters?.players,
@@ -313,7 +313,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
             filters?.matchStatuses,
             limitOrId,
             offset,
-          )) ?? { data: [], total: 0 }) as Database['matches']['get'],
+          )) ?? { data: [], total: 0 })) as Database['matches']['get'],
     getMatchDeaths: (matchId: string) =>
       this.select<MatchDeathData[]>('get_match_deaths', matchId),
     getMatchDamage: (matchId: string) =>

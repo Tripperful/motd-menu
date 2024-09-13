@@ -70,7 +70,11 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       );
     },
 
-    player_chat: async (msg: WsMessage<PlayerChatAction>, _serverId, sessionId) => {
+    player_chat: async (
+      msg: WsMessage<PlayerChatAction>,
+      _serverId,
+      sessionId,
+    ) => {
       const { steamId } = msg.data;
       const cmd = msg.data.msg.toLowerCase();
 

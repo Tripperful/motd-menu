@@ -164,8 +164,8 @@ const MatchPlayersContent: FC = () => {
   const c = useStyles();
 
   const onlinePlayers = useOnlinePlayers();
-  const [players, setPlayers] = useState<MatchPlayerInfo[]>(
-    () => onlinePlayers?.map((p) => ({ ...p, teamIndex: 1 })),
+  const [players, setPlayers] = useState<MatchPlayerInfo[]>(() =>
+    onlinePlayers?.map((p) => ({ ...p, teamIndex: 1 })),
   );
 
   const availableTeams = useAvailableTeams();

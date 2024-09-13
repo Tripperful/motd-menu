@@ -343,7 +343,7 @@ class MotdApi {
         search.append('matchStatuses', JSON.stringify(filters.matchStatuses));
     }
 
-    const res = await this.get('match/results/' + offset ?? '', search);
+    const res = await this.get('match/results/' + (offset ?? ''), search);
 
     return JSON.parse(res) as PagedData<MatchSummary>;
   }

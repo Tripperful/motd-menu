@@ -65,7 +65,7 @@ const PlayersListItems: FC = () => {
 
   return (
     <>
-      {players?.length ?? 0 ? (
+      {(players?.length ?? 0) ? (
         players.map((data) => (
           <PlayersListItem key={data.steamId} steamId={data.steamId} />
         ))
