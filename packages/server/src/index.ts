@@ -10,7 +10,6 @@ import { api } from './api';
 import { authMiddleware } from './auth';
 import './config';
 import { db } from './db';
-import { TelegramService } from './telegram';
 import { dbgWarn } from './util';
 import { EfpsWatchdog } from './util/efps';
 import { WsApi } from './ws';

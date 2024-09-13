@@ -125,10 +125,13 @@ export class WsSrcdsApi implements SrcdsApi {
   }
 
   rankUpdate(ranksData: RankUpdateData[], show = true): void {
-    this.send('rank_update', ranksData.map((data) => ({
-      ...data,
-      show
-    })));
+    this.send(
+      'rank_update',
+      ranksData.map((data) => ({
+        ...data,
+        show,
+      })),
+    );
   }
 
   clientExec(steamId: string, command: string): void {
