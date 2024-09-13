@@ -199,7 +199,7 @@ const NewsPreviewItem: FC<{ newsPreview: NewsPreview }> = ({ newsPreview }) => {
         <div>{title}</div>
         <div className={c.publishDate}>
           {publishedOn
-            ? 'Published' + dateFormat(publishedOn)
+            ? 'Published ' + dateFormat(publishedOn)
             : 'Created ' + dateFormat(createdOn)}
         </div>
       </Link>
