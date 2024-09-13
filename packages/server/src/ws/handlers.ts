@@ -41,7 +41,7 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       try {
         const rankData = await getEfpsRank(steamId);
 
-        if (rankData.rank) {
+        if (rankData?.rank) {
           const srcdsApi = getSrcdsApi(sessionId);
           srcdsApi.rankUpdate([rankData], false);
         }
