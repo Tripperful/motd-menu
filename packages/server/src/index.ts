@@ -22,8 +22,17 @@ const staticServer = expressStaticGzip(staticDir, {
   serveStatic: { immutable: true },
 });
 
+const storybookStaticDir = path.resolve(
+  __dirname,
+  '../../client/storybook-static',
+);
+const storybookStaticServer = expressStaticGzip(storybookStaticDir, {
+  serveStatic: { immutable: true },
+});
+
 app.use('/healthcheck', (_req, res) => res.send('healthy'));
 app.set('x-powered-by', false);
+app.use('/storybook', storybookStaticServer);
 app.use(cookieParser());
 app.use('/', authMiddleware);
 // app.use(TelegramService.middleware);

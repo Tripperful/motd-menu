@@ -11,5 +11,6 @@ export const theme = {
   fgInfo: '#ffaa00',
   fgError: '#ee0000',
   fgSuccess: '#00ee00',
+  fgArmor: '#008cff',
   backdrop: '#888b',
 };
