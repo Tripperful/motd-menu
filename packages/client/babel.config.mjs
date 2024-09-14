@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   presets: [
     [
       '@babel/preset-env',
@@ -6,7 +6,7 @@ module.exports = {
         targets: {
           chrome: '85',
         },
-        corejs: '3.32.2',
+        corejs: '3.38.1',
         useBuiltIns: 'usage',
       },
     ],
