@@ -39,3 +39,11 @@ export const weaponIconsGlyphs: Partial<Record<WeaponType, string>> = {
   rpg_missile: IconGlyph.WeaponRpg,
   slam: IconGlyph.WeaponSlam,
 };
+
+export const weaponNameToIconGlyph = (weaponName: string) => {
+  if (weaponName.startsWith('weapon_')) {
+    weaponName = weaponName.substring(7);
+  }
+
+  return weaponIconsGlyphs[weaponName];
+};

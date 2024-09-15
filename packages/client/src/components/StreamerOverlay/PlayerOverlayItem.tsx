@@ -1,8 +1,10 @@
-import React, { FC } from 'react';
+import classNames from 'classnames';
+import React, { FC, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { createUseStyles } from 'react-jss';
-import { theme } from '~styles/theme';
+import { weaponNameToIconGlyph } from 'src/util/iconGlyph';
 import FlashlightIcon from '~icons/flashlight.svg';
+import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
   root: {
@@ -14,7 +16,7 @@ const useStyles = createUseStyles({
     padding: '0.5em',
     fontSize: '1.5em',
     fontWeight: 'bold',
-    fontFamily: 'sans-serif',
+    fontFamily: "'motd-menu-icons', 'Industry-Bold', sans-serif",
     transition: 'opacity 0.2s ease 0s',
     '@global': {
       '.CircularProgressbar': {
@@ -25,6 +27,14 @@ const useStyles = createUseStyles({
         },
       },
     },
+    userSelect: 'none',
+  },
+  flipped: {
+    transform: 'scaleX(-1)',
+  },
+  flipped2: {
+    transform: 'scaleX(-1)',
+    textAlign: 'end',
   },
   nameWrapper: {
     display: 'flex',
@@ -38,6 +48,9 @@ const useStyles = createUseStyles({
   },
   weapon: {
     transition: 'opacity 0.2s ease 0s',
+    fontSize: '2em',
+    transform: 'scaleX(-1)',
+    height: '1em',
   },
   score: {
     fontSize: '1.25em',
@@ -74,6 +87,7 @@ const useStyles = createUseStyles({
     borderRadius: '50%',
     objectFit: 'cover',
     padding: '0.55em',
+    overflow: 'hidden',
   },
   hpApWrapper: {
     alignSelf: 'start',
@@ -112,7 +126,10 @@ const useStyles = createUseStyles({
     color: theme.fgInfo,
     fontSize: '0.5em',
     transition: 'opacity 0.2s ease 0s',
-    marginLeft: '1em',
+    width: '100%',
+  },
+  blur: {
+    filter: 'blur(8px)',
   },
 });
 
@@ -129,6 +146,7 @@ export const PlayerOverlayItem: FC<{
   sprint: number;
   flashlight: boolean;
   weapon: string;
+  flip?: boolean;
 }> = ({
   name,
   avatarUrl,
@@ -139,24 +157,32 @@ export const PlayerOverlayItem: FC<{
   sprint,
   flashlight,
   weapon,
+  flip,
 }) => {
   const c = useStyles();
   const isAlive = hp > 0;
   const hasArmor = isAlive && ap > 0;
+  const [blurAvatar, setBlurAvatar] = useState(false);
 
   return (
-    <div className={c.root} style={{ opacity: isAlive ? 1 : 0.5 }}>
+    <div
+      className={classNames(c.root, flip && c.flipped)}
+      style={{ opacity: isAlive ? 1 : 0.5 }}
+    >
       <div className={c.nameWrapper}>
-        <div className={c.score}>
+        <div className={classNames(c.score, flip && c.flipped)}>
           {kills}
           <span className={c.deaths}>:{deaths}</span>
         </div>
-        <div className={c.name}>{name}</div>
+        <div className={classNames(c.name, flip && c.flipped)}>{name}</div>
         <div className={c.weapon} style={{ opacity: isAlive ? 1 : 0 }}>
-          {weapon}
+          {weaponNameToIconGlyph(weapon)}
         </div>
       </div>
-      <div className={c.avatarWrapper}>
+      <div
+        className={classNames(c.avatarWrapper, flip && c.flipped)}
+        onClick={() => setBlurAvatar((c) => !c)}
+      >
         <CircularProgressbar
           className={c.hpCircle}
           value={hp}
@@ -170,13 +196,22 @@ export const PlayerOverlayItem: FC<{
           maxValue={maxAp}
           strokeWidth={8}
         />
-        <img className={c.avatarImage} src={avatarUrl} />
+        <img
+          className={classNames(c.avatarImage, blurAvatar && c.blur)}
+          src={avatarUrl}
+        />
       </div>
       <div className={c.hpApWrapper} style={{ opacity: isAlive ? 1 : 0 }}>
-        <div className={c.hpText} style={{ opacity: hp > 0 ? 1 : 0 }}>
+        <div
+          className={classNames(c.hpText, flip && c.flipped2)}
+          style={{ opacity: hp > 0 ? 1 : 0 }}
+        >
           {hp}
         </div>
-        <div className={c.apText} style={{ opacity: ap > 0 ? 1 : 0 }}>
+        <div
+          className={classNames(c.apText, flip && c.flipped2)}
+          style={{ opacity: ap > 0 ? 1 : 0 }}
+        >
           {ap}
         </div>
         <div

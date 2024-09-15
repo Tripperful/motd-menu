@@ -1,9 +1,10 @@
 import Color from 'color';
 import { createUseStyles } from 'react-jss';
+import industryBoldFont from '~assets/fonts/Industry-Bold.woff2';
+import iconsFont from '~assets/fonts/motd-menu-icons.woff2';
 import arrowDownSrc from '~icons/chevron-down.svg?url';
 import arrowUpSrc from '~icons/chevron-up.svg?url';
 import { theme } from './theme';
-import iconsFont from '~assets/fonts/motd-menu-icons.woff2';
 
 export const useGlobalStyles = createUseStyles({
   '@global': {
@@ -113,11 +114,19 @@ export const useGlobalStyles = createUseStyles({
         display: 'none',
       },
     },
-    '@font-face': {
-      fontFamily: 'motd-menu-icons',
-      src: `url("${iconsFont}") format("woff")`,
-      fontWeight: 'normal',
-      fontStyle: 'normal',
-    },
+    '@font-face': [
+      {
+        fontFamily: 'motd-menu-icons',
+        src: `url("${iconsFont}") format("woff")`,
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+      } as any,
+      {
+        fontFamily: 'Industry-Bold',
+        src: `url("${industryBoldFont}") format("woff")`,
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+      } as any,
+    ],
   },
 });

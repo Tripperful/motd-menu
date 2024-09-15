@@ -10,7 +10,7 @@ export const theme = {
   fg3: '#7d7554',
   fgInfo: '#ffaa00',
   fgError: '#ee0000',
-  fgSuccess: '#00ee00',
-  fgArmor: '#008cff',
+  fgSuccess: '#6eb41e',
+  fgArmor: '#0f96d7',
   backdrop: '#888b',
 };

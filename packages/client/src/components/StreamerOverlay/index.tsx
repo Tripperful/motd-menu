@@ -1,12 +1,18 @@
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
 import { PlayerOverlayItem } from './PlayerOverlayItem';
+import { useGlobalStyles } from '~styles/global';
 
 const useStyles = createUseStyles({
   root: {
     display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  team: {
+    display: 'flex',
     flexDirection: 'column',
-    gap: '1em',
+    gap: '1.5em',
   },
 });
 
@@ -31,21 +37,84 @@ export const StreamerOverlay: FC<{
   flashlight,
   weapon,
 }) => {
+  useGlobalStyles();
   const c = useStyles();
 
   return (
     <div className={c.root}>
-      <PlayerOverlayItem
-        name={name}
-        avatarUrl={avatarUrl}
-        kills={kills}
-        deaths={deaths}
-        hp={hp}
-        ap={ap}
-        sprint={sprint}
-        flashlight={flashlight}
-        weapon={weapon}
-      />
+      <div className={c.team}>
+        <PlayerOverlayItem
+          name={name}
+          avatarUrl={avatarUrl}
+          kills={kills}
+          deaths={deaths}
+          hp={hp}
+          ap={ap}
+          sprint={sprint}
+          flashlight={flashlight}
+          weapon={weapon}
+          flip
+        />
+        <PlayerOverlayItem
+          name={name}
+          avatarUrl={avatarUrl}
+          kills={kills}
+          deaths={deaths}
+          hp={hp}
+          ap={ap}
+          sprint={sprint}
+          flashlight={flashlight}
+          weapon={weapon}
+          flip
+        />
+        <PlayerOverlayItem
+          name={name}
+          avatarUrl={avatarUrl}
+          kills={kills}
+          deaths={deaths}
+          hp={hp}
+          ap={ap}
+          sprint={sprint}
+          flashlight={flashlight}
+          weapon={weapon}
+          flip
+        />
+      </div>
+      <div className={c.team}>
+        <PlayerOverlayItem
+          name={name}
+          avatarUrl={avatarUrl}
+          kills={kills}
+          deaths={deaths}
+          hp={hp}
+          ap={ap}
+          sprint={sprint}
+          flashlight={flashlight}
+          weapon={weapon}
+        />
+        <PlayerOverlayItem
+          name={name}
+          avatarUrl={avatarUrl}
+          kills={kills}
+          deaths={deaths}
+          hp={hp}
+          ap={ap}
+          sprint={sprint}
+          flashlight={flashlight}
+          weapon={weapon}
+        />
+        <PlayerOverlayItem
+          name={name}
+          avatarUrl={avatarUrl}
+          kills={kills}
+          deaths={deaths}
+          hp={hp}
+          ap={ap}
+          sprint={sprint}
+          flashlight={flashlight}
+          weapon={weapon}
+        />
+      </div>
     </div>
   );
 };
