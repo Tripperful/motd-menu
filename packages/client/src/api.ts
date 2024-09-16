@@ -436,12 +436,6 @@ class MotdApi {
   public async deleteNews(id: string) {
     await this.delete('news/' + id);
   }
-
-  public async getStreamFrame(sessionId: string) {
-    const res = await this.get('stream/' + sessionId);
-
-    return JSON.parse(res) as StreamFrame;
-  }
 }
 
 export const motdApi = new MotdApi();

@@ -175,10 +175,12 @@ export const PlayerOverlayItem: FC<{
       style={{ opacity: isAlive ? 1 : 0.5 }}
     >
       <div className={c.nameWrapper}>
-        <div className={classNames(c.score, flip && c.flipped)}>
-          {kills}
-          <span className={c.deaths}>:{deaths}</span>
-        </div>
+        {kills != null && deaths != null && (
+          <div className={classNames(c.score, flip && c.flipped)}>
+            {kills}
+            <span className={c.deaths}>:{deaths}</span>
+          </div>
+        )}
         <div
           className={classNames(c.name, flip && c.flipped)}
           style={{ color: teamInfo.color }}

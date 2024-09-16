@@ -10,7 +10,6 @@ const useStyles = createUseStyles({
   root: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
   },
   team: {
     display: 'flex',

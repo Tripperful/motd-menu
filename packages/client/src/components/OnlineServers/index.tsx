@@ -160,7 +160,7 @@ export const OnlineServers: FC = () => {
               className={c.link}
               to={`../streamerOverlay/${sessionId}?token=${new URLSearchParams(
                 location.search,
-              ).get('token')}`}
+              ).get('token')}&scale=1&delay=0`}
               target="_blank"
             >
               <HudIcon />

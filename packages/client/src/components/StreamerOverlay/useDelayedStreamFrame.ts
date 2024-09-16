@@ -1,9 +1,7 @@
 import { StreamFrame } from '@motd-menu/common';
 import { useEffect, useState } from 'react';
-import { motdApi } from 'src/api';
 
 const streamQueue: StreamFrame[] = [];
-const streamUpdateRate = 100; // 0.1 seconds
 let now = Date.now();
 
 export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
@@ -11,25 +9,26 @@ export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
 
   useEffect(() => {
     streamQueue.length = 0;
-  });
+    const eventSource = new EventSource(`/api/stream/${sessionId}`);
+
+    eventSource.onmessage = (event) => {
+      const frame = JSON.parse(event.data) as StreamFrame;
+
+      if (frame.timestamp > now - delay) {
+        streamQueue.push(frame);
+
+        now = frame.timestamp;
+      }
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, [sessionId, delay]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       let nextFrame: StreamFrame;
-
-      (async () => {
-        try {
-          const lastFrame = await motdApi.getStreamFrame(sessionId);
-          now = lastFrame.timestamp;
-
-          if (
-            lastFrame.timestamp >
-            (streamQueue[streamQueue.length - 1]?.timestamp ?? 0)
-          ) {
-            streamQueue.push(lastFrame);
-          }
-        } catch {}
-      })();
 
       while (streamQueue[0]?.timestamp <= now - delay) {
         nextFrame = streamQueue.shift();
@@ -38,12 +37,12 @@ export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
       if (nextFrame) {
         setStreamFrame(nextFrame);
       }
-    }, streamUpdateRate);
+    }, 100);
 
     return () => {
       clearInterval(interval);
     };
-  });
+  }, [delay]);
 
   return streamFrame;
 };

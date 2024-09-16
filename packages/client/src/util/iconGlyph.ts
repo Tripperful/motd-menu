@@ -41,7 +41,7 @@ export const weaponIconsGlyphs: Partial<Record<WeaponType, string>> = {
 };
 
 export const weaponNameToIconGlyph = (weaponName: string) => {
-  if (weaponName.startsWith('weapon_')) {
+  if (weaponName?.startsWith('weapon_')) {
     weaponName = weaponName.substring(7);
   }
 
