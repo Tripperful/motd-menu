@@ -38,6 +38,13 @@ const OnlineServers = React.lazy(
     ),
 );
 
+const StreamerOverlay = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "streamer-overlay" */ '~components/StreamerOverlay'
+    ),
+);
+
 export const Router: FC = () => {
   return (
     <BrowserRouter>
@@ -97,6 +104,14 @@ export const Router: FC = () => {
           element={
             <Suspense>
               <OnlineServers />
+            </Suspense>
+          }
+        />
+        <Route
+          path="streamerOverlay/:sessionId"
+          element={
+            <Suspense>
+              <StreamerOverlay />
             </Suspense>
           }
         />

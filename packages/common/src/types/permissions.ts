@@ -14,6 +14,7 @@ export const permissionDescriptions = {
   news_create: 'Create news',
   news_publish: 'Publish news',
   rcon: 'Run server concommands via the menu',
+  streamer: 'Allow streamer overlay',
   dev: 'Developer',
 };
 

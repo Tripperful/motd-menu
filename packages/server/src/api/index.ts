@@ -8,6 +8,7 @@ import { menuRouter } from './menu';
 import { newsRouter } from './news';
 import { playersRouter } from './players';
 import { srcdsRouter } from './srcds';
+import { streamRouter } from './stream';
 import { teamsRouter } from './teams';
 
 export const api = Router();
@@ -21,4 +22,5 @@ api.use('/cvars', cvarsRouter);
 api.use('/match', matchRouter);
 api.use('/srcds', srcdsRouter);
 api.use('/news', newsRouter);
+api.use('/stream', streamRouter);
 api.use((_, res) => res.status(400).end());

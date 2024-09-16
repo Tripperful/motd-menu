@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { StreamerOverlay } from '.';
+import { PlayerOverlayItem } from './PlayerOverlayItem';
 
 const meta = {
   title: 'Example/StreamerOverlay',
-  component: StreamerOverlay,
+  component: PlayerOverlayItem,
   argTypes: {
+    teamIdx: { name: 'Team Index', control: 'number' },
     name: { name: 'Name', control: 'text' },
     avatarUrl: { name: 'Avatar URL', control: 'text' },
     kills: { name: 'Kills', control: { type: 'range', min: 0, max: 200 } },
@@ -34,13 +35,14 @@ const meta = {
       ],
     },
   },
-} satisfies Meta<typeof StreamerOverlay>;
+} satisfies Meta<typeof PlayerOverlayItem>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
+    teamIdx: 0,
     name: 'Some Cool Player',
     avatarUrl: 'https://i.imgur.com/wJViMrf.png',
     kills: 0,

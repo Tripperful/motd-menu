@@ -22,6 +22,7 @@ import {
   Severity,
   StartMatchSettings,
   SteamPlayerData,
+  StreamFrame,
 } from '@motd-menu/common';
 
 class MotdApi {
@@ -434,6 +435,12 @@ class MotdApi {
 
   public async deleteNews(id: string) {
     await this.delete('news/' + id);
+  }
+
+  public async getStreamFrame(sessionId: string) {
+    const res = await this.get('stream/' + sessionId);
+
+    return JSON.parse(res) as StreamFrame;
   }
 }
 

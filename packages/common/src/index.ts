@@ -11,6 +11,7 @@ export * from './types/reactions';
 export * from './types/reviews';
 export * from './types/servers';
 export * from './types/steam';
+export * from './types/stream';
 export * from './types/util';
 export * from './types/ws';
 export * from './util/steam';

@@ -1,7 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
-import { PlayerOverlayItem } from './PlayerOverlayItem';
 import { useGlobalStyles } from '~styles/global';
+import { PlayerOverlayItem } from './PlayerOverlayItem';
+import { useDelayedStreamFrame } from './useDelayedStreamFrame';
+import { useParams } from 'react-router-dom';
+import { OnlinePlayerInfo } from '@motd-menu/common';
 
 const useStyles = createUseStyles({
   root: {
@@ -13,108 +16,75 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '1.5em',
+    alignItems: 'end',
+    '&:first-child': {
+      alignItems: 'start',
+    },
   },
 });
 
-export const StreamerOverlay: FC<{
-  name: string;
-  avatarUrl: string;
-  kills: number;
-  deaths: number;
-  hp: number;
-  ap: number;
-  sprint: number;
-  flashlight: boolean;
-  weapon: string;
-}> = ({
-  name,
-  avatarUrl,
-  kills,
-  deaths,
-  hp,
-  ap,
-  sprint,
-  flashlight,
-  weapon,
-}) => {
+export const StreamerOverlay: FC = () => {
   useGlobalStyles();
   const c = useStyles();
+  const { sessionId } = useParams();
+
+  const { scale, delay } = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+
+    const scaleStr = params.get('scale') ?? '1';
+    const delayStr = params.get('delay') ?? '0';
+
+    return {
+      scale: Number(scaleStr),
+      delay: Number(delayStr),
+    };
+  }, [location.search]);
+
+  const frame = useDelayedStreamFrame(sessionId, delay * 1000);
+
+  const teams = useMemo(() => {
+    if (!frame) return [];
+
+    const players = frame.players.filter((player) => player.teamIdx !== 1);
+
+    const uniqueTeamIdxs = new Set(players.map((player) => player.teamIdx));
+
+    if (uniqueTeamIdxs.size < 2) {
+      return [
+        players.filter((_, idx) => idx % 2 === 0),
+        players.filter((_, idx) => idx % 2 === 1),
+      ];
+    }
+
+    return Array.from(uniqueTeamIdxs).map((teamIdx) =>
+      players.filter((player) => player.teamIdx === teamIdx),
+    );
+  }, [frame]);
 
   return (
-    <div className={c.root}>
-      <div className={c.team}>
-        <PlayerOverlayItem
-          name={name}
-          avatarUrl={avatarUrl}
-          kills={kills}
-          deaths={deaths}
-          hp={hp}
-          ap={ap}
-          sprint={sprint}
-          flashlight={flashlight}
-          weapon={weapon}
-          flip
-        />
-        <PlayerOverlayItem
-          name={name}
-          avatarUrl={avatarUrl}
-          kills={kills}
-          deaths={deaths}
-          hp={hp}
-          ap={ap}
-          sprint={sprint}
-          flashlight={flashlight}
-          weapon={weapon}
-          flip
-        />
-        <PlayerOverlayItem
-          name={name}
-          avatarUrl={avatarUrl}
-          kills={kills}
-          deaths={deaths}
-          hp={hp}
-          ap={ap}
-          sprint={sprint}
-          flashlight={flashlight}
-          weapon={weapon}
-          flip
-        />
-      </div>
-      <div className={c.team}>
-        <PlayerOverlayItem
-          name={name}
-          avatarUrl={avatarUrl}
-          kills={kills}
-          deaths={deaths}
-          hp={hp}
-          ap={ap}
-          sprint={sprint}
-          flashlight={flashlight}
-          weapon={weapon}
-        />
-        <PlayerOverlayItem
-          name={name}
-          avatarUrl={avatarUrl}
-          kills={kills}
-          deaths={deaths}
-          hp={hp}
-          ap={ap}
-          sprint={sprint}
-          flashlight={flashlight}
-          weapon={weapon}
-        />
-        <PlayerOverlayItem
-          name={name}
-          avatarUrl={avatarUrl}
-          kills={kills}
-          deaths={deaths}
-          hp={hp}
-          ap={ap}
-          sprint={sprint}
-          flashlight={flashlight}
-          weapon={weapon}
-        />
-      </div>
+    <div className={c.root} style={{ fontSize: scale + 'em' }}>
+      {teams.map((team, idx) => (
+        <div key={idx} className={c.team}>
+          {team.map((player) => (
+            <PlayerOverlayItem
+              key={player.steamId}
+              teamIdx={player.teamIdx}
+              name={player.steamProfile?.name ?? 'Unknown'}
+              avatarUrl={player.steamProfile?.avatar}
+              kills={player.kills}
+              deaths={player.deaths}
+              hp={player.health}
+              ap={player.armor}
+              sprint={player.stamina}
+              flashlight={player.flashlight}
+              weapon={player.weapon}
+              flip={idx % 2 === 0}
+            />
+          ))}
+        </div>
+      ))}
     </div>
   );
 };
+
+export default StreamerOverlay;

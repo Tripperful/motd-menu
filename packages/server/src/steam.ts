@@ -12,6 +12,16 @@ interface GetPlayerSummariesResponse {
   };
 }
 
+const profileCacheLifetime = 1000 * 60 * 10; // 10 min
+
+const playersProfilesCache: Record<
+  string,
+  {
+    lastUpdate: number;
+    data: PlayerSummary;
+  }
+> = {};
+
 const errorProfile = (steamId: string) =>
   ({
     steamId,
@@ -22,13 +32,28 @@ const errorProfile = (steamId: string) =>
 
 export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
   try {
+    const profilesBySteamId: Record<string, PlayerSummary> = {};
+
+    let cachedSteamIds: string[] = [];
+    let uncachedSteamIds: string[] = [];
+
+    for (const steamId of steamIds64) {
+      const cache = playersProfilesCache[steamId];
+      const now = Date.now();
+
+      if (cache && cache.lastUpdate > now - profileCacheLifetime) {
+        profilesBySteamId[steamId] = cache.data;
+        cachedSteamIds.push(steamId);
+      } else {
+        uncachedSteamIds.push(steamId);
+      }
+    }
+
     // Steam API only allows requesting up to 100 profiles at once
     const batches = Array.from(
-      { length: Math.ceil(steamIds64.length / 100) },
-      (_, i) => steamIds64.slice(i * 100, i * 100 + 100),
+      { length: Math.ceil(uncachedSteamIds.length / 100) },
+      (_, i) => uncachedSteamIds.slice(i * 100, i * 100 + 100),
     );
-
-    const profilesBySteamId: Record<string, PlayerSummary> = {};
 
     await Promise.all(
       batches.map((batch) =>
@@ -39,8 +64,14 @@ export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
         )
           .then((r) => r.json())
           .then((r: GetPlayerSummariesResponse) => {
+            const lastUpdate = Date.now();
+
             for (const player of r.response.players) {
               profilesBySteamId[player.steamid] = player;
+              playersProfilesCache[player.steamid] = {
+                lastUpdate,
+                data: player,
+              };
             }
           }),
       ),

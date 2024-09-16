@@ -3,7 +3,9 @@ import React, { FC, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { createUseStyles } from 'react-jss';
 import { weaponNameToIconGlyph } from 'src/util/iconGlyph';
+import { teamInfoByIdx } from 'src/util/teams';
 import FlashlightIcon from '~icons/flashlight.svg';
+import { useGlobalStyles } from '~styles/global';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
@@ -137,6 +139,7 @@ const maxHp = 100;
 const maxAp = 200;
 
 export const PlayerOverlayItem: FC<{
+  teamIdx: number;
   name: string;
   avatarUrl: string;
   kills: number;
@@ -148,6 +151,7 @@ export const PlayerOverlayItem: FC<{
   weapon: string;
   flip?: boolean;
 }> = ({
+  teamIdx,
   name,
   avatarUrl,
   kills,
@@ -160,9 +164,10 @@ export const PlayerOverlayItem: FC<{
   flip,
 }) => {
   const c = useStyles();
+  useGlobalStyles();
   const isAlive = hp > 0;
-  const hasArmor = isAlive && ap > 0;
   const [blurAvatar, setBlurAvatar] = useState(false);
+  const teamInfo = teamInfoByIdx[teamIdx] ?? teamInfoByIdx[0];
 
   return (
     <div
@@ -174,7 +179,12 @@ export const PlayerOverlayItem: FC<{
           {kills}
           <span className={c.deaths}>:{deaths}</span>
         </div>
-        <div className={classNames(c.name, flip && c.flipped)}>{name}</div>
+        <div
+          className={classNames(c.name, flip && c.flipped)}
+          style={{ color: teamInfo.color }}
+        >
+          {name}
+        </div>
         <div className={c.weapon} style={{ opacity: isAlive ? 1 : 0 }}>
           {weaponNameToIconGlyph(weapon)}
         </div>

@@ -4,6 +4,13 @@ export interface OnlinePlayerInfo {
   steamId: string;
   userId?: number;
   teamIdx?: number;
+  kills?: number;
+  deaths?: number;
+  health?: number;
+  armor?: number;
+  stamina?: number;
+  flashlight?: boolean;
+  weapon?: string;
   steamProfile?: SteamPlayerData;
 }
 

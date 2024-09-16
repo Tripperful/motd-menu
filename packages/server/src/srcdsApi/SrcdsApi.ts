@@ -3,6 +3,7 @@ import {
   OnlinePlayerInfo,
   PlayerClientSettings,
   RankUpdateData,
+  StreamFrame,
 } from '@motd-menu/common';
 
 export interface SrcdsApi {

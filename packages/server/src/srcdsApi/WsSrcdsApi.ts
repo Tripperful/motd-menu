@@ -5,6 +5,7 @@ import {
   PlayerClientSettings,
   RankUpdateData,
   SetSettingsAction,
+  StreamFrame,
   WsMessageType,
 } from '@motd-menu/common';
 import { wsApi } from 'src/ws';

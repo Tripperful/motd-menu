@@ -3,8 +3,10 @@ import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
 import { useOnlineServers } from 'src/hooks/state/onlineServers';
 import { useOnlineServersMaps } from 'src/hooks/state/onlineServersMaps';
+import { useMyPermissions } from 'src/hooks/state/permissions';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { Popup } from '~components/common/Popup';
+import HudIcon from '~icons/hud.svg';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 
@@ -23,6 +25,11 @@ const useStyles = createUseStyles({
     position: 'absolute',
     top: '2em',
     right: '2em',
+  },
+  serverRow: {
+    display: 'flex',
+    gap: '0.5em',
+    alignItems: 'center',
   },
   link: {
     ...activeItem(),
@@ -139,21 +146,36 @@ const MapsPopup: FC = () => {
 export const OnlineServers: FC = () => {
   const c = useStyles();
   const servers = useOnlineServers();
+  const permissions = useMyPermissions();
+  const isStreamer = permissions.includes('streamer');
 
   return (
     <div className={c.root}>
       <h2>Online servers ({servers.length})</h2>
       {servers.map(({ serverInfo, sessionId }) => (
-        <Link
-          key={serverInfo.id}
-          className={c.link}
-          to={`/?guid=${sessionId}&token=${new URLSearchParams(
-            location.search,
-          ).get('token')}`}
-          target="_blank"
-        >
-          {serverInfo.name} ({serverInfo.ip}:{serverInfo.port})
-        </Link>
+        <span className={c.serverRow} key={serverInfo.id}>
+          {isStreamer && (
+            <Link
+              key={serverInfo.id}
+              className={c.link}
+              to={`../streamerOverlay/${sessionId}?token=${new URLSearchParams(
+                location.search,
+              ).get('token')}`}
+              target="_blank"
+            >
+              <HudIcon />
+            </Link>
+          )}
+          <Link
+            className={c.link}
+            to={`/?guid=${sessionId}&token=${new URLSearchParams(
+              location.search,
+            ).get('token')}`}
+            target="_blank"
+          >
+            {serverInfo.name} ({serverInfo.ip}:{serverInfo.port})
+          </Link>
+        </span>
       ))}
       <Routes>
         <Route path="maps" element={<MapsPopup />} />
