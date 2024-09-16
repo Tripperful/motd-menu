@@ -5,7 +5,7 @@ import { getPlayersProfiles } from 'src/steam';
 
 export const streamRouter = Router();
 
-const streamCacheLifetime = 0.5 * 1000; // 0.5 seconds
+const streamCacheLifetime = 0.125 * 1000; // 0.125 seconds
 
 const streamCache: Record<
   string,

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { motdApi } from 'src/api';
 
 const streamQueue: StreamFrame[] = [];
-const streamUpdateRate = 250; // 0.25 seconds
+const streamUpdateRate = 100; // 0.1 seconds
 let now = Date.now();
 
 export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
@@ -14,20 +14,22 @@ export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
   });
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const interval = setInterval(() => {
       let nextFrame: StreamFrame;
 
-      try {
-        const lastFrame = await motdApi.getStreamFrame(sessionId);
-        now = lastFrame.timestamp;
+      (async () => {
+        try {
+          const lastFrame = await motdApi.getStreamFrame(sessionId);
+          now = lastFrame.timestamp;
 
-        if (
-          lastFrame.timestamp >
-          (streamQueue[streamQueue.length - 1]?.timestamp ?? 0)
-        ) {
-          streamQueue.push(lastFrame);
-        }
-      } catch {}
+          if (
+            lastFrame.timestamp >
+            (streamQueue[streamQueue.length - 1]?.timestamp ?? 0)
+          ) {
+            streamQueue.push(lastFrame);
+          }
+        } catch {}
+      })();
 
       while (streamQueue[0]?.timestamp <= now - delay) {
         nextFrame = streamQueue.shift();
