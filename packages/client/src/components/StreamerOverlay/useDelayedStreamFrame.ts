@@ -2,7 +2,6 @@ import { StreamFrame } from '@motd-menu/common';
 import { useEffect, useState } from 'react';
 
 const streamQueue: StreamFrame[] = [];
-let now = Date.now();
 
 export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
   const [streamFrame, setStreamFrame] = useState<StreamFrame>();
@@ -14,11 +13,7 @@ export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
     eventSource.onmessage = (event) => {
       const frame = JSON.parse(event.data) as StreamFrame;
 
-      if (frame.timestamp > now - delay) {
-        streamQueue.push(frame);
-
-        now = frame.timestamp;
-      }
+      streamQueue.push(frame);
     };
 
     return () => {
@@ -29,8 +24,14 @@ export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
   useEffect(() => {
     const interval = setInterval(() => {
       let nextFrame: StreamFrame;
+      let firstFrame: StreamFrame;
+      let lastFrame: StreamFrame;
 
-      while (streamQueue[0]?.timestamp <= now - delay) {
+      while (
+        (firstFrame = streamQueue[0]) &&
+        (lastFrame = streamQueue[streamQueue.length - 1]) &&
+        (lastFrame?.timestamp ?? 0) - (firstFrame?.timestamp ?? 0) > delay
+      ) {
         nextFrame = streamQueue.shift();
       }
 

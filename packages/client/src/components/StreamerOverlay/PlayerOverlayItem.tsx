@@ -8,6 +8,8 @@ import FlashlightIcon from '~icons/flashlight.svg';
 import { useGlobalStyles } from '~styles/global';
 import { theme } from '~styles/theme';
 
+const vLerp = 0.5; // seconds
+
 const useStyles = createUseStyles({
   root: {
     display: 'flex',
@@ -25,7 +27,7 @@ const useStyles = createUseStyles({
         transition: 'opacity 0.2s ease 0s',
         overflow: 'visible',
         '&-path': {
-          transition: 'stroke-dashoffset 0.2s ease 0s',
+          transition: `stroke-dashoffset ${vLerp}s ease 0s`,
         },
       },
     },
@@ -122,7 +124,7 @@ const useStyles = createUseStyles({
   sprintValue: {
     width: '100%',
     backgroundColor: theme.fgInfo,
-    transition: 'height 0.2s ease 0s',
+    transition: `height ${vLerp}s ease 0s`,
   },
   flashlightIcon: {
     color: theme.fgInfo,
