@@ -5,6 +5,7 @@ import { PlayerOverlayItem } from './PlayerOverlayItem';
 import { useDelayedStreamFrame } from './useDelayedStreamFrame';
 import { useParams } from 'react-router-dom';
 import { OnlinePlayerInfo } from '@motd-menu/common';
+import classNames from 'classnames';
 
 const useStyles = createUseStyles({
   root: {
@@ -20,6 +21,10 @@ const useStyles = createUseStyles({
       alignItems: 'start',
     },
   },
+  center: {
+    alignItems: 'center',
+    height: '100%',
+  },
 });
 
 export const StreamerOverlay: FC = () => {
@@ -27,15 +32,17 @@ export const StreamerOverlay: FC = () => {
   const c = useStyles();
   const { sessionId } = useParams();
 
-  const { scale, delay } = useMemo(() => {
+  const { scale, delay, center } = useMemo(() => {
     const params = new URLSearchParams(location.search);
 
     const scaleStr = params.get('scale') ?? '1';
     const delayStr = params.get('delay') ?? '0';
+    const center = params.get('center') === '1';
 
     return {
       scale: Number(scaleStr),
       delay: Number(delayStr),
+      center,
     };
   }, [location.search]);
 
@@ -61,7 +68,10 @@ export const StreamerOverlay: FC = () => {
   }, [frame]);
 
   return (
-    <div className={c.root} style={{ fontSize: scale + 'em' }}>
+    <div
+      className={classNames(c.root, center && c.center)}
+      style={{ fontSize: scale + 'em' }}
+    >
       {teams.map((team, idx) => (
         <div key={idx} className={c.team}>
           {team.map((player) => (
