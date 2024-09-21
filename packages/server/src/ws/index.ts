@@ -227,8 +227,17 @@ export class WsApi {
     timeout = 10000,
   ) {
     return await new Promise<WsMessage<TResData>>(async (res, rej) => {
+      const requestedAt = Date.now();
+
       try {
-        setTimeout(() => rej('Timed out'), timeout);
+        setTimeout(() => {
+          if (this.responseHandlers[guid]) {
+            delete this.responseHandlers[guid];
+            rej(
+              `WS request '${type}' timed out after ${(Date.now() - requestedAt) / 1000} seconds`,
+            );
+          }
+        }, timeout);
 
         const guid = uuid();
 

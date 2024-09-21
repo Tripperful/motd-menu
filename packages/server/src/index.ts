@@ -1,3 +1,4 @@
+import './config';
 import { WsMessageType } from '@motd-menu/common';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -8,7 +9,6 @@ import https from 'https';
 import path from 'path';
 import { api } from './api';
 import { authMiddleware } from './auth';
-import './config';
 import { db } from './db';
 import { dbgWarn } from './util';
 import { EfpsWatchdog } from './util/efps';

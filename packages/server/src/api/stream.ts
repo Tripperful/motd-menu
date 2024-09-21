@@ -1,21 +1,67 @@
-import { StreamFrame } from '@motd-menu/common';
+import type { Response as ExpressResponse } from 'express';
 import { Router } from 'express';
 import { getSrcdsApi } from 'src/srcdsApi';
 import { getPlayersProfiles } from 'src/steam';
+import { dbgInfo } from 'src/util';
+import { wsApi } from 'src/ws';
 
 export const streamRouter = Router();
 
-const streamCacheLifetime = 0.125 * 1000; // 0.125 seconds
+let streamResponses: { res: ExpressResponse; sessionId: string }[] = [];
 
-const streamCache: Record<
-  string,
-  {
-    lastUpdate: number;
-    data: StreamFrame;
+setInterval(() => {
+  const sessionIds = Array.from(streamResponses).map((s) => s.sessionId);
+
+  for (const sessionId of sessionIds) {
+    const streamClients = Array.from(streamResponses).filter(
+      (s) => s.sessionId === sessionId,
+    );
+
+    const dropClientsBySessionId = () => {
+      streamResponses = streamResponses.filter(
+        (s) => s.sessionId !== sessionId,
+      );
+    };
+
+    if (!streamClients.length) {
+      dropClientsBySessionId();
+      continue;
+    }
+
+    const srcdsApi = getSrcdsApi(sessionId);
+
+    srcdsApi
+      .getOnlinePlayers()
+      .then(async (players) => {
+        const playerProfiles = await getPlayersProfiles(
+          players.map((p) => p.steamId),
+        );
+
+        for (const player of players) {
+          player.steamProfile = playerProfiles[player.steamId];
+        }
+
+        const timestamp = Date.now();
+
+        for (const streamClient of streamClients) {
+          const { res } = streamClient;
+          if (res.writable && !res.closed) {
+            res.write(`data: ${JSON.stringify({ timestamp, players })}\n\n`);
+          } else {
+            streamResponses = streamResponses.filter((s) => s.res !== res);
+          }
+        }
+      })
+      .catch(() => {
+        for (const { res } of streamClients) {
+          dropClientsBySessionId();
+          res.status(500).end();
+        }
+      });
   }
-> = {};
+}, 100);
 
-streamRouter.get('/:sessionId', (req, res) => {
+streamRouter.get('/:sessionId', async (req, res) => {
   const { sessionData } = res.locals;
   const { permissions } = sessionData ?? {};
 
@@ -24,55 +70,33 @@ streamRouter.get('/:sessionId', (req, res) => {
     return;
   }
 
+  const { sessionId } = req.params;
+
+  const connectedServers = wsApi.getConnectedServers();
+
+  if (!connectedServers.find((s) => s.sessionId === sessionId)) {
+    dbgInfo(
+      `Stream for session ${sessionId} not found at ${new Date().toString()}`,
+    );
+    res.status(404).end(`Server with session ID ${sessionId} is not connected`);
+    return;
+  }
+
+  streamResponses.push({ res, sessionId });
+
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Connection', 'keep-alive');
   res.flushHeaders();
 
-  let interValID = setInterval(() => {
-    const { sessionId } = req.params;
-    const cache = streamCache[sessionId];
-    let response = cache?.data;
-
-    if ((cache?.lastUpdate ?? 0) < Date.now() - streamCacheLifetime) {
-      const srcdsApi = getSrcdsApi(sessionId);
-
-      srcdsApi
-        .getOnlinePlayers()
-        .then(async (players) => {
-          const playerProfiles = await getPlayersProfiles(
-            players.map((p) => p.steamId),
-          );
-
-          for (const player of players) {
-            player.steamProfile = playerProfiles[player.steamId];
-          }
-
-          const timestamp = Date.now();
-
-          streamCache[sessionId] = {
-            lastUpdate: Date.now(),
-            data: {
-              timestamp,
-              players,
-            },
-          };
-
-          response = streamCache[sessionId].data;
-
-          res.write(`data: ${JSON.stringify(response)}\n\n`);
-        })
-        .catch(() => {
-          res.status(500).end();
-        });
-    } else {
-      res.write(`data: ${JSON.stringify(response)}\n\n`);
-    }
-  }, streamCacheLifetime);
+  dbgInfo(
+    `Stream connected for session ${sessionId} at ${new Date().toString()}`,
+  );
 
   res.on('close', () => {
-    clearInterval(interValID);
-    res.end();
+    dbgInfo(
+      `Stream ended for session ${sessionId} at ${new Date().toString()}`,
+    );
   });
 });
