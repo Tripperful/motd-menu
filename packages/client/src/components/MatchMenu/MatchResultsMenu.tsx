@@ -66,6 +66,12 @@ const useStyles = createUseStyles({
     backgroundColor: theme.bg2,
     borderRadius: '0.5em',
     textShadow: '0 0 4px #000b',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5em',
+  },
+  chipScore: {
+    color: theme.fg2,
   },
   status: {
     fontSize: '0.8em',
@@ -179,10 +185,29 @@ const MatchScore: FC<{ data: MatchSummary }> = ({ data }) => {
 const PlayersChips: FC<{ teams: MatchSummaryTeam[] }> = ({ teams }) => {
   const c = useStyles();
 
-  const players = useMemo(
-    () => teams.flatMap((t) => t.players.map((p) => ({ ...p, team: t.index }))),
-    [teams],
-  );
+  const players = useMemo(() => {
+    const players = teams.flatMap((t) =>
+      t.players.map((p) => ({ ...p, team: t.index })),
+    );
+
+    const teamsScoresByIndex = teams.reduce(
+      (acc, t) => {
+        acc[t.index] = t.players.reduce((a, b) => a + b.kills, 0);
+        return acc;
+      },
+      {} as Record<number, number>,
+    );
+
+    players.sort((a, b) => {
+      if (a.team !== b.team) {
+        return teamsScoresByIndex[b.team] - teamsScoresByIndex[a.team];
+      }
+
+      return b.kills - a.kills;
+    });
+
+    return players;
+  }, [teams]);
 
   return (
     <div className={c.playersChips}>
@@ -192,7 +217,10 @@ const PlayersChips: FC<{ teams: MatchSummaryTeam[] }> = ({ teams }) => {
           className={c.chip}
           style={{ color: teamInfoByIdx[p.team].color }}
         >
-          {p.profile.name}
+          <span>{p.profile.name}</span>
+          <span className={c.chipScore}>
+            {p.kills}:{p.deaths}
+          </span>
         </span>
       ))}
     </div>

@@ -40,6 +40,12 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
   },
+  popupTitle: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5em',
+    flexWrap: 'wrap',
+  },
   content: {
     flex: '1 1 auto',
     minHeight: 0,
@@ -123,6 +129,16 @@ const useStyles = createUseStyles({
   linkButton: {
     ...outlineButton(),
     alignSelf: 'center',
+  },
+  chip: {
+    fontSize: '0.8em',
+    padding: '0.2em 0.5em',
+    backgroundColor: theme.bg2,
+    borderRadius: '0.5em',
+    textShadow: '0 0 4px #000b',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5em',
   },
 });
 
@@ -541,13 +557,37 @@ const MatchResultPopupContent: FC<{ matchId: string }> = ({ matchId }) => {
   );
 };
 
+const MatchResultPopupTitle: FC<{ matchId: string }> = ({ matchId }) => {
+  const c = useStyles();
+  const match = useMatchResult(matchId);
+
+  return (
+    <>
+      <span className={c.chip}>{match.mapName}</span>
+      <span className={c.chip}>{match.server}</span>
+      <span className={c.chip}>{match.status}</span>
+    </>
+  );
+};
+
 export const MatchResultPopup: FC = () => {
   const c = useStyles();
   const goBack = useGoBack();
   const { matchId } = useParams();
 
   return (
-    <Popup onClose={goBack} title="Match details" className={c.root}>
+    <Popup
+      onClose={goBack}
+      title={
+        <span className={c.popupTitle}>
+          <span>Match details</span>
+          <Suspense>
+            <MatchResultPopupTitle matchId={matchId} />
+          </Suspense>
+        </span>
+      }
+      className={c.root}
+    >
       <Suspense fallback={<Spinner />}>
         <MatchResultPopupContent matchId={matchId} />
       </Suspense>
