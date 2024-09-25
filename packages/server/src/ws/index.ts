@@ -172,6 +172,8 @@ export class WsApi {
           );
         }
       });
+
+      remoteWs.on('error', dbgErr);
     });
   }
 
