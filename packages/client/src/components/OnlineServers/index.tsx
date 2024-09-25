@@ -175,7 +175,7 @@ export const OnlineServers: FC = () => {
           >
             {serverInfo.name} ({serverInfo.ip}:{serverInfo.port}, version
             hash:&nbsp;
-            {serverInfo.versionHash})
+            {serverInfo.versionHash?.substring(0, 8) ?? 'unknown'})
           </Link>
         </span>
       ))}
