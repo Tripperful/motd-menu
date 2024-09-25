@@ -67,12 +67,14 @@ export class WsApi {
 
       const auth = searchParams?.get('auth')?.toLowerCase();
       const sessionId = searchParams?.get('guid');
+      const versionHash = searchParams?.get('ver');
       const serverInfo = await authenticate(auth);
       const remoteId = serverInfo?.id;
       const ip = req.socket.remoteAddress.split(':').pop();
       const port = req.socket.remotePort;
       serverInfo.ip = ip;
       serverInfo.port = port;
+      serverInfo.versionHash = versionHash;
 
       if (!(remoteId && sessionId)) {
         console.warn(

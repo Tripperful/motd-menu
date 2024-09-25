@@ -12,10 +12,11 @@ const isHttps = location.protocol === 'https:';
 const searchParams = new URLSearchParams(location.search);
 const auth = searchParams.get('auth');
 const guid = searchParams.get('guid');
+const ver = searchParams.get('ver');
 
 const wsUrl = `ws${isHttps ? 's' : ''}://${
   location.host
-}?auth=${auth}&guid=${guid}`;
+}?auth=${auth}&guid=${guid}&ver=${ver}`;
 
 const wsClient = new WsClient(wsUrl);
 

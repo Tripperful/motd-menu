@@ -7,7 +7,7 @@ import { useMyPermissions } from 'src/hooks/state/permissions';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { Popup } from '~components/common/Popup';
 import HudIcon from '~icons/hud.svg';
-import { activeItem } from '~styles/elements';
+import { activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
@@ -32,7 +32,7 @@ const useStyles = createUseStyles({
     alignItems: 'center',
   },
   link: {
-    ...activeItem(),
+    ...activeItemNoTransform(),
   },
   mapsPopup: {
     width: 'calc(100vw - 2em)',
@@ -173,7 +173,9 @@ export const OnlineServers: FC = () => {
             ).get('token')}`}
             target="_blank"
           >
-            {serverInfo.name} ({serverInfo.ip}:{serverInfo.port})
+            {serverInfo.name} ({serverInfo.ip}:{serverInfo.port}, version
+            hash:&nbsp;
+            {serverInfo.versionHash})
           </Link>
         </span>
       ))}
