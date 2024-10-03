@@ -256,6 +256,23 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE PROCEDURE save_client_cvars (steam_id_text text, cvars_json text) AS $$
+DECLARE
+    cvar_key text;
+    cvar_value text;
+    fetch_id uuid := gen_random_uuid();
+BEGIN
+  FOR cvar_key, cvar_value IN
+    SELECT key, value
+    FROM json_each_text(cvars_json::json)
+  LOOP
+    INSERT INTO client_cvars (steam_id, fetch_id, cvar, value, created_on)
+    VALUES (steam_id_text::BIGINT, fetch_id, cvar_key, cvar_value, NOW());
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE PROCEDURE match_started (server_id int, match_data json) AS $$
 DECLARE
   map_id int;

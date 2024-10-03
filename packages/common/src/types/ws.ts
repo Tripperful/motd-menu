@@ -28,6 +28,7 @@ export type WsMessageType =
   | 'motd_auth_request'
   | 'motd_auth_response'
   | 'apply_settings'
+  | 'client_cvars'
   | 'match_started'
   | 'match_ended'
   | 'player_death'

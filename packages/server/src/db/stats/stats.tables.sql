@@ -44,6 +44,16 @@ CREATE TABLE IF NOT EXISTS
   client_aka (steam_id bigint PRIMARY KEY, name text);
 
 CREATE TABLE IF NOT EXISTS
+  client_cvars (
+    steam_id bigint,
+    fetch_id uuid,
+    cvar text,
+    value text,
+    created_on timestamp DEFAULT NOW(),
+    UNIQUE (cvar, fetch_id)
+  );
+
+CREATE TABLE IF NOT EXISTS
   matches (
     id uuid PRIMARY KEY,
     map_id int REFERENCES maps (id),

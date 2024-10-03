@@ -95,6 +95,15 @@ export const wsHandlers: Partial<Record<WsMessageType, WsSubscriberCallback>> =
       }
     },
 
+    client_cvars: async (msg: WsMessage<{
+      steamId: string;
+      cvars: Record<string, string>;
+    }>) => {
+      const { steamId, cvars } = msg.data;
+
+      db.client.saveCvars(steamId, cvars);
+    },
+
     get_settings_request: async (msg: WsMessage<string>) => {
       const {
         fov,

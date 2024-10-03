@@ -145,6 +145,7 @@ export interface Database {
       get: (steamId: string) => Promise<PlayerClientSettings>;
       set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;
     };
+    saveCvars(steamId: string, cvars: Record<string, string>): Promise<void>;
   };
   server: {
     getById(serverId: number): Promise<ServerInfo>;

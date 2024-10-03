@@ -250,6 +250,9 @@ export class PgDatabase extends BasePgDatabase implements Database {
         );
       },
     },
+
+    saveCvars: (steamId: string, cvars: Record<string, string>) =>
+      this.call('save_client_cvars', steamId, cvars),
   };
 
   server = {
