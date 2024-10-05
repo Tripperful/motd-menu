@@ -45,16 +45,16 @@ setInterval(() => {
 
         for (const streamClient of streamClients) {
           const { res } = streamClient;
-          if (res.writable && !res.closed) {
+          try {
             res.write(`data: ${JSON.stringify({ timestamp, players })}\n\n`);
-          } else {
+          } catch {
             streamResponses = streamResponses.filter((s) => s.res !== res);
           }
         }
       })
       .catch(() => {
+        dropClientsBySessionId();
         for (const { res } of streamClients) {
-          dropClientsBySessionId();
           res.status(500).end();
         }
       });
