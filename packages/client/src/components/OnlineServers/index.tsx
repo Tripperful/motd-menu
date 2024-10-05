@@ -20,6 +20,7 @@ const useStyles = createUseStyles({
     gap: '1em',
     height: '100%',
     position: 'relative',
+    overflowY: 'auto',
   },
   otherLinks: {
     position: 'absolute',
