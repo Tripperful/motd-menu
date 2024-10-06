@@ -61,6 +61,8 @@ export class WsApi {
   ) {
     this.wsServer = new WebSocketServer({ noServer: true });
 
+    this.wsServer.on('error', dbgErr);
+
     httpServer.on('upgrade', async (req, socket, head) => {
       const searchParams = new URL(req.url, `http://${req.headers.host}`)
         ?.searchParams;
