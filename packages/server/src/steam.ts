@@ -103,7 +103,14 @@ const profilesCallbacks: ((
 ) => void)[] = [];
 
 const flushProfiles = async () => {
-  const profiles = await getPlayersProfilesNoBatch(Array.from(profilesToFetch));
+  let profiles: Record<string, SteamPlayerData>;
+  try {
+    profiles = await getPlayersProfilesNoBatch(Array.from(profilesToFetch));
+  } catch {
+    profiles = Object.fromEntries(
+      Array.from(profilesToFetch).map((id) => [id, errorProfile(id)]),
+    );
+  }
 
   fetchTimeout = null;
 
@@ -125,6 +132,10 @@ const debounceProfilesFetch = () => {
 
 export const getPlayersProfiles = async (steamIds64: string[]) =>
   new Promise<Record<string, SteamPlayerData>>((resolve) => {
+    for (const id of steamIds64) {
+      profilesToFetch.add(id);
+    }
+
     profilesCallbacks.push((profiles) => {
       const requestedProfiles = Object.fromEntries(
         steamIds64.map((id) => [id, profiles[id]]),
@@ -132,10 +143,6 @@ export const getPlayersProfiles = async (steamIds64: string[]) =>
 
       resolve(requestedProfiles);
     });
-
-    for (const id of steamIds64) {
-      profilesToFetch.add(id);
-    }
 
     debounceProfilesFetch();
   });
