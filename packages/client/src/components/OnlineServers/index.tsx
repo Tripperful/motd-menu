@@ -1,10 +1,11 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, Suspense, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
 import { useOnlineServers } from 'src/hooks/state/onlineServers';
 import { useOnlineServersMaps } from 'src/hooks/state/onlineServersMaps';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { Popup } from '~components/common/Popup';
+import { Spinner } from '~components/common/Spinner';
 import { activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
 
@@ -93,9 +94,8 @@ const MapListItem: FC<{
   );
 };
 
-const MapsPopup: FC = () => {
+const AllServersMaps: FC<{ search: string }> = ({ search }) => {
   const c = useStyles();
-  const goBack = useGoBack();
   const maps = useOnlineServersMaps();
 
   const allMaps = maps.reduce((acc, { maps }) => {
@@ -108,8 +108,6 @@ const MapsPopup: FC = () => {
     return acc;
   }, [] as string[]);
 
-  const [search, setSearch] = useState('');
-
   const filteredMaps = useMemo(
     () =>
       allMaps.filter((map) => map.toLowerCase().includes(search.toLowerCase())),
@@ -119,6 +117,28 @@ const MapsPopup: FC = () => {
   const allServernames = maps.map(({ serverInfo }) => serverInfo.name);
 
   return (
+    <div className={c.mapsList}>
+      {filteredMaps.map((map) => (
+        <MapListItem
+          key={map}
+          map={map}
+          serverNames={maps
+            .filter(({ maps }) => maps.includes(map))
+            .map(({ serverInfo }) => serverInfo.name)}
+          allServerNames={allServernames}
+        />
+      ))}
+    </div>
+  );
+};
+
+const MapsPopup: FC = () => {
+  const c = useStyles();
+  const goBack = useGoBack();
+
+  const [search, setSearch] = useState('');
+
+  return (
     <Popup onClose={goBack} title="Maps" className={c.mapsPopup}>
       <input
         type="text"
@@ -126,18 +146,9 @@ const MapsPopup: FC = () => {
         value={search}
         onChange={(e) => setSearch(e.currentTarget.value)}
       />
-      <div className={c.mapsList}>
-        {filteredMaps.map((map) => (
-          <MapListItem
-            key={map}
-            map={map}
-            serverNames={maps
-              .filter(({ maps }) => maps.includes(map))
-              .map(({ serverInfo }) => serverInfo.name)}
-            allServerNames={allServernames}
-          />
-        ))}
-      </div>
+      <Suspense fallback={<Spinner />}>
+        <AllServersMaps search={search} />
+      </Suspense>
     </Popup>
   );
 };
@@ -145,11 +156,26 @@ const MapsPopup: FC = () => {
 export const OnlineServers: FC = () => {
   const c = useStyles();
   const servers = useOnlineServers();
+  const sortedServers = useMemo(
+    () =>
+      servers.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+
+        if (a.name > b.name) {
+          return 1;
+        }
+
+        return 0;
+      }),
+    [servers],
+  );
 
   return (
     <div className={c.root}>
-      <h2>Online servers ({servers.length})</h2>
-      {servers.map((serverInfo) => (
+      <h2>Online servers ({sortedServers.length})</h2>
+      {sortedServers.map((serverInfo) => (
         <span className={c.serverRow} key={serverInfo.id}>
           <Link
             className={c.link}
