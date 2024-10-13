@@ -22,11 +22,14 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
     const auth = searchParams?.get('auth')?.toLowerCase();
     const sessionId = searchParams?.get('guid');
     const versionHash = searchParams?.get('ver');
+    const ip = req.socket.remoteAddress.split(':').pop();
+    const port = req.socket.remotePort;
 
     const serverInfo = await db.server.getByApiKey(auth);
 
     if (!serverInfo || serverInfo.blocked) return null;
-
+    serverInfo.ip = ip;
+    serverInfo.port = port;
     serverInfo.sessionId = sessionId;
     serverInfo.versionHash = versionHash;
 
