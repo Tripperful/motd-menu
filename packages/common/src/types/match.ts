@@ -72,12 +72,35 @@ export interface EfpsMatchSummaryKill {
   weapon: string;
 }
 
+export interface WeaponHitStats {
+  fired: number;
+  hit: {
+    total: number;
+    hs: number;
+    damage: number;
+  };
+}
+
+export interface MiscPlayerMatchStats {
+  chargerUses?: {
+    timeUsed: number;
+    hpConsumed: number;
+    apConsumed: number;
+  };
+  pickups?: Record<string, number>;
+  catches?: {
+    npc_grenade_frag?: number;
+    prop_combine_ball?: number;
+  };
+}
+
 export interface EfpsMatchSummaryStat {
   steamId: string;
   fired: number;
   hit: number;
   hs: number;
   team: number;
+  weaponStats: Record<string, WeaponHitStats>;
 }
 
 export interface EfpsMatchSummary {

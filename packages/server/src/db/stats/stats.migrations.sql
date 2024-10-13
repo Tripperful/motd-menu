@@ -29,3 +29,19 @@ ALTER TABLE IF EXISTS match_team_players
 ADD COLUMN IF NOT EXISTS points float DEFAULT NULL,
 ADD COLUMN IF NOT EXISTS rank text DEFAULT NULL,
 ADD COLUMN IF NOT EXISTS rank_pos int DEFAULT NULL;
+
+-- Swap steam_id and entity_id columns in projectile_spawns table
+-- if they're the wrong way around
+DO $$
+BEGIN
+  IF (
+    SELECT steam_id
+    FROM projectile_spawns
+    LIMIT 1
+) < 1000000 THEN 
+  ALTER TABLE projectile_spawns RENAME COLUMN steam_id TO temp_col_name;
+  ALTER TABLE projectile_spawns RENAME COLUMN entity_id TO steam_id;
+  ALTER TABLE projectile_spawns RENAME COLUMN temp_col_name TO entity_id;
+END IF; 
+END
+$$ 

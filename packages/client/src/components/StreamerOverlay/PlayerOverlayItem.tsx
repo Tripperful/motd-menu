@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { FC, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { createUseStyles } from 'react-jss';
-import { weaponNameToIconGlyph } from 'src/util/iconGlyph';
+import { itemNameToIconGlyph } from 'src/util/iconGlyph';
 import { teamInfoByIdx } from 'src/util/teams';
 import FlashlightIcon from '~icons/flashlight.svg';
 import { useGlobalStyles } from '~styles/global';
@@ -190,7 +190,7 @@ export const PlayerOverlayItem: FC<{
           {name}
         </div>
         <div className={c.weapon} style={{ opacity: isAlive ? 1 : 0 }}>
-          {weaponNameToIconGlyph(weapon)}
+          {itemNameToIconGlyph(weapon)}
         </div>
       </div>
       <div

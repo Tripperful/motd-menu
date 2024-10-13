@@ -1,4 +1,11 @@
-import React, { FC, MouseEventHandler, useLayoutEffect, useState } from 'react';
+import React, {
+  FC,
+  MouseEventHandler,
+  ReactNode,
+  Suspense,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { createUseStyles } from 'react-jss';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +14,7 @@ import { boxShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
 import { ChildrenProps } from '~types/props';
 import { PageHeader } from './PageHeader';
+import { Spinner } from './Spinner';
 
 const useStyles = createUseStyles({
   bg: {
@@ -31,7 +39,7 @@ const useStyles = createUseStyles({
 });
 
 export const SidePanel: FC<
-  ChildrenProps & { title: string; backPath?: string }
+  ChildrenProps & { title: ReactNode; backPath?: string }
 > = ({ title, backPath = '..', children }) => {
   const c = useStyles();
   const [shown, setShown] = useState(false);
@@ -53,7 +61,9 @@ export const SidePanel: FC<
       <div className={c.bg} onPointerDown={onBgClick}>
         <div className={c.root}>
           <PageHeader title={title} backPath={backPath} />
-          <div className={c.content}>{children}</div>
+          <Suspense fallback={<Spinner />}>
+            <div className={c.content}>{children}</div>
+          </Suspense>
         </div>
       </div>,
       document.getElementById('modalRoot'),

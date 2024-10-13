@@ -1,6 +1,7 @@
 import {
   ArrayElementType,
   Cvar,
+  EfpsMatchSummaryStat,
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
@@ -8,6 +9,7 @@ import {
   MatchDeathData,
   MatchFilters,
   MatchSummary,
+  MiscPlayerMatchStats,
   NewsData,
   NewsPreviewsPagedData,
   OnlinePlayerInfo,
@@ -363,6 +365,18 @@ class MotdApi {
     const res = await this.get('match/damage/' + matchId);
 
     return JSON.parse(res) as MatchDamageData[];
+  }
+
+  public async getMatchAccuracy(matchId: string) {
+    const res = await this.get('match/accuracy/' + matchId);
+
+    return JSON.parse(res) as EfpsMatchSummaryStat[];
+  }
+
+  public async getMiscPlayerMatchStats(matchId: string, steamId: string) {
+    const res = await this.get(`match/misc/${matchId}/${steamId}`);
+
+    return JSON.parse(res) as MiscPlayerMatchStats;
   }
 
   public async startMatch(settings: StartMatchSettings) {

@@ -2,6 +2,7 @@ import {
   AmmoPickupData,
   BatteryPickupData,
   EfpsMatchSummary,
+  EfpsMatchSummaryStat,
   EntityTeleportData,
   ItemPickupData,
   ItemRespawnData,
@@ -15,6 +16,7 @@ import {
   MatchStartedData,
   MatchSummary,
   MedkitPickupData,
+  MiscPlayerMatchStats,
   NewsData,
   NewsPreviewsPagedData,
   PagedData,
@@ -183,6 +185,11 @@ export interface Database {
     get(matchId: string): Promise<MatchSummary>;
     getMatchDeaths(matchId: string): Promise<MatchDeathData[]>;
     getMatchDamage(matchId: string): Promise<MatchDamageData[]>;
+    getMatchAccuracy(matchId: string): Promise<EfpsMatchSummaryStat[]>;
+    getMiscPlayerStats(
+      matchId: string,
+      steamId: string,
+    ): Promise<MiscPlayerMatchStats>;
     getEfpsStats(matchId: string): Promise<EfpsMatchSummary>;
     markSentToEfps(matchId: string): Promise<void>;
     getNotSentToEfps(): Promise<string[]>;

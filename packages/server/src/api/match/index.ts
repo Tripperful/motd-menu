@@ -109,6 +109,32 @@ matchRouter.get('/damage/:matchId', async (req, res) => {
   }
 });
 
+matchRouter.get('/accuracy/:matchId', async (req, res) => {
+  try {
+    const { matchId } = req.params;
+
+    const result = await db.matches.getMatchAccuracy(matchId);
+
+    res.status(200).end(JSON.stringify(result));
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+matchRouter.get('/misc/:matchId/:steamId', async (req, res) => {
+  try {
+    const { matchId, steamId } = req.params;
+
+    const result = await db.matches.getMiscPlayerStats(matchId, steamId);
+
+    res.status(200).end(JSON.stringify(result));
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
 matchRouter.post('/start', async (req, res) => {
   try {
     const {

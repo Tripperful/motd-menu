@@ -865,8 +865,8 @@ OR REPLACE PROCEDURE projectile_spawn (spawn_data json) AS $$ BEGIN
       (((spawn_data->>'origin')::json)->>'z')::float
     ], ARRAY[NULL::float, NULL::float, NULL::float]),
     spawn_data->>'projectile',
-    (spawn_data->>'entityId')::bigint,
-    (spawn_data->>'steamId')::bigint
+    (spawn_data->>'steamId')::bigint,
+    (spawn_data->>'entityId')::bigint
   );
 END;
 $$ LANGUAGE plpgsql;
@@ -1293,7 +1293,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
-OR REPLACE FUNCTION get_efps_accuracy (match_id uuid, steam_id bigint) RETURNS json AS $$
+OR REPLACE FUNCTION get_match_player_accuracy (match_id text, steam_id text) RETURNS json AS $$
 DECLARE
   _hitscan_weapons text[];
   _hitscan_dmg text[];
@@ -1314,8 +1314,8 @@ BEGIN
     INTO _total_shots
     FROM player_attacks
     WHERE weapon = ANY(_hitscan_weapons)
-    AND player_attacks.steam_id = get_efps_accuracy.steam_id
-    AND player_attacks.match_id = get_efps_accuracy.match_id;
+    AND player_attacks.steam_id = get_match_player_accuracy.steam_id::bigint
+    AND player_attacks.match_id = get_match_player_accuracy.match_id::uuid;
 
   SELECT SUM(hitbox_hits.hits) INTO _total_hits
     FROM (
@@ -1324,8 +1324,8 @@ BEGIN
         SELECT ((json_each_text(hitboxes)).value)::int AS hb
         FROM player_damage
         WHERE weapon = ANY(_hitscan_dmg)
-        AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
-        AND player_damage.match_id = get_efps_accuracy.match_id
+        AND player_damage.attacker_steam_id = get_match_player_accuracy.steam_id::bigint
+        AND player_damage.match_id = get_match_player_accuracy.match_id::uuid
       )
     ) hitbox_hits;
 
@@ -1334,8 +1334,8 @@ BEGIN
       SELECT SUM((hitboxes->>'1')::int) AS hits
       FROM player_damage
       WHERE weapon = ANY(_hitscan_dmg)
-      AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
-      AND player_damage.match_id = get_efps_accuracy.match_id
+      AND player_damage.attacker_steam_id = get_match_player_accuracy.steam_id::bigint
+      AND player_damage.match_id = get_match_player_accuracy.match_id::uuid
       AND hitboxes->'1' IS NOT NULL
     ) hs_hits;
 
@@ -1352,11 +1352,11 @@ BEGIN
     (
       SELECT match_teams.index
       FROM match_teams
-      WHERE match_teams.match_id = get_efps_accuracy.match_id
+      WHERE match_teams.match_id = get_match_player_accuracy.match_id::uuid
       AND EXISTS (
         SELECT *
         FROM match_team_players
-        WHERE match_team_players.steam_id = get_efps_accuracy.steam_id
+        WHERE match_team_players.steam_id = get_match_player_accuracy.steam_id::bigint
         AND match_team_players.match_team_id = match_teams.id
       )
     ),
@@ -1379,8 +1379,8 @@ BEGIN
                 END
               )
               FROM player_attacks
-              WHERE player_attacks.match_id = get_efps_accuracy.match_id
-              AND player_attacks.steam_id = get_efps_accuracy.steam_id
+              WHERE player_attacks.match_id = get_match_player_accuracy.match_id::uuid
+              AND player_attacks.steam_id = get_match_player_accuracy.steam_id::bigint
               AND player_attacks.weapon IN (
                 SELECT weapon
                 FROM damage_attack_info
@@ -1408,8 +1408,8 @@ BEGIN
                   (hitboxes->>'1')::int AS hs,
                   hp_before - hp_after + armor_before - armor_after AS dmg
                 FROM player_damage
-                WHERE player_damage.match_id = get_efps_accuracy.match_id
-                AND player_damage.attacker_steam_id = get_efps_accuracy.steam_id
+                WHERE player_damage.match_id = get_match_player_accuracy.match_id::uuid
+                AND player_damage.attacker_steam_id = get_match_player_accuracy.steam_id::bigint
                 AND player_damage.weapon IN (
                   SELECT damage_type
                   FROM damage_attack_info
@@ -1429,6 +1429,85 @@ BEGIN
       ) FROM _distinct_attack_types
     ) 
   );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_match_accuracy (match_id text) RETURNS json AS $$ BEGIN
+  RETURN json_agg(
+    get_match_player_accuracy(match_id, match_team_players.steam_id::text)
+  ) FROM match_team_players
+  WHERE match_team_players.match_team_id IN (
+    SELECT id
+    FROM match_teams
+    WHERE match_teams.match_id = get_match_accuracy.match_id::uuid
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_match_player_misc_stats (match_id text, steam_id text) RETURNS json AS $$ BEGIN
+  RETURN json_build_object(
+    'chargerUses',
+    (
+      SELECT json_build_object(
+        'timeUsed', time_used,
+        'hpConsumed', hp_consumed,
+        'apConsumed', ap_consumed
+      )
+      FROM (
+        SELECT
+          SUM(end_curtime - start_curtime) AS time_used,
+          COALESCE(SUM(consumed_hp), NULL) AS hp_consumed,
+          COALESCE(SUM(consumed_ap), NULL) AS ap_consumed
+        FROM charger_uses
+        WHERE charger_uses.match_id = get_match_player_misc_stats.match_id::uuid
+        AND charger_uses.steam_id = get_match_player_misc_stats.steam_id::bigint
+      )
+    ),
+    'pickups',
+    (
+      WITH distinct_player_respawn_positions AS (
+        SELECT DISTINCT origin FROM player_respawns
+        WHERE player_respawns.match_id = get_match_player_misc_stats.match_id::uuid
+        AND player_respawns.steam_id = get_match_player_misc_stats.steam_id::bigint
+      ) SELECT json_object_agg(
+        item_type,
+        item_count
+      )
+      FROM (
+        SELECT
+          item AS item_type,
+          COUNT(*) AS item_count
+        FROM item_pickups
+        WHERE item_pickups.match_id = get_match_player_misc_stats.match_id::uuid
+        AND item_pickups.steam_id = get_match_player_misc_stats.steam_id::bigint
+        AND item_pickups.origin NOT IN (SELECT origin FROM distinct_player_respawn_positions)
+        GROUP BY item
+      ) AS item_counts
+    ),
+    'catches',
+    (
+      WITH match_projectile_spawns AS (
+        SELECT * FROM projectile_spawns
+        WHERE projectile_spawns.match_id = get_match_player_misc_stats.match_id::uuid
+      ) SELECT json_object_agg(
+        projectile,
+        catch_count
+      ) FROM (
+        SELECT (
+          SELECT projectile
+          FROM match_projectile_spawns
+          WHERE match_projectile_spawns.entity_id = projectile_owner_changes.entity_id
+          LIMIT 1
+        ) AS projectile, COUNT(*) AS catch_count
+        FROM projectile_owner_changes
+        WHERE projectile_owner_changes.match_id = get_match_player_misc_stats.match_id::uuid
+        AND projectile_owner_changes.new_owner_steam_id = get_match_player_misc_stats.steam_id::bigint
+        GROUP BY projectile
+      ) WHERE projectile IS NOT NULL
+    )
+  ); 
 END;
 $$ LANGUAGE plpgsql;
 
@@ -1505,7 +1584,7 @@ OR REPLACE FUNCTION get_efps_stats (match_id text) RETURNS json AS $$ BEGIN RETU
   'stats',
   (
     SELECT json_agg(
-      get_efps_accuracy(get_efps_stats.match_id::uuid, match_team_players.steam_id)
+      get_match_player_accuracy(get_efps_stats.match_id, match_team_players.steam_id::text)
     )
     FROM match_team_players
     WHERE match_team_players.match_team_id IN (

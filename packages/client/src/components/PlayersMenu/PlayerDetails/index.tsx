@@ -27,6 +27,7 @@ import { PlayerTimePlayed } from './PlayerTimePlayed';
 import { SetAkaPopup } from './SetAkaPopup';
 import { SetPlayerTeam } from './SetPlayerTeam';
 import { SmurfsPopup } from './SmurfsPopup';
+import { Spinner } from '~components/common/Spinner';
 
 const useStyles = createUseStyles({
   root: {
@@ -151,7 +152,7 @@ export const PlayerDetails: FC<{ backPath?: string }> = ({ backPath }) => {
   return (
     <SidePanel title="Player details" backPath={backPath}>
       <div className={c.root}>
-        <Suspense fallback="Loading...">
+        <Suspense fallback={<Spinner />}>
           <PlayerDetailsContent />
         </Suspense>
       </div>

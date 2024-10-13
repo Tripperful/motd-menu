@@ -2,6 +2,7 @@ import {
   AmmoPickupData,
   BatteryPickupData,
   EfpsMatchSummary,
+  EfpsMatchSummaryStat,
   EntityTeleportData,
   ItemPickupData,
   ItemRespawnData,
@@ -15,6 +16,7 @@ import {
   MatchStartedData,
   MatchSummary,
   MedkitPickupData,
+  MiscPlayerMatchStats,
   NewsData,
   NewsPreviewsPagedData,
   PagedData,
@@ -318,6 +320,14 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.select<MatchDeathData[]>('get_match_deaths', matchId),
     getMatchDamage: (matchId: string) =>
       this.select<MatchDamageData[]>('get_match_damage', matchId),
+    getMatchAccuracy: (matchId: string) =>
+      this.select<EfpsMatchSummaryStat[]>('get_match_accuracy', matchId),
+    getMiscPlayerStats: (matchId: string, steamId: string) =>
+      this.select<MiscPlayerMatchStats>(
+        'get_match_player_misc_stats',
+        matchId,
+        steamId,
+      ),
     getEfpsStats: async (matchId: string) =>
       this.select<EfpsMatchSummary>('get_efps_stats', matchId),
     markSentToEfps: async (matchId: string) =>
