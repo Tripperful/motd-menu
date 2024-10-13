@@ -1,4 +1,4 @@
-import { ChargerUseMessage, Vec3 } from '@motd-menu/common';
+import { Vec3, ChargerUseData } from '@motd-menu/common';
 import { db } from 'src/db';
 
 export interface ChargeAggregate {
@@ -22,7 +22,7 @@ export interface ChargeAggregate {
 
 const chargeAggregates = new Map<string, ChargeAggregate>();
 
-export const chargerUseHandler = async (data: ChargerUseMessage) => {
+export const chargerUseHandler = async (data: ChargerUseData) => {
   const key = `${data.steamId}:${data.entityId}`;
 
   let aggregate = chargeAggregates.get(key);

@@ -112,7 +112,7 @@ matchRouter.get('/damage/:matchId', async (req, res) => {
 matchRouter.post('/start', async (req, res) => {
   try {
     const {
-      srcdsApi,
+      srcds,
       sessionData: { token, permissions },
     } = res.locals;
 
@@ -142,7 +142,7 @@ matchRouter.post('/start', async (req, res) => {
         cmdTarget.push(cmd);
       }
 
-      const onlinePlayers = await srcdsApi.getOnlinePlayers();
+      const onlinePlayers = await srcds.request('get_players_request');
 
       for (const [steamId, teamIndex] of Object.entries(players)) {
         const player = onlinePlayers.find((p) => p.steamId === steamId);
@@ -157,7 +157,11 @@ matchRouter.post('/start', async (req, res) => {
         preTimerCommands.push(`motd_team_change ${player.userId} ${teamIndex}`);
       }
 
-      srcdsApi.startMatch(token, preTimerCommands, postTimerCommands);
+      srcds.send('start_match', {
+        token,
+        preTimerCommands: preTimerCommands.join(';'),
+        postTimerCommands: postTimerCommands.join(';'),
+      });
     } catch (e) {
       return res
         .status(400)

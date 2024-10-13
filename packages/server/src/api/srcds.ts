@@ -1,14 +1,13 @@
 import { Router } from 'express';
 import { db } from 'src/db';
-import { getSrcdsApi } from 'src/srcdsApi';
-import { wsApi } from 'src/ws';
+import { SrcdsWsApiServer } from 'src/ws/servers/srcds/SrcdsWsApiServer';
 
 export const srcdsRouter = Router();
 
 srcdsRouter.post('/runCommand', async (req, res) => {
   try {
-    const { command } = req.body;
-    const { srcdsApi } = res.locals;
+    const commands = req.body.command as string;
+    const { srcds } = res.locals;
 
     const { permissions, steamId } = res.locals.sessionData;
 
@@ -16,9 +15,8 @@ srcdsRouter.post('/runCommand', async (req, res) => {
       return res.status(403).end();
     }
 
-    srcdsApi.runCommand(command);
-
-    db.logs.add('menu_rcon_command', steamId, { command });
+    srcds.send('run_command', { commands });
+    db.logs.add('menu_rcon_command', steamId, { commands });
 
     res.status(200).end();
   } catch (e) {
@@ -29,9 +27,9 @@ srcdsRouter.post('/runCommand', async (req, res) => {
 
 srcdsRouter.get('/onlineServers', async (_, res) => {
   try {
-    const onlineServers = wsApi.getConnectedServers();
+    const onlineServers = SrcdsWsApiServer.getInstace().getConnectedClients();
 
-    res.status(200).json(onlineServers);
+    res.status(200).json(onlineServers.map((s) => s.getInfo()));
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -40,14 +38,13 @@ srcdsRouter.get('/onlineServers', async (_, res) => {
 
 srcdsRouter.get('/onlineServers/maps', async (_, res) => {
   try {
-    const onlineServers = wsApi.getConnectedServers();
+    const onlineServers = SrcdsWsApiServer.getInstace().getConnectedClients();
 
     const maps = await Promise.all(
-      onlineServers.map(async (server) => {
-        const srcdsApi = getSrcdsApi(server.sessionId);
+      onlineServers.map(async (srcds) => {
         return {
-          serverInfo: server.serverInfo,
-          maps: await srcdsApi.getMaps(),
+          serverInfo: srcds.getInfo(),
+          maps: await srcds.request('get_maps_request'),
         };
       }),
     );

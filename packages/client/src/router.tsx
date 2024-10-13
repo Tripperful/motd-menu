@@ -27,10 +27,6 @@ const MatchMenu = React.lazy(
   () => import(/* webpackChunkName: "lazy-main" */ '~components/MatchMenu'),
 );
 
-const SrcdsMock = React.lazy(
-  () => import(/* webpackChunkName: "srcds-mock" */ '~components/SrcdsMock'),
-);
-
 const OnlineServers = React.lazy(
   () =>
     import(
@@ -88,14 +84,6 @@ export const Router: FC = () => {
           element={
             <Suspense>
               <MatchMenu />
-            </Suspense>
-          }
-        />
-        <Route
-          path="srcdsMock/*"
-          element={
-            <Suspense>
-              <SrcdsMock />
             </Suspense>
           }
         />

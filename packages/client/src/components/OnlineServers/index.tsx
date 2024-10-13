@@ -153,13 +153,13 @@ export const OnlineServers: FC = () => {
   return (
     <div className={c.root}>
       <h2>Online servers ({servers.length})</h2>
-      {servers.map(({ serverInfo, sessionId }) => (
+      {servers.map((serverInfo) => (
         <span className={c.serverRow} key={serverInfo.id}>
           {isStreamer && (
             <Link
               key={serverInfo.id}
               className={c.link}
-              to={`../streamerOverlay/${sessionId}?token=${new URLSearchParams(
+              to={`../streamerOverlay/${serverInfo.sessionId}?token=${new URLSearchParams(
                 location.search,
               ).get('token')}&center=1&scale=1&delay=0`}
               target="_blank"
@@ -169,7 +169,7 @@ export const OnlineServers: FC = () => {
           )}
           <Link
             className={c.link}
-            to={`/?guid=${sessionId}&token=${new URLSearchParams(
+            to={`/?guid=${serverInfo.sessionId}&token=${new URLSearchParams(
               location.search,
             ).get('token')}`}
             target="_blank"

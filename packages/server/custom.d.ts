@@ -1,9 +1,9 @@
 declare namespace Express {
   interface Locals {
-    sessionData: import('./src/auth').MotdSessionData;
+    sessionData: import('src/auth').MotdSessionData;
     command?: string;
     parseCommandRes?: (res: string) => Promise<readonly [number, unknown]>;
-    srcdsApi?: import('src/srcdsApi/SrcdsApi').SrcdsApi;
+    srcds?: import('src/ws/servers/srcds/SrcdsWsApiServer').SrcdsWsApiClientType;
     tgService?: import('src/telegram').TelegramService;
     tgClientInfo?: import('src/telegram/types').TelegramClientInfo;
   }

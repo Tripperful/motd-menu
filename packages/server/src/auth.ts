@@ -1,9 +1,11 @@
 import { OnlinePlayerInfo, Permission } from '@motd-menu/common';
 import { RequestHandler } from 'express';
 import { db } from './db';
-import { getSrcdsApi } from './srcdsApi';
-import { SrcdsApi } from './srcdsApi/SrcdsApi';
 import { dbgWarn, logDbgInfo } from './util';
+import {
+  SrcdsWsApiClientType,
+  SrcdsWsApiServer,
+} from './ws/servers/srcds/SrcdsWsApiServer';
 
 export interface MotdSessionData {
   remoteId: string;
@@ -19,7 +21,7 @@ const authCache: Record<string, OnlinePlayerInfo> = {};
 
 const getUserCredentials = async (
   token: string,
-  srcdsApi?: SrcdsApi,
+  srcds?: SrcdsWsApiClientType,
 ): Promise<OnlinePlayerInfo> => {
   let auth = authCache[token];
 
@@ -28,10 +30,10 @@ const getUserCredentials = async (
   }
 
   if (!auth?.steamId) {
-    if (!srcdsApi) {
+    if (!srcds) {
       throw 'Unauthorized';
     }
-    auth = await srcdsApi.auth(token);
+    auth = await srcds.request('motd_auth_request', token);
   }
 
   if (!auth?.steamId) {
@@ -69,14 +71,18 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       throw 'Unauthorized';
     }
 
-    let srcdsApi: SrcdsApi;
+    const connectedServers =
+      SrcdsWsApiServer.getInstace().getConnectedClients();
 
-    if (remoteId) {
-      srcdsApi = getSrcdsApi(remoteId);
-      res.locals.srcdsApi = srcdsApi;
+    const srcds =
+      remoteId &&
+      connectedServers?.find((s) => s.getInfo()?.sessionId === remoteId);
+
+    if (srcds) {
+      res.locals.srcds = srcds;
     }
 
-    const { steamId, userId } = await getUserCredentials(token, srcdsApi);
+    const { steamId, userId } = await getUserCredentials(token, srcds);
     const permissions = await db.permissions.get(steamId);
 
     res.locals.sessionData = {

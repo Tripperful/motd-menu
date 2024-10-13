@@ -1,5 +1,5 @@
 import './config';
-import { WsMessageType } from '@motd-menu/common';
+import './ws/servers/srcds';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
@@ -7,13 +7,12 @@ import expressStaticGzip from 'express-static-gzip';
 import http from 'http';
 import https from 'https';
 import path from 'path';
+import { WebSocketServer } from 'ws';
 import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
-import { dbgWarn } from './util';
 import { EfpsWatchdog } from './util/efps';
-import { WsApi } from './ws';
-import { wsHandlers } from './ws/handlers';
+import { SrcdsWsApiServer } from './ws/servers/srcds/SrcdsWsApiServer';
 
 const app = express();
 
@@ -82,6 +81,8 @@ if (process.env.MOTD_WEB_PORT_HTTPS) {
 
 console.log('Connecting to database...');
 
+const wsApiServers = [SrcdsWsApiServer.getInstace()];
+
 db.init().then(() => {
   console.log('Database initialized');
 
@@ -94,27 +95,14 @@ db.init().then(() => {
 
     new EfpsWatchdog();
 
-    // if (process.env.MOTD_TELEGRAM_BOT_TOKEN) {
-    //   new TelegramService(process.env.MOTD_TELEGRAM_BOT_TOKEN);
-    // }
+    const wsServer = new WebSocketServer({ noServer: true });
 
-    const wsApi = WsApi.init(server, async (authKey: string) => {
-      const serverInfo = await db.server.getByApiKey(authKey);
+    server.on('upgrade', async (req, socket, head) => {
+      for (const wsApiServer of wsApiServers) {
+        const client = await wsApiServer.onUpgrade(req, socket, head, wsServer);
 
-      if (!serverInfo) return null;
-
-      if (serverInfo.blocked) {
-        dbgWarn(
-          `A blocked server attempted WS connection (${serverInfo.name})`,
-        );
-        return null;
+        if (client) break;
       }
-
-      return serverInfo;
     });
-
-    for (const [msgType, handler] of Object.entries(wsHandlers)) {
-      wsApi.subscribe(msgType as WsMessageType, handler);
-    }
   });
 });

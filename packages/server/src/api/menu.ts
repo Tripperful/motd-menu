@@ -5,11 +5,11 @@ export const menuRouter = Router();
 menuRouter.post('/close', async (_req, res) => {
   try {
     const {
-      srcdsApi,
+      srcds,
       sessionData: { token },
     } = res.locals;
 
-    srcdsApi.closeMenu(token);
+    srcds.send('motd_close', token);
 
     res.status(200).end();
   } catch (e) {
@@ -21,12 +21,12 @@ menuRouter.post('/close', async (_req, res) => {
 menuRouter.post('/clientExec', async (req, res) => {
   try {
     const {
-      srcdsApi,
+      srcds,
       sessionData: { steamId },
     } = res.locals;
 
     const { command } = req.body;
-    srcdsApi.clientExec(steamId, command);
+    srcds.send('client_cexec', { steamId, command });
 
     res.status(200).end();
   } catch (e) {
@@ -38,12 +38,12 @@ menuRouter.post('/clientExec', async (req, res) => {
 menuRouter.post('/voteSpec/:targetSteamId', async (req, res) => {
   try {
     const {
-      srcdsApi,
+      srcds,
       sessionData: { steamId },
     } = res.locals;
 
     const targetSteamId = req.params.targetSteamId;
-    const players = await srcdsApi.getOnlinePlayers();
+    const players = await srcds.request('get_players_request');
     const voters = players
       .filter(
         (p) =>
@@ -54,7 +54,10 @@ menuRouter.post('/voteSpec/:targetSteamId', async (req, res) => {
       .map((p) => p.steamId);
 
     if (voters.length > 0) {
-      srcdsApi.openMenu(voters, 'vote/spec/' + targetSteamId);
+      srcds.send('motd_open', {
+        clients: voters,
+        url: 'vote/spec/' + targetSteamId,
+      });
     }
 
     res.status(200).end();

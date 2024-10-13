@@ -1,42 +1,42 @@
 import {
-  AmmoPickupMessage,
-  BatteryPickupMessage,
+  AmmoPickupData,
+  BatteryPickupData,
   EfpsMatchSummary,
-  EntityTeleportMessage,
-  ItemPickupMessage,
-  ItemRespawnMessage,
+  EntityTeleportData,
+  ItemPickupData,
+  ItemRespawnData,
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
   MatchDamageData,
   MatchDeathData,
-  MatchEndedMessage,
+  MatchEndedData,
   MatchFilters,
-  MatchStartedMessage,
+  MatchStartedData,
   MatchSummary,
-  MedkitPickupMessage,
+  MedkitPickupData,
   NewsData,
   NewsPreviewsPagedData,
   PagedData,
   Permission,
-  PlayerAttackMessage,
+  PlayerAttackData,
   PlayerClientSettings,
-  PlayerDamageMessage,
-  PlayerDeathMessage,
-  PlayerRespawnMessage,
-  ProjectileBounceMessage,
-  ProjectileDeathMessage,
-  ProjectileLifetimeResetMessage,
-  ProjectileOwnerChangeMessage,
-  ProjectileSpawnMessage,
-  RankUpdateData,
+  PlayerDamageData,
+  PlayerDeathData,
+  PlayerRespawnData,
+  ProjectileBounceData,
+  ProjectileDeathData,
+  ProjectileLifetimeResetData,
+  ProjectileOwnerChangeData,
+  ProjectileSpawnData,
+  RankData,
   ReactionData,
   ReactionName,
   ServerInfo,
-  WeaponDropMessage,
+  WeaponDropData,
 } from '@motd-menu/common';
 import { TelegramClientInfo } from 'src/telegram/types';
-import { ChargeAggregate } from 'src/ws/chargerUseHandler';
+import { ChargeAggregate } from 'src/ws/servers/srcds/chargerUseHandler';
 import { LogEventType } from './LogEventType';
 
 export interface Database {
@@ -153,31 +153,26 @@ export interface Database {
     devTokenAuth(token: string): Promise<string>;
   };
   matchStats: {
-    matchStarted(serverId: number, data: MatchStartedMessage): Promise<void>;
-    matchEnded(data: MatchEndedMessage): Promise<void>;
-    updateAfterMatchRanks(
-      matchId: string,
-      data: RankUpdateData[],
-    ): Promise<void>;
-    playerDeath(data: PlayerDeathMessage): Promise<void>;
-    playerRespawn(data: PlayerRespawnMessage): Promise<void>;
-    playerDamage(data: PlayerDamageMessage): Promise<void>;
-    playerAttack(data: PlayerAttackMessage): Promise<void>;
-    itemRespawn(data: ItemRespawnMessage): Promise<void>;
-    weaponDrop(data: WeaponDropMessage): Promise<void>;
-    itemPickup(data: ItemPickupMessage): Promise<void>;
-    medkitPickup(data: MedkitPickupMessage): Promise<void>;
-    batteryPickup(data: BatteryPickupMessage): Promise<void>;
-    ammoPickup(data: AmmoPickupMessage): Promise<void>;
+    matchStarted(serverId: number, data: MatchStartedData): Promise<void>;
+    matchEnded(data: MatchEndedData): Promise<void>;
+    updateAfterMatchRanks(matchId: string, data: RankData[]): Promise<void>;
+    playerDeath(data: PlayerDeathData): Promise<void>;
+    playerRespawn(data: PlayerRespawnData): Promise<void>;
+    playerDamage(data: PlayerDamageData): Promise<void>;
+    playerAttack(data: PlayerAttackData): Promise<void>;
+    itemRespawn(data: ItemRespawnData): Promise<void>;
+    weaponDrop(data: WeaponDropData): Promise<void>;
+    itemPickup(data: ItemPickupData): Promise<void>;
+    medkitPickup(data: MedkitPickupData): Promise<void>;
+    batteryPickup(data: BatteryPickupData): Promise<void>;
+    ammoPickup(data: AmmoPickupData): Promise<void>;
     chargerUse(data: ChargeAggregate): Promise<void>;
-    projectileSpawn(data: ProjectileSpawnMessage): Promise<void>;
-    projectileDeath(data: ProjectileDeathMessage): Promise<void>;
-    projectileBounce(data: ProjectileBounceMessage): Promise<void>;
-    projectileOwnerChange(data: ProjectileOwnerChangeMessage): Promise<void>;
-    projectileLifetimeReset(
-      data: ProjectileLifetimeResetMessage,
-    ): Promise<void>;
-    entityTeleport(data: EntityTeleportMessage): Promise<void>;
+    projectileSpawn(data: ProjectileSpawnData): Promise<void>;
+    projectileDeath(data: ProjectileDeathData): Promise<void>;
+    projectileBounce(data: ProjectileBounceData): Promise<void>;
+    projectileOwnerChange(data: ProjectileOwnerChangeData): Promise<void>;
+    projectileLifetimeReset(data: ProjectileLifetimeResetData): Promise<void>;
+    entityTeleport(data: EntityTeleportData): Promise<void>;
   };
   matches: {
     get(

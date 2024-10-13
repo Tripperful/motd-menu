@@ -14,9 +14,9 @@ playersRouter.use('/settings', playerSettingsRouter);
 
 playersRouter.get('/', async (_req, res) => {
   try {
-    const { srcdsApi } = res.locals;
+    const { srcds } = res.locals;
 
-    const onlinePlayers = await srcdsApi.getOnlinePlayers();
+    const onlinePlayers = (await srcds.request('get_players_request')) ?? [];
 
     const playerProfiles = await getPlayersProfiles(
       onlinePlayers.map((p) => p.steamId),

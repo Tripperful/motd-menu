@@ -1,6 +1,7 @@
+import { steamId64ToLegacy } from '@motd-menu/common';
+import { RankData } from '@motd-menu/common/src/types/ws/schemas/srcds/payloads';
 import { db } from 'src/db';
 import { dbgErr } from '.';
-import { RankUpdateData, steamId64ToLegacy } from '@motd-menu/common';
 import { colorByRank } from './ranks';
 
 const efpsUrl = (path: string, params?: Record<string, string>) => {
@@ -37,9 +38,9 @@ export const getEfpsRank = async (steamId: string) => {
       pos,
       max,
       ...color,
-    } as RankUpdateData;
+    } as RankData;
   } catch {
-    return null;
+    return null as RankData;
   }
 };
 

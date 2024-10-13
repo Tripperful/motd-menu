@@ -11,11 +11,11 @@ mapsRouter.use('/reactions', mapsReactionsRouter);
 mapsRouter.get('/', async (_req, res) => {
   try {
     const {
-      srcdsApi,
+      srcds,
       sessionData: { steamId },
     } = res.locals;
 
-    const mapNames = await srcdsApi.getMaps();
+    const mapNames = await srcds.request('get_maps_request');
 
     await db.maps.init(mapNames);
 
@@ -199,13 +199,13 @@ mapsRouter.delete('/favorite/:mapName', async (req, res) => {
 mapsRouter.post('/changelevel/:mapName', async (req, res) => {
   try {
     const {
-      srcdsApi,
+      srcds,
       sessionData: { token, steamId },
     } = res.locals;
 
     const { mapName } = req.params;
 
-    srcdsApi.changelevel(token, mapName);
+    srcds.send('changelevel', { mapName, token });
 
     db.logs.add('menu_map_change', steamId, { mapName });
 

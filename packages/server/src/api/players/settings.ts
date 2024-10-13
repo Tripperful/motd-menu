@@ -1,4 +1,4 @@
-import { PlayerClientSettings } from '@motd-menu/common';
+import { PlayerClientSettings, SetSettingsData } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
 
@@ -21,7 +21,23 @@ playerSettingsRouter.post('/', async (req, res) => {
     const settings = req.body as PlayerClientSettings;
 
     await db.client.settings.set(steamId, settings);
-    res.locals.srcdsApi.applySettings(steamId, settings);
+
+    const netSettings: SetSettingsData = {
+      steamId,
+      settings: {
+        drawviewmodel: settings.drawViewmodel ? 1 : 0,
+        esp: settings.esp ? 1 : 0,
+        dsp: settings.dsp ? 1 : 0,
+        fov: settings.fov,
+        magnumZoomFov: settings.magnumZoomFov,
+        crossbowZoomFov: settings.crossbowZoomFov,
+        hitsound: settings.hitSound ? 1 : 0,
+        killsound: settings.killSound ? 1 : 0,
+        kevlarsound: settings.kevlarSound ? 1 : 0,
+      },
+    };
+
+    res.locals.srcds.send('apply_settings', netSettings);
 
     res.status(200).end();
   } catch (e) {

@@ -305,7 +305,7 @@ export const MatchResultsMenu: FC = () => {
   const c = useStyles();
   const [total, setTotal] = useState(null as number);
 
-  const isMatchOrganizer = useCheckPermission('match_organizer');
+  const isMatchOrganizer = useCheckPermission('match_organizer') && false;
 
   return (
     <ActionPage

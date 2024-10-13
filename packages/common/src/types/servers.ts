@@ -6,9 +6,5 @@ export interface ServerInfo {
   blocked?: boolean;
   isDev: boolean;
   versionHash?: string;
-}
-
-export interface OnlineServerInfo {
-  sessionId: string;
-  serverInfo: ServerInfo;
+  sessionId?: string;
 }

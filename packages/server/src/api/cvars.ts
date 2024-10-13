@@ -9,7 +9,7 @@ cvarsRouter.post('/get/:cvar?', async (req, res) => {
   try {
     const {
       sessionData: { permissions },
-      srcdsApi,
+      srcds,
     } = res.locals;
 
     const cvars = [] as Cvar[];
@@ -30,7 +30,7 @@ cvarsRouter.post('/get/:cvar?', async (req, res) => {
       }
     }
 
-    const cvarsValues = await srcdsApi.getCvars(...cvars);
+    const cvarsValues = await srcds.request('get_cvars_request', cvars);
 
     res.status(200).end(JSON.stringify(cvarsValues));
   } catch (e) {
@@ -43,7 +43,7 @@ cvarsRouter.post('/set/:cvar', async (req, res) => {
   try {
     const {
       sessionData: { steamId, permissions },
-      srcdsApi,
+      srcds,
     } = res.locals;
 
     const cvar = req.params.cvar as Cvar;
@@ -54,7 +54,7 @@ cvarsRouter.post('/set/:cvar', async (req, res) => {
 
     const sanitizedValue = sanitizeCvarValue(value);
 
-    srcdsApi.setCvar(cvar, sanitizedValue);
+    srcds.send('set_cvar', { cvar, value: sanitizedValue });
     db.logs.add('menu_cvar_change', steamId, { cvar, value: sanitizedValue });
 
     res.status(200).end();

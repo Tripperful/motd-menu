@@ -11,18 +11,16 @@ import {
   NewsData,
   NewsPreviewsPagedData,
   OnlinePlayerInfo,
-  OnlineServerInfo,
   PagedData,
   Permission,
   PlayerClientSettings,
-  RankUpdateData,
+  RankData,
   ReactionData,
   ReactionName,
   ServerInfo,
   Severity,
   StartMatchSettings,
   SteamPlayerData,
-  StreamFrame,
 } from '@motd-menu/common';
 
 class MotdApi {
@@ -176,7 +174,7 @@ class MotdApi {
   public async getPlayerStats(steamId: string) {
     return (
       (JSON.parse(await this.get(`players/stats/${steamId}`)) as {
-        efpsRank: RankUpdateData;
+        efpsRank: RankData;
       }) || null
     );
   }
@@ -378,7 +376,7 @@ class MotdApi {
   public async getOnlineServers() {
     const res = await this.get('srcds/onlineServers');
 
-    return JSON.parse(res) as OnlineServerInfo[];
+    return JSON.parse(res) as ServerInfo[];
   }
 
   public async getOnlineServersMaps() {

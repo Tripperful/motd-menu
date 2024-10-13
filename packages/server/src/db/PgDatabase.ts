@@ -1,44 +1,44 @@
 import {
-  AmmoPickupMessage,
-  BatteryPickupMessage,
+  AmmoPickupData,
+  BatteryPickupData,
   EfpsMatchSummary,
-  EntityTeleportMessage,
-  ItemPickupMessage,
-  ItemRespawnMessage,
+  EntityTeleportData,
+  ItemPickupData,
+  ItemRespawnData,
   MapDetailsData,
   MapPreviewData,
   MapReviewData,
   MatchDamageData,
   MatchDeathData,
-  MatchEndedMessage,
+  MatchEndedData,
   MatchFilters,
-  MatchStartedMessage,
+  MatchStartedData,
   MatchSummary,
-  MedkitPickupMessage,
+  MedkitPickupData,
   NewsData,
   NewsPreviewsPagedData,
   PagedData,
   Permission,
-  PlayerAttackMessage,
+  PlayerAttackData,
   PlayerClientSettings,
-  PlayerDamageMessage,
-  PlayerDeathMessage,
-  PlayerRespawnMessage,
-  ProjectileBounceMessage,
-  ProjectileDeathMessage,
-  ProjectileLifetimeResetMessage,
-  ProjectileOwnerChangeMessage,
-  ProjectileSpawnMessage,
-  RankUpdateData,
+  PlayerDamageData,
+  PlayerDeathData,
+  PlayerRespawnData,
+  ProjectileBounceData,
+  ProjectileDeathData,
+  ProjectileLifetimeResetData,
+  ProjectileOwnerChangeData,
+  ProjectileSpawnData,
+  RankData,
   ReactionData,
   ReactionName,
   ServerInfo,
-  WeaponDropMessage,
+  WeaponDropData,
   allPermissions,
   allReactionNames,
 } from '@motd-menu/common';
 import { TelegramClientInfo } from 'src/telegram/types';
-import { ChargeAggregate } from 'src/ws/chargerUseHandler';
+import { ChargeAggregate } from 'src/ws/servers/srcds/chargerUseHandler';
 import { BasePgDatabase } from './BasePgDatabase';
 import { Database } from './Database';
 import { LogEventType } from './LogEventType';
@@ -265,38 +265,35 @@ export class PgDatabase extends BasePgDatabase implements Database {
   };
 
   matchStats = {
-    matchStarted: (serverId: number, data: MatchStartedMessage) =>
+    matchStarted: (serverId: number, data: MatchStartedData) =>
       this.call('match_started', serverId, data),
-    matchEnded: (data: MatchEndedMessage) => this.call('match_ended', data),
-    updateAfterMatchRanks: (matchId: string, data: RankUpdateData[]) =>
+    matchEnded: (data: MatchEndedData) => this.call('match_ended', data),
+    updateAfterMatchRanks: (matchId: string, data: RankData[]) =>
       this.call('set_aftermatch_ranks', matchId, data),
-    playerDeath: (data: PlayerDeathMessage) => this.call('player_death', data),
-    playerRespawn: (data: PlayerRespawnMessage) =>
+    playerDeath: (data: PlayerDeathData) => this.call('player_death', data),
+    playerRespawn: (data: PlayerRespawnData) =>
       this.call('player_respawn', data),
-    playerDamage: (data: PlayerDamageMessage) =>
-      this.call('player_damaged', data),
-    playerAttack: (data: PlayerAttackMessage) =>
-      this.call('player_attack', data),
-    itemRespawn: (data: ItemRespawnMessage) => this.call('item_respawn', data),
-    weaponDrop: (data: WeaponDropMessage) => this.call('weapon_drop', data),
-    itemPickup: (data: ItemPickupMessage) => this.call('item_pickup', data),
-    medkitPickup: (data: MedkitPickupMessage) =>
-      this.call('medkit_pickup', data),
-    batteryPickup: (data: BatteryPickupMessage) =>
+    playerDamage: (data: PlayerDamageData) => this.call('player_damaged', data),
+    playerAttack: (data: PlayerAttackData) => this.call('player_attack', data),
+    itemRespawn: (data: ItemRespawnData) => this.call('item_respawn', data),
+    weaponDrop: (data: WeaponDropData) => this.call('weapon_drop', data),
+    itemPickup: (data: ItemPickupData) => this.call('item_pickup', data),
+    medkitPickup: (data: MedkitPickupData) => this.call('medkit_pickup', data),
+    batteryPickup: (data: BatteryPickupData) =>
       this.call('battery_pickup', data),
-    ammoPickup: (data: AmmoPickupMessage) => this.call('ammo_pickup', data),
+    ammoPickup: (data: AmmoPickupData) => this.call('ammo_pickup', data),
     chargerUse: (data: ChargeAggregate) => this.call('charger_use', data),
-    projectileSpawn: (data: ProjectileSpawnMessage) =>
+    projectileSpawn: (data: ProjectileSpawnData) =>
       this.call('projectile_spawn', data),
-    projectileDeath: (data: ProjectileDeathMessage) =>
+    projectileDeath: (data: ProjectileDeathData) =>
       this.call('projectile_death', data),
-    projectileBounce: (data: ProjectileBounceMessage) =>
+    projectileBounce: (data: ProjectileBounceData) =>
       this.call('projectile_bounce', data),
-    projectileOwnerChange: (data: ProjectileOwnerChangeMessage) =>
+    projectileOwnerChange: (data: ProjectileOwnerChangeData) =>
       this.call('projectile_owner_change', data),
-    projectileLifetimeReset: (data: ProjectileLifetimeResetMessage) =>
+    projectileLifetimeReset: (data: ProjectileLifetimeResetData) =>
       this.call('projectile_lifetime_reset', data),
-    entityTeleport: (data: EntityTeleportMessage) =>
+    entityTeleport: (data: EntityTeleportData) =>
       this.call('entity_teleport', data),
   };
 

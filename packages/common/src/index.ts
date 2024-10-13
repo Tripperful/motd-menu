@@ -16,3 +16,4 @@ export * from './types/util';
 export * from './types/ws';
 export * from './util/steam';
 export * from './util/uuid';
+export * from './ws';

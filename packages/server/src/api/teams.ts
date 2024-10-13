@@ -7,7 +7,7 @@ teamsRouter.post('/set/:userId?/:teamIndex', async (req, res) => {
   try {
     const { teamIndex, userId: userIdStr } = req.params;
     const {
-      srcdsApi,
+      srcds,
       sessionData: { permissions, userId: ownUserId, steamId },
     } = res.locals;
 
@@ -19,7 +19,7 @@ teamsRouter.post('/set/:userId?/:teamIndex', async (req, res) => {
         return res.status(403).end();
       }
 
-      srcdsApi.getOnlinePlayers().then((players) => {
+      srcds.request('get_players_request').then((players) => {
         const player = players.find((p) => p.userId === userId);
 
         if (player) {
@@ -31,7 +31,7 @@ teamsRouter.post('/set/:userId?/:teamIndex', async (req, res) => {
       });
     }
 
-    srcdsApi.setPlayerTeam(userId, Number(teamIndex));
+    srcds.send('set_player_team', { userId, teamIndex: Number(teamIndex) });
 
     res.status(200).end();
   } catch (e) {

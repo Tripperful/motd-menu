@@ -1,4 +1,4 @@
-import { SteamPlayerData } from './steam';
+import type { SteamPlayerData } from './steam';
 
 export interface OnlinePlayerInfo {
   steamId: string;
