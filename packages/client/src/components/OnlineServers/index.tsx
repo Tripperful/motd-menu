@@ -3,10 +3,8 @@ import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
 import { useOnlineServers } from 'src/hooks/state/onlineServers';
 import { useOnlineServersMaps } from 'src/hooks/state/onlineServersMaps';
-import { useMyPermissions } from 'src/hooks/state/permissions';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { Popup } from '~components/common/Popup';
-import HudIcon from '~icons/hud.svg';
 import { activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
 
@@ -147,26 +145,12 @@ const MapsPopup: FC = () => {
 export const OnlineServers: FC = () => {
   const c = useStyles();
   const servers = useOnlineServers();
-  const permissions = useMyPermissions();
-  const isStreamer = permissions.includes('streamer');
 
   return (
     <div className={c.root}>
       <h2>Online servers ({servers.length})</h2>
       {servers.map((serverInfo) => (
         <span className={c.serverRow} key={serverInfo.id}>
-          {isStreamer && (
-            <Link
-              key={serverInfo.id}
-              className={c.link}
-              to={`../streamerOverlay/${serverInfo.sessionId}?token=${new URLSearchParams(
-                location.search,
-              ).get('token')}&center=1&scale=1&delay=0`}
-              target="_blank"
-            >
-              <HudIcon />
-            </Link>
-          )}
           <Link
             className={c.link}
             to={`/?guid=${serverInfo.sessionId}&token=${new URLSearchParams(
