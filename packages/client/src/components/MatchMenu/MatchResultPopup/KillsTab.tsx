@@ -16,10 +16,6 @@ const useStyles = createUseStyles({
     overflow: 'hidden scroll',
     marginRight: '-0.5em',
   },
-  filters: {
-    position: 'sticky',
-    top: 0,
-  },
   weaponKills: {
     display: 'flex',
     alignItems: 'center',
@@ -61,7 +57,7 @@ export const KillsTab: FC<{ matchId: string }> = ({ matchId }) => {
 
   return (
     <div className={c.root}>
-      <div className={c.filters}>
+      <div>
         <div
           className={c.button}
           onClick={() =>
