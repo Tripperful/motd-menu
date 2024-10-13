@@ -16,6 +16,8 @@ const useStyles = createUseStyles({
     display: 'flex',
     gap: '1em',
     flexWrap: 'wrap',
+    overflow: 'hidden scroll',
+    marginRight: '-0.5em',
   },
   weaponDetails: {
     padding: '1em',
