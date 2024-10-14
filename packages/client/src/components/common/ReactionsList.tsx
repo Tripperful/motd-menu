@@ -1,6 +1,6 @@
 import { ReactionData, ReactionName } from '@motd-menu/common';
 import classNames from 'classnames';
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, forwardRef, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useMySteamId } from 'src/hooks/useMySteamId';
 import AddReactionIcon from '~icons/add-reaction.svg';
@@ -23,19 +23,21 @@ const useStyles = createUseStyles({
   },
 });
 
-export const ReactionsListSkeleton: FC<ClassNameProps> = ({ className }) => {
-  const c = useStyles();
+export const ReactionsListSkeleton = forwardRef<HTMLDivElement, ClassNameProps>(
+  ({ className }, ref) => {
+    const c = useStyles();
 
-  return (
-    <div className={classNames(c.root, className)}>
-      <ReactionSkeleton />
-      <ReactionSkeleton />
-      <div className={c.addButton} data-disabled>
-        <AddReactionIcon />
+    return (
+      <div className={classNames(c.root, className)} ref={ref}>
+        <ReactionSkeleton />
+        <ReactionSkeleton />
+        <div className={c.addButton} data-disabled>
+          <AddReactionIcon />
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  },
+);
 
 export const ReactionsList: FC<
   {

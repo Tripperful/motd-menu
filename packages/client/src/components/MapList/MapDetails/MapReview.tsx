@@ -1,8 +1,9 @@
 import { MapReviewData, ReactionName } from '@motd-menu/common';
 import classNames from 'classnames';
-import React, { FC, Suspense } from 'react';
+import React, { FC, Suspense, useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
+import { useIntersection } from 'react-use';
 import { motdApi } from 'src/api';
 import {
   useAddRemoveMapReviewReaction,
@@ -147,11 +148,22 @@ const MapReviewReactionsContent: FC<MapReviewReactionsProps> = ({
 
 const MapReviewReactions: FC<MapReviewReactionsProps> = (props) => {
   const c = useStyles();
+  const [revealed, setRevealed] = React.useState(false);
+  const skeletonRef = React.useRef<HTMLDivElement>();
+  const intersection = useIntersection(skeletonRef, {});
 
-  return (
+  useEffect(() => {
+    if (intersection && intersection.isIntersecting) {
+      setRevealed(true);
+    }
+  }, [intersection]);
+
+  return revealed ? (
     <Suspense fallback={<ReactionsListSkeleton className={c.reactions} />}>
       <MapReviewReactionsContent {...props} />
     </Suspense>
+  ) : (
+    <ReactionsListSkeleton className={c.reactions} ref={skeletonRef} />
   );
 };
 
