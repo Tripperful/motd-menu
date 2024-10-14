@@ -76,9 +76,9 @@ export const ServerSettings: FC = () => {
 
   return (
     <Page
-      title="Server settings"
-      headerContent={
+      title={
         <>
+          <h2>Server settings</h2>
           {canRunCommands && (
             <Link to="runCommand" className={c.button}>
               <TerminalIcon />

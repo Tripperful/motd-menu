@@ -15,10 +15,8 @@ export const ClientSettings: FC = () => {
   const steamId = useMySteamId();
 
   return (
-    <Page title="Client settings">
-      <Suspense>
-        <PlayerSettings steamId={steamId} className={c.root} />
-      </Suspense>
+    <Page title={<h2>Client settings</h2>}>
+      <PlayerSettings steamId={steamId} className={c.root} />
     </Page>
   );
 };

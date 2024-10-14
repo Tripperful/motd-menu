@@ -18,6 +18,7 @@ import LambdaIcon from '~icons/lambda.svg';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { StartMatchSettingsContext } from './StartMatchMenu';
+import { Spinner } from '~components/common/Spinner';
 
 const useStyles = createUseStyles({
   root: {
@@ -207,7 +208,7 @@ export const MatchPlayers: FC = () => {
 
   return (
     <div className={c.root}>
-      <Suspense>
+      <Suspense fallback={<Spinner />}>
         <MatchPlayersContent />
       </Suspense>
     </div>

@@ -10,12 +10,17 @@ const useStyles = createUseStyles({
     padding: '1em',
     width: '100%',
     height: '100%',
+    position: 'relative',
   },
   spinnerIcon: {
     width: '50%',
     height: '50%',
     maxWidth: '5em',
     maxHeight: '5em',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
   },
 });
 

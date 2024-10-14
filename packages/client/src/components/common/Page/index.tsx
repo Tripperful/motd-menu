@@ -1,7 +1,8 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { ChildrenProps } from '~types/props';
 import { PageHeader } from '../PageHeader';
+import { Spinner } from '../Spinner';
 
 const useStyles = createUseStyles({
   root: {
@@ -15,18 +16,15 @@ const useStyles = createUseStyles({
 export const Page: FC<
   {
     title: ReactNode;
-    headerContent?: ReactNode;
     backPath?: string;
   } & ChildrenProps
-> = ({ title, headerContent, backPath, children }) => {
+> = ({ title, backPath, children }) => {
   const c = useStyles();
 
   return (
     <div className={c.root}>
-      <PageHeader title={title} backPath={backPath}>
-        {headerContent}
-      </PageHeader>
-      {children}
+      <PageHeader title={title} backPath={backPath} />
+      <Suspense fallback={<Spinner />}>{children}</Suspense>
     </div>
   );
 };

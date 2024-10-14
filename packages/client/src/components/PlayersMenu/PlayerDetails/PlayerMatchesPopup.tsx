@@ -92,12 +92,10 @@ const PlayerMatchesPopupTitle: FC<{ steamId: string; total: number }> = ({
   const profile = usePlayerSteamProfile(steamId);
 
   return (
-    <Suspense fallback="Loading...">
-      <span className={c.header}>
-        {`${profile.name}'s matches`}
-        {total != null && <span className={c.chip}>{total}</span>}
-      </span>
-    </Suspense>
+    <span className={c.header}>
+      {`${profile.name}'s matches`}
+      {total != null && <span className={c.chip}>{total}</span>}
+    </span>
   );
 };
 
@@ -113,9 +111,7 @@ export const PlayerMatchesPopup: FC<{ steamId: string }> = ({ steamId }) => {
       className={c.root}
     >
       <div className={c.content}>
-        <Suspense fallback={<MatchResultsSkeleton />}>
-          <PlayerMatchesContent steamId={steamId} setTotal={setTotal} />
-        </Suspense>
+        <PlayerMatchesContent steamId={steamId} setTotal={setTotal} />
       </div>
       <Routes>
         <Route path="/:matchId/*" element={<MatchResultPopup />} />

@@ -1,4 +1,4 @@
-import React, { FC, Suspense, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Routes, useParams } from 'react-router-dom';
 import {
@@ -8,7 +8,6 @@ import {
 import { useGoBack } from 'src/hooks/useGoBack';
 import { LineWithCopy } from '~components/common/LineWithCopy';
 import { Popup } from '~components/common/Popup';
-import { Spinner } from '~components/common/Spinner';
 import { theme } from '~styles/theme';
 import { PlayerDetails } from '.';
 import { PlayersListItem } from '../PlayersList/PlayersListItem';
@@ -89,9 +88,7 @@ export const SmurfsPopup: FC = () => {
   return (
     <Popup title="Player accounts details" onClose={goBack}>
       <div className={c.root}>
-        <Suspense fallback={<Spinner />}>
-          <SmurfsPopupContent steamId={steamId} />
-        </Suspense>
+        <SmurfsPopupContent steamId={steamId} />
       </div>
       <Routes>
         <Route path=":steamId/*" element={<PlayerDetails />} />

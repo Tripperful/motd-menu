@@ -83,9 +83,9 @@ export const ActionPage: FC<
 
   return (
     <Page
-      title={title}
-      headerContent={
+      title={
         <>
+          <h2>{title}</h2>
           {headerContent}
           {refreshAction && (
             <div className={c.refreshButton} onClick={refreshAction}>

@@ -61,9 +61,9 @@ export const SidePanel: FC<
       <div className={c.bg} onPointerDown={onBgClick}>
         <div className={c.root}>
           <PageHeader title={title} backPath={backPath} />
-          <Suspense fallback={<Spinner />}>
-            <div className={c.content}>{children}</div>
-          </Suspense>
+          <div className={c.content}>
+            <Suspense fallback={<Spinner />}>{children}</Suspense>
+          </div>
         </div>
       </div>,
       document.getElementById('modalRoot'),

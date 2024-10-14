@@ -10,6 +10,7 @@ import PencilIcon from '~icons/pencil.svg';
 import { outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { EditImagesPopup } from './EditImagesPopup';
+import { Spinner } from '~components/common/Spinner';
 
 const useStyles = createUseStyles({
   root: {
@@ -75,7 +76,7 @@ export const MapImages: FC<{ mapName: string }> = ({ mapName }) => {
 
   return (
     <div className={c.root}>
-      <Suspense>
+      <Suspense fallback={<Spinner />}>
         <MapImagesContent mapName={mapName} />
       </Suspense>
       {canEdit && (

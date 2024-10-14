@@ -173,9 +173,9 @@ export const MapList: FC = () => {
       }}
     >
       <Page
-        title="Maps"
-        headerContent={
+        title={
           <>
+            <h2>Maps</h2>
             <Filters />
             <Search />
             {hasFilters && (

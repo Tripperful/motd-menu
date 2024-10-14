@@ -177,10 +177,8 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
         <Route
           path="news/*"
           element={
-            <SidePanel title="News">
-              <Suspense>
-                <LazyNews />
-              </Suspense>
+            <SidePanel title={<h2>News</h2>}>
+              <LazyNews />
             </SidePanel>
           }
         />

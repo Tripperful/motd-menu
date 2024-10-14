@@ -19,6 +19,7 @@ import { MapReviews } from './MapReviews';
 import { MapTags } from './MapTags';
 import { OtherVersions } from './OtherVersions';
 import { MapReactions } from './MapReactions';
+import { Spinner } from '~components/common/Spinner';
 
 const useStyles = createUseStyles({
   root: {
@@ -205,10 +206,13 @@ export const MapDetails: FC<MapDetailsProps> = ({
   };
 
   return (
-    <SidePanel backPath={backPath} title={'Map details - ' + mapName}>
+    <SidePanel
+      backPath={backPath}
+      title={<h2>{'Map details - ' + mapName}</h2>}
+    >
       <div className={c.root}>
         <div className={c.content}>
-          <Suspense fallback="Loading...">
+          <Suspense fallback={<Spinner />}>
             <MapDetailsContent mapName={mapName} />
           </Suspense>
         </div>

@@ -1,6 +1,7 @@
 import React, { FC, Suspense } from 'react';
 import { getSessionData } from 'src/hooks/useSessionData';
 import { Menu, MenuItemInfo } from '~components/common/Menu';
+import { Spinner } from '~components/common/Spinner';
 import TeamsIcon from '~icons/flag.svg';
 import KnobsIcon from '~icons/knobs.svg';
 import PlayersIcon from '~icons/players.svg';
@@ -40,7 +41,7 @@ const menuItems: MenuItemInfo[] = [
 ];
 
 export const MainMenu: FC = () => (
-  <Suspense>
+  <Suspense fallback={<Spinner />}>
     <Menu items={menuItems} title="Main menu" />
   </Suspense>
 );

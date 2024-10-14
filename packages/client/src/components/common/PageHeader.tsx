@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import React, { FC, ReactNode, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
 import { simpleButton } from 'src/styles/elements';
@@ -21,15 +21,24 @@ const useStyles = createUseStyles({
     padding: '0.5em',
   },
   title: {
-    fontSize: '1.5em',
+    flex: '1 1 auto',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5em',
+    minWidth: 0,
+    '& h2': {
+      margin: 0,
+    },
+    '& > :first-child': {
+      marginRight: 'auto',
+    },
   },
 });
 
 export const PageHeader: FC<{
   title: ReactNode;
   backPath?: string;
-  children?: ReactNode;
-}> = ({ title, backPath = '..', children }) => {
+}> = ({ title, backPath = '..' }) => {
   const c = useStyles();
 
   return (
@@ -37,8 +46,9 @@ export const PageHeader: FC<{
       <Link className={c.backButton} to={backPath} relative="path">
         <BackIcon />
       </Link>
-      <div className={c.title}>{title}</div>
-      {children}
+      <div className={c.title}>
+        <Suspense fallback="Loading...">{title}</Suspense>
+      </div>
     </div>
   );
 };

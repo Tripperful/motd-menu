@@ -57,7 +57,7 @@ export const Tabs: FC<{ tabs: TabData[] } & ClassNameProps> = ({
               key={tabPath}
               onClick={() => setSelectedTab(idx)}
             >
-              {label}
+              <Suspense fallback="Loading...">{label}</Suspense>
             </div>
           );
         })}

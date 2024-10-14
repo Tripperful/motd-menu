@@ -90,7 +90,7 @@ const VoteSpecConfirm: FC = () => {
         <Route
           path="playerDetails"
           element={
-            <SidePanel title="Player details">
+            <SidePanel title={<h2>Player details</h2>}>
               <PlayerDetails />
             </SidePanel>
           }
@@ -122,7 +122,7 @@ const VoteSpec: FC = () => {
       : 'No players to move to spectators';
 
   return (
-    <Page title="Move player to spectators" backPath="/">
+    <Page title={<h2>Move player to spectators</h2>} backPath="/">
       <div className={c.root}>
         <div className={c.title}>{title}</div>
         <div className={c.playerList}>

@@ -55,9 +55,7 @@ const PlayerStats: FC<{ steamId: string; matchId: string }> = ({
           {
             label: (
               <span>
-                <span className={c.icon}>
-                  {itemNameToIconGlyph('battery')}
-                </span>
+                <span className={c.icon}>{itemNameToIconGlyph('battery')}</span>
                 &nbsp;Misc
               </span>
             ),
@@ -77,13 +75,13 @@ const SidePanelTitle: FC<{ steamId: string }> = ({ steamId }) => {
   const profile = usePlayerSteamProfile(steamId);
 
   return (
-    <span>
+    <h2>
       Match stats (
       <Link to="profile" className={c.playerTitle}>
         {profile.name}
       </Link>
       )
-    </span>
+    </h2>
   );
 };
 
@@ -93,7 +91,7 @@ export const PlayerMatchStats: FC<{ backPath?: string }> = ({ backPath }) => {
   return (
     <SidePanel
       title={
-        <Suspense fallback="Match stats">
+        <Suspense fallback={<h2>Match stats</h2>}>
           <SidePanelTitle steamId={steamId} />
         </Suspense>
       }

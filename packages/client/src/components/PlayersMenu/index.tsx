@@ -27,9 +27,9 @@ export const PlayersMenu: FC = () => {
 
   return (
     <Page
-      title="Players"
-      headerContent={
+      title={
         <>
+          <h2>Players</h2>
           <Link className={c.button} to="byName">
             <SearchIcon />
           </Link>

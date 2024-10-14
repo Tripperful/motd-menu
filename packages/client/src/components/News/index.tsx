@@ -30,7 +30,6 @@ import { PlayerItem } from '~components/common/PlayerItem';
 import { Popup } from '~components/common/Popup';
 import { SidePanel } from '~components/common/SidePanel';
 import CopyIcon from '~icons/copy.svg';
-import LoadingIcon from '~icons/loading.svg';
 import { activeItem, activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
 
@@ -175,10 +174,6 @@ const useStyles = createUseStyles({
     '10%': {
       opacity: 1,
     },
-  },
-  loading: {
-    fontSize: '4em',
-    margin: 'auto',
   },
 });
 
@@ -442,30 +437,24 @@ const NewsPopup: FC = () => {
       onClose={goBack}
       className={classNames(c.newsPopup, editing && c.editing)}
     >
-      <Suspense fallback={<LoadingIcon className={c.loading} />}>
-        <NewsContent
-          newsId={newsId}
-          editing={editing}
-          setEditing={setEditing}
+      <NewsContent newsId={newsId} editing={editing} setEditing={setEditing} />
+      <Routes>
+        <Route
+          path="author/:steamId/*"
+          element={<PlayerDetails backPath="../.." />}
         />
-        <Routes>
-          <Route
-            path="author/:steamId/*"
-            element={<PlayerDetails backPath="../.." />}
-          />
-          <Route
-            path="views"
-            element={
-              <SidePanel title="News views">
-                <Suspense>
-                  <NewsViews />
-                </Suspense>
-              </SidePanel>
-            }
-          />
-          <Route path="views/:steamId" element={<PlayerDetails />} />
-        </Routes>
-      </Suspense>
+        <Route
+          path="views"
+          element={
+            <SidePanel title={<h2>News views</h2>}>
+              <Suspense>
+                <NewsViews />
+              </Suspense>
+            </SidePanel>
+          }
+        />
+        <Route path="views/:steamId" element={<PlayerDetails />} />
+      </Routes>
     </Popup>
   );
 };

@@ -74,7 +74,7 @@ export const MatchSettings: FC = () => {
   }, [cvars, players]);
 
   return (
-    <SidePanel title="Match settings">
+    <SidePanel title={<h2>Match settings</h2>}>
       <div className={c.root}>
         <div className={c.cvarList}>
           {matchCvars.map((cvar) => (

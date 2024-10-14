@@ -11,6 +11,7 @@ import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { FindPlayerByNamePopup } from '~components/common/FindPlayerByNamePopup';
 import { SidePanel } from '~components/common/SidePanel';
+import { Spinner } from '~components/common/Spinner';
 import { Switch } from '~components/common/Switch';
 import CrossIcon from '~icons/close.svg';
 import ClearFiltersIcon from '~icons/filter-clear.svg';
@@ -241,8 +242,8 @@ const MatchResultsFiltersContent: FC = () => {
 };
 
 export const MatchResultsFilters: FC = () => (
-  <SidePanel title="Match filters">
-    <Suspense fallback="Loading...">
+  <SidePanel title={<h2>Match filters</h2>}>
+    <Suspense fallback={<Spinner />}>
       <MatchResultsFiltersContent />
     </Suspense>
   </SidePanel>

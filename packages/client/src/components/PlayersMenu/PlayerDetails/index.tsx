@@ -1,5 +1,5 @@
 import { steamId64ToLegacy } from '@motd-menu/common';
-import React, { FC, Suspense } from 'react';
+import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
 import {
@@ -9,28 +9,27 @@ import {
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { steamProfileLink } from 'src/util';
-import { MapDetails } from '~components/MapList/MapDetails';
 import { IFramePopup } from '~components/common/IFramePopup';
 import { LineWithCopy } from '~components/common/LineWithCopy';
 import { PlayerSettings } from '~components/common/PlayerSettings';
 import { SidePanel } from '~components/common/SidePanel';
-import EfpsIcon from '~icons/efps.svg';
 import MatchesIcon from '~icons/playlist.svg';
+import StarIcon from '~icons/star.svg';
 import UserInspectIcon from '~icons/user-inspect.svg';
 import { outlineButton } from '~styles/elements';
+import { MapsReviewsPopup } from './MapsReviewsPopup';
 import { PlayerAka } from './PlayerAka';
 import { PlayerMatchesPopup } from './PlayerMatchesPopup';
 import { PlayerPermissions } from './PlayerPermissions';
-import { PlayerReviews } from './PlayerReviews';
 import { PlayerStats } from './PlayerStats';
 import { PlayerTimePlayed } from './PlayerTimePlayed';
 import { SetAkaPopup } from './SetAkaPopup';
 import { SetPlayerTeam } from './SetPlayerTeam';
 import { SmurfsPopup } from './SmurfsPopup';
-import { Spinner } from '~components/common/Spinner';
 
 const useStyles = createUseStyles({
   root: {
+    flex: '1 1 auto',
     padding: '1em',
     display: 'flex',
     flexDirection: 'column',
@@ -123,6 +122,10 @@ const PlayerDetailsContent: FC = () => {
               <MatchesIcon />
               Matches
             </Link>
+            <Link className={c.profileButton} to="mapsReviews">
+              <StarIcon />
+              Maps reviews
+            </Link>
           </div>
         </div>
       </div>
@@ -134,15 +137,8 @@ const PlayerDetailsContent: FC = () => {
         <PlayerSettings steamId={steamId} />
       </div>
       {canViewPermissions && <PlayerPermissions />}
-      <PlayerReviews steamId={steamId} />
     </>
   );
-};
-
-const RatedMapDetails: FC = () => {
-  const { mapName } = useParams();
-
-  return <MapDetails mapName={mapName} />;
 };
 
 export const PlayerDetails: FC<{ backPath?: string }> = ({ backPath }) => {
@@ -150,11 +146,9 @@ export const PlayerDetails: FC<{ backPath?: string }> = ({ backPath }) => {
   const { steamId } = useParams();
 
   return (
-    <SidePanel title="Player details" backPath={backPath}>
+    <SidePanel title={<h2>Player details</h2>} backPath={backPath}>
       <div className={c.root}>
-        <Suspense fallback={<Spinner />}>
-          <PlayerDetailsContent />
-        </Suspense>
+        <PlayerDetailsContent />
       </div>
       <Routes>
         <Route path="/smurfs/*" element={<SmurfsPopup />} />
@@ -164,7 +158,10 @@ export const PlayerDetails: FC<{ backPath?: string }> = ({ backPath }) => {
           path="/matches/*"
           element={<PlayerMatchesPopup steamId={steamId} />}
         />
-        <Route path="/:mapName/*" element={<RatedMapDetails />} />
+        <Route
+          path="/mapsReviews/*"
+          element={<MapsReviewsPopup steamId={steamId} />}
+        />
       </Routes>
     </SidePanel>
   );

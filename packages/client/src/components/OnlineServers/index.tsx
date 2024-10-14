@@ -146,9 +146,7 @@ const MapsPopup: FC = () => {
         value={search}
         onChange={(e) => setSearch(e.currentTarget.value)}
       />
-      <Suspense fallback={<Spinner />}>
-        <AllServersMaps search={search} />
-      </Suspense>
+      <AllServersMaps search={search} />
     </Popup>
   );
 };
