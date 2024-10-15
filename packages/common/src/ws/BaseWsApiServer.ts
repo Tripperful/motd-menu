@@ -85,7 +85,7 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
                   const res = await subscriber(client, message.data);
 
                   if (res) {
-                    client.sendReply(type, guid, data);
+                    client.sendReply(res.type, guid, res.data);
                   }
                 } catch (e) {
                   console.error(e);
