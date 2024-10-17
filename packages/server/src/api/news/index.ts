@@ -1,7 +1,12 @@
 import { Router } from 'express';
 import { db } from 'src/db';
+import { newsCommentsRouter } from './comments';
+import { newsReactionsRouter } from './reactions';
 
 export const newsRouter = Router();
+
+newsRouter.use('/comments', newsCommentsRouter);
+newsRouter.use('/reactions', newsReactionsRouter);
 
 newsRouter.get('/previews/:offset', async (req, res) => {
   try {

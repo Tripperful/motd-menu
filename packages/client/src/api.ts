@@ -10,6 +10,7 @@ import {
   MatchFilters,
   MatchSummary,
   MiscPlayerMatchStats,
+  NewsCommentData,
   NewsData,
   NewsPreviewsPagedData,
   OnlinePlayerInfo,
@@ -447,6 +448,59 @@ class MotdApi {
 
   public async deleteNews(id: string) {
     await this.delete('news/' + id);
+  }
+
+  public async getNewsReactions(newsId: string) {
+    const res = await this.get('news/reactions/' + newsId);
+    return JSON.parse(res) as ReactionData[];
+  }
+
+  public async addNewsReaction(newsId: string, reaction: ReactionName) {
+    await this.post(`news/reactions/${newsId}/${reaction}`);
+  }
+
+  public async deleteNewsReaction(newsId: string, reaction: ReactionName) {
+    await this.delete(`news/reactions/${newsId}/${reaction}`);
+  }
+
+  public async getNewsComments(newsId: string) {
+    const res = await this.get('news/comments/' + newsId);
+    return JSON.parse(res) as NewsCommentData[];
+  }
+
+  public async addNewsComment(newsId: string, content: string) {
+    const res = await this.post(
+      'news/comments/' + newsId,
+      JSON.stringify({ content }),
+    );
+    return JSON.parse(res).commentId as string;
+  }
+
+  public async editNewsComment(commentId: string, content: string) {
+    await this.put('news/comments/' + commentId, JSON.stringify({ content }));
+  }
+
+  public async deleteNewsComment(commentId: string) {
+    await this.delete('news/comments/' + commentId);
+  }
+
+  public async getNewsCommentReactions(commentId: string) {
+    const res = await this.get('news/comments/reactions/' + commentId);
+    return JSON.parse(res) as ReactionData[];
+  }
+
+  public async addNewsCommentReaction(
+    commentId: string,
+    reaction: ReactionName,
+  ) {
+    await this.post(`news/comments/reactions/${commentId}/${reaction}`);
+  }
+
+  public async deleteNewsCommentReaction(
+    commentId: string,
+    reaction: ReactionName,
+  ) {
+    await this.delete(`news/comments/reactions/${commentId}/${reaction}`);
   }
 }
 

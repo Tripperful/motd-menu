@@ -18,3 +18,21 @@ CREATE TABLE IF NOT EXISTS
     steam_id bigint NOT NULL,
     UNIQUE (map_review_id, reaction_id, steam_id)
   );
+
+CREATE TABLE IF NOT EXISTS
+  news_reactions (
+    id SERIAL PRIMARY KEY,
+    news_id uuid REFERENCES news (id) ON DELETE CASCADE NOT NULL,
+    reaction_id int REFERENCES reactions (id) ON DELETE CASCADE NOT NULL,
+    steam_id bigint NOT NULL,
+    UNIQUE (news_id, reaction_id, steam_id)
+  );
+
+CREATE TABLE IF NOT EXISTS
+  news_comments_reactions (
+    id SERIAL PRIMARY KEY,
+    news_comment_id uuid REFERENCES news_comments (id) ON DELETE CASCADE NOT NULL,
+    reaction_id int REFERENCES reactions (id) ON DELETE CASCADE NOT NULL,
+    steam_id bigint NOT NULL,
+    UNIQUE (news_comment_id, reaction_id, steam_id)
+  );

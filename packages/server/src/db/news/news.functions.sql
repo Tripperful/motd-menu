@@ -178,3 +178,66 @@ OR REPLACE PROCEDURE mark_news_hidden (news_id text, steam_id text) AS $$ BEGIN
     AND news_read.steam_id = mark_news_hidden.steam_id::bigint;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION news_comment_json (_comment record) RETURNS json AS $$
+BEGIN
+  RETURN json_build_object(
+    'id', _comment.id,
+    'steamId', _comment.author_steam_id::text,
+    'content', _comment.content,
+    'createdOn', ROUND(EXTRACT(EPOCH FROM _comment.created_on) * 1000)
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_news_comments (news_id text) RETURNS json AS $$
+BEGIN
+  RETURN (
+    SELECT COALESCE(json_agg(
+      news_comment_json(news_comments)
+    ), '[]'::json)
+    FROM news_comments
+    WHERE news_comments.news_id = get_news_comments.news_id::uuid
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_news_comment (comment_id text) RETURNS json AS $$
+BEGIN
+  RETURN (
+    SELECT news_comment_json(news_comments)
+    FROM news_comments
+    WHERE news_comments.id = get_news_comment.comment_id::uuid
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION create_news_comment (news_id text, author_steam_id text, content text) RETURNS text AS $$
+DECLARE
+  _id uuid;
+BEGIN
+  INSERT INTO news_comments (news_id, author_steam_id, content)
+  VALUES (create_news_comment.news_id::uuid, create_news_comment.author_steam_id::bigint, create_news_comment.content)
+  RETURNING id INTO _id;
+  RETURN _id::text;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE delete_news_comment (comment_id text) AS $$ BEGIN
+  DELETE FROM news_comments
+  WHERE news_comments.id = delete_news_comment.comment_id::uuid;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE edit_news_comment (comment_id text, content text) AS $$ BEGIN
+  UPDATE news_comments
+  SET content = edit_news_comment.content
+  WHERE news_comments.id = edit_news_comment.comment_id::uuid;
+END;
+$$ LANGUAGE plpgsql;

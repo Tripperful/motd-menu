@@ -39,6 +39,7 @@ export const EditDescriptionPopup: FC<{
         onChange={(e) =>
           setDescription(e.currentTarget.value.substring(0, 256))
         }
+        autoFocus
       />
       <div className={c.submit} onClick={onSubmitClick}>
         Submit

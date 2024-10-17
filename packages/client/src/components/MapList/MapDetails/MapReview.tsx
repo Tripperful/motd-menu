@@ -70,6 +70,7 @@ const useStyles = createUseStyles({
     display: 'block',
     marginTop: '0.2em',
     wordBreak: 'break-word',
+    whiteSpace: 'pre-wrap',
   },
   confirmPopupContent: {
     display: 'flex',

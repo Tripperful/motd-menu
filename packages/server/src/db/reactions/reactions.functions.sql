@@ -164,3 +164,119 @@ WHERE
   AND maps_reviews_reactions.steam_id = delete_map_review_reaction.steam_id::bigint;
 END; 
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION json_news_reaction (reaction news_reactions) RETURNS json AS $$ BEGIN
+RETURN json_build_object(
+    'steamId', json_news_reaction.reaction.steam_id::text,
+    'name',
+    (
+      SELECT name
+      FROM reactions
+      WHERE reactions.id = json_news_reaction.reaction.reaction_id
+      LIMIT 1
+    )
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_news_reactions (news_id uuid) RETURNS json AS $$ BEGIN
+RETURN COALESCE(json_agg(json_news_reaction(news_reactions)), '[]'::json)
+FROM news_reactions
+WHERE news_reactions.news_id = get_news_reactions.news_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE add_news_reaction (news_id uuid, steam_id text, reaction_name text) AS $$ BEGIN
+INSERT INTO news_reactions(news_id, reaction_id, steam_id)
+VALUES (
+    add_news_reaction.news_id,
+    (
+      SELECT reactions.id
+      FROM reactions
+      WHERE reactions.name = add_news_reaction.reaction_name
+      LIMIT 1
+    ),
+    add_news_reaction.steam_id::bigint
+  ) ON CONFLICT DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE delete_news_reaction (news_id uuid, steam_id text, reaction_name text) AS $$ BEGIN
+DELETE FROM news_reactions
+WHERE
+  news_reactions.news_id = delete_news_reaction.news_id
+  AND news_reactions.reaction_id = (
+    SELECT reactions.id
+    FROM reactions
+    WHERE reactions.name = delete_news_reaction.reaction_name
+    LIMIT 1
+  )
+  AND news_reactions.steam_id = delete_news_reaction.steam_id::bigint;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION json_news_comment_reaction (reaction news_comments_reactions) RETURNS json AS $$ BEGIN
+RETURN json_build_object(
+    'steamId', json_news_comment_reaction.reaction.steam_id::text,
+    'name',
+    (
+      SELECT name
+      FROM reactions
+      WHERE reactions.id = json_news_comment_reaction.reaction.reaction_id
+      LIMIT 1
+    )
+  );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_news_comment_reactions (news_comment_id uuid) RETURNS json AS $$ BEGIN
+RETURN COALESCE(json_agg(json_news_comment_reaction(news_comments_reactions)), '[]'::json)
+FROM news_comments_reactions
+WHERE news_comments_reactions.news_comment_id = get_news_comment_reactions.news_comment_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE add_news_comment_reaction (
+  news_comment_id uuid,
+  steam_id text,
+  reaction_name text
+) AS $$ BEGIN
+INSERT INTO news_comments_reactions(news_comment_id, reaction_id, steam_id)
+VALUES (
+    add_news_comment_reaction.news_comment_id,
+    (
+      SELECT reactions.id
+      FROM reactions
+      WHERE reactions.name = add_news_comment_reaction.reaction_name
+      LIMIT 1
+    ),
+    add_news_comment_reaction.steam_id::bigint
+  ) ON CONFLICT DO NOTHING;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE delete_news_comment_reaction (
+  news_comment_id uuid,
+  steam_id text,
+  reaction_name text
+) AS $$ BEGIN
+DELETE FROM news_comments_reactions
+WHERE
+  news_comments_reactions.news_comment_id = delete_news_comment_reaction.news_comment_id
+  AND news_comments_reactions.reaction_id = (
+    SELECT reactions.id
+    FROM reactions
+    WHERE reactions.name = delete_news_comment_reaction.reaction_name
+    LIMIT 1
+  )
+  AND news_comments_reactions.steam_id = delete_news_comment_reaction.steam_id::bigint;
+END;
+$$ LANGUAGE plpgsql;

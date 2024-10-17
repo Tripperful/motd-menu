@@ -17,3 +17,10 @@ export interface NewsData extends NewsPreview {
 export interface NewsPreviewsPagedData extends PagedData<NewsPreview> {
   unread: number;
 }
+
+export interface NewsCommentData {
+  id: string;
+  steamId: string;
+  content: string;
+  createdOn: number;
+}

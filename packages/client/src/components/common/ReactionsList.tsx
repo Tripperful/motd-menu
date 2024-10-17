@@ -19,7 +19,9 @@ const useStyles = createUseStyles({
   addButton: {
     ...activeItem(),
     fontSize: '0.8em',
+    height: '3em',
     display: 'flex',
+    alignItems: 'center',
   },
 });
 
@@ -70,7 +72,7 @@ export const ReactionsList: FC<
   const onReactionClick = (reaction: ReactionName) => {
     setShowAddPopup(false);
 
-    const iReacted = authorsSteamIdsByReaction[reaction].includes(mySteamId);
+    const iReacted = authorsSteamIdsByReaction[reaction]?.includes(mySteamId);
 
     iReacted ? onRemoveReaction?.(reaction) : onAddReaction?.(reaction);
   };

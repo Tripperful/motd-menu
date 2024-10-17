@@ -17,6 +17,7 @@ import {
   MatchSummary,
   MedkitPickupData,
   MiscPlayerMatchStats,
+  NewsCommentData,
   NewsData,
   NewsPreviewsPagedData,
   PagedData,
@@ -219,5 +220,42 @@ export interface Database {
     markRead(newsId: string, steamId: string): Promise<void>;
     markHidden(newsId: string, steamId: string): Promise<void>;
     delete(newsId: string): Promise<void>;
+    comments: {
+      get(newsId: string): Promise<NewsCommentData[]>;
+      getById(commentId: string): Promise<NewsCommentData>;
+      add(
+        newsId: string,
+        authorSteamId: string,
+        content: string,
+      ): Promise<string>;
+      edit(commentId: string, content: string): Promise<void>;
+      delete(commentId: string): Promise<void>;
+      reactions: {
+        get(commentId: string): Promise<ReactionData[]>;
+        add(
+          commentId: string,
+          steamId: string,
+          reaction: ReactionName,
+        ): Promise<void>;
+        delete(
+          commentId: string,
+          steamId: string,
+          reaction: ReactionName,
+        ): Promise<void>;
+      };
+    };
+    reactions: {
+      get(newsId: string): Promise<ReactionData[]>;
+      add(
+        newsId: string,
+        steamId: string,
+        reaction: ReactionName,
+      ): Promise<void>;
+      delete(
+        newsId: string,
+        steamId: string,
+        reaction: ReactionName,
+      ): Promise<void>;
+    };
   };
 }

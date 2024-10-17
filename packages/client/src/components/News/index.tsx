@@ -32,6 +32,8 @@ import { SidePanel } from '~components/common/SidePanel';
 import CopyIcon from '~icons/copy.svg';
 import { activeItem, activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
+import { NewsCommentPopup } from './NewsCommentPopup';
+import { NewsComments } from './NewsComments';
 
 const useStyles = createUseStyles({
   newsList: {
@@ -221,10 +223,11 @@ const customMarkdownComponents: Partial<JsxRuntimeComponents> = {
   },
 };
 
-const NewsRenderer: FC<{ news: NewsData; author: SteamPlayerData }> = ({
-  news,
-  author,
-}) => {
+const NewsRenderer: FC<{
+  news: NewsData;
+  author: SteamPlayerData;
+  showComments: boolean;
+}> = ({ news, author, showComments }) => {
   const c = useStyles();
   const permissions = useMyPermissions();
 
@@ -264,6 +267,7 @@ const NewsRenderer: FC<{ news: NewsData; author: SteamPlayerData }> = ({
         >
           {content}
         </Markdown>
+        {showComments && news.id && <NewsComments newsId={news.id} />}
       </div>
     </div>
   );
@@ -375,10 +379,15 @@ const NewsContent: FC<{
               onChange={(e) => {
                 setTempNews((prev) => ({ ...prev, content: e.target.value }));
               }}
+              autoFocus
             />
           </div>
         )}
-        <NewsRenderer news={editing ? tempNews : news} author={author} />
+        <NewsRenderer
+          news={editing ? tempNews : news}
+          author={author}
+          showComments={!editing}
+        />
       </div>
       {(canEdit || (canPublish && !published)) && (
         <div className={c.editActions}>
@@ -454,6 +463,7 @@ const NewsPopup: FC = () => {
           }
         />
         <Route path="views/:steamId" element={<PlayerDetails />} />
+        <Route path="comment/:commentId?" element={<NewsCommentPopup />} />
       </Routes>
     </Popup>
   );

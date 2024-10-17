@@ -17,6 +17,7 @@ import {
   MatchSummary,
   MedkitPickupData,
   MiscPlayerMatchStats,
+  NewsCommentData,
   NewsData,
   NewsPreviewsPagedData,
   PagedData,
@@ -373,6 +374,44 @@ export class PgDatabase extends BasePgDatabase implements Database {
     markHidden: (newsId: string, steamId: string) =>
       this.call('mark_news_hidden', newsId, steamId),
     delete: (newsId: string) => this.call('delete_news', newsId),
+    comments: {
+      get: (newsId: string) =>
+        this.select<NewsCommentData[]>('get_news_comments', newsId),
+      getById: (commentId: string) =>
+        this.select<NewsCommentData>('get_news_comment', commentId),
+      add: (newsId: string, authorSteamId: string, content: string) =>
+        this.select<string>(
+          'create_news_comment',
+          newsId,
+          authorSteamId,
+          content,
+        ),
+      edit: (commentId: string, content: string) =>
+        this.call('edit_news_comment', commentId, content),
+      delete: (commentId: string) =>
+        this.call('delete_news_comment', commentId),
+      reactions: {
+        get: (commentId: string) =>
+          this.select<ReactionData[]>('get_news_comment_reactions', commentId),
+        add: (commentId: string, steamId: string, reaction: ReactionName) =>
+          this.call('add_news_comment_reaction', commentId, steamId, reaction),
+        delete: (commentId: string, steamId: string, reaction: ReactionName) =>
+          this.call(
+            'delete_news_comment_reaction',
+            commentId,
+            steamId,
+            reaction,
+          ),
+      },
+    },
+    reactions: {
+      get: (newsId: string) =>
+        this.select<ReactionData[]>('get_news_reactions', newsId),
+      add: (newsId: string, steamId: string, reaction: ReactionName) =>
+        this.call('add_news_reaction', newsId, steamId, reaction),
+      delete: (newsId: string, steamId: string, reaction: ReactionName) =>
+        this.call('delete_news_reaction', newsId, steamId, reaction),
+    },
   };
 
   override async init() {
