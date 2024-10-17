@@ -29,7 +29,7 @@ const useStyles = createUseStyles({
     color: theme.fg1,
     fontSize: '0.75em',
     boxShadow: `0 0 0.25em ${theme.bgError}`,
-    animation: '$blink 3s infinite',
+    animation: '$blink 1s infinite',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -37,13 +37,10 @@ const useStyles = createUseStyles({
   },
   '@keyframes blink': {
     '0%': {
-      opacity: 1,
+      transform: 'scale(1) rotate(0deg)',
     },
-    '5%': {
-      opacity: 0,
-    },
-    '10%': {
-      opacity: 1,
+    '50%': {
+      transform: 'scale(1.5) rotate(-15deg)',
     },
   },
 });
