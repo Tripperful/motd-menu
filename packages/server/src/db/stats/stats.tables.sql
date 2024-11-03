@@ -54,6 +54,13 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE TABLE IF NOT EXISTS
+  client_custom_ranks (
+    steam_id bigint PRIMARY KEY,
+    rank text,
+    color int[3]
+  );
+
+CREATE TABLE IF NOT EXISTS
   matches (
     id uuid PRIMARY KEY,
     map_id int REFERENCES maps (id),

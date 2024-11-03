@@ -273,6 +273,42 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE FUNCTION get_client_custom_rank (steam_id text) RETURNS json AS $$ BEGIN RETURN json_build_object(
+  'rank',
+  client_custom_ranks.rank,
+  'color',
+  json_build_array(
+    client_custom_ranks.color[1],
+    client_custom_ranks.color[2],
+    client_custom_ranks.color[3]
+  )
+) FROM client_custom_ranks
+WHERE client_custom_ranks.steam_id = get_client_custom_rank.steam_id::bigint;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE set_client_custom_rank (steam_id text, rank text, color text) AS $$ BEGIN
+IF rank IS NOT NULL THEN
+  INSERT INTO client_custom_ranks (steam_id, rank, color)
+  VALUES (
+    steam_id::bigint,
+    rank,
+    ARRAY[
+      (color::json->>0)::int,
+      (color::json->>1)::int,
+      (color::json->>2)::int
+    ]
+  ) ON CONFLICT ON CONSTRAINT client_custom_ranks_pkey DO
+    UPDATE SET rank = EXCLUDED.rank, color = EXCLUDED.color;
+ELSE
+  DELETE FROM client_custom_ranks
+  WHERE client_custom_ranks.steam_id = steam_id::bigint;
+END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE PROCEDURE match_started (server_id int, match_data json) AS $$
 DECLARE
   map_id int;

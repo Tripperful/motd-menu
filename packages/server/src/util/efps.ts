@@ -19,6 +19,21 @@ const efpsUrl = (path: string, params?: Record<string, string>) => {
 };
 
 export const getEfpsRank = async (steamId: string) => {
+  const customRank = await db.client.getCustomRank(steamId);
+
+  if (customRank) {
+    return {
+      steamId,
+      points: 0,
+      rank: customRank.rank,
+      pos: 0,
+      max: 0,
+      r: customRank.color[0],
+      g: customRank.color[1],
+      b: customRank.color[2],
+    } as RankData;
+  }
+
   const steamIdLegacy = steamId64ToLegacy(steamId);
 
   try {

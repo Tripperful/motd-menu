@@ -149,6 +149,14 @@ export interface Database {
       set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;
     };
     saveCvars(steamId: string, cvars: Record<string, string>): Promise<void>;
+    getCustomRank(
+      steamId: string,
+    ): Promise<{ rank: string; color: [number, number, number] }>;
+    setCustomRank(
+      steamId: string,
+      rank: string,
+      color: [number, number, number],
+    ): Promise<void>;
   };
   server: {
     getById(serverId: number): Promise<ServerInfo>;

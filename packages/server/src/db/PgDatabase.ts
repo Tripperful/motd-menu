@@ -256,6 +256,25 @@ export class PgDatabase extends BasePgDatabase implements Database {
 
     saveCvars: (steamId: string, cvars: Record<string, string>) =>
       this.call('save_client_cvars', steamId, cvars),
+
+    getCustomRank: async (steamId: string) =>
+      this.select<{ rank: string; color: [number, number, number] }>(
+        'get_client_custom_rank',
+        steamId,
+      ),
+
+    setCustomRank: async (
+      steamId: string,
+      rank: string,
+      color: [number, number, number],
+    ) => {
+      await this.call(
+        'set_client_custom_rank',
+        steamId,
+        rank,
+        JSON.stringify(color),
+      );
+    },
   };
 
   server = {
