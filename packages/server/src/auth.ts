@@ -15,34 +15,51 @@ export interface MotdSessionData {
   permissions: Permission[];
 }
 
-const authVersion = '1';
+interface AuthCacheEntry {
+  ts: number;
+  auth: OnlinePlayerInfo;
+}
 
-const authCache: Record<string, OnlinePlayerInfo> = {};
+const authVersion = '1';
+const authCacheLifetime = 1000 * 60 * 60; // 1 hour
+const authCache: Record<string, AuthCacheEntry> = {};
 
 const getUserCredentials = async (
   token: string,
   srcds?: SrcdsWsApiClientType,
 ): Promise<OnlinePlayerInfo> => {
-  let auth = authCache[token];
+  try {
+    let tokenAuthCache = authCache[token];
 
-  if (!auth?.steamId) {
-    auth = { steamId: await db.server.devTokenAuth(token) };
-  }
-
-  if (!auth?.steamId) {
-    if (!srcds) {
-      throw 'Unauthorized';
+    if (tokenAuthCache) {
+      if (Date.now() - tokenAuthCache.ts < authCacheLifetime) {
+        return tokenAuthCache.auth;
+      } else {
+        delete authCache[token];
+      }
     }
-    auth = await srcds.request('motd_auth_request', token);
-  }
 
-  if (!auth?.steamId) {
+    const devTokenAuth: OnlinePlayerInfo = {
+      steamId: await db.server.devTokenAuth(token),
+    };
+
+    if (devTokenAuth?.steamId) {
+      authCache[token] = { ts: Date.now(), auth: devTokenAuth };
+      return devTokenAuth;
+    }
+
+    const srcdsAuth = await srcds.request('motd_auth_request', token);
+
+    if (srcdsAuth?.steamId) {
+      authCache[token] = { ts: Date.now(), auth: srcdsAuth };
+      return srcdsAuth;
+    }
+  } catch {
     delete authCache[token];
     throw 'Unauthorized';
   }
 
-  authCache[token] = auth;
-  return authCache[token];
+  return null;
 };
 
 export const dropAuthCache = (token: string) => {
