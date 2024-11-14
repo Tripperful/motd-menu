@@ -343,7 +343,7 @@ class MotdApi {
   }
 
   public async confirmReplacePlayer(whomSteamId: string) {
-    await this.post(`match/replaceConfirm/${whomSteamId}`);
+    await this.post(`match/rc/${whomSteamId}`);
   }
 
   public async getMatchResults(offset?: number, filters?: MatchFilters) {

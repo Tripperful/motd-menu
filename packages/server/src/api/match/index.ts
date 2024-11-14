@@ -163,7 +163,7 @@ matchRouter.post('/replace/:whomSteamId/:withWhomSteamId', async (req, res) => {
 
     srcds.send('motd_open', {
       clients: [withWhomSteamId],
-      url: `replaceConfirm/${steamId}/${whomSteamId}`,
+      url: `rc/${steamId}/${whomSteamId}`,
     });
 
     res.status(200).end();
@@ -173,7 +173,7 @@ matchRouter.post('/replace/:whomSteamId/:withWhomSteamId', async (req, res) => {
   }
 });
 
-matchRouter.post('/replaceConfirm/:whomSteamId', async (req, res) => {
+matchRouter.post('/rc/:whomSteamId', async (req, res) => {
   const { whomSteamId } = req.params;
   const {
     srcds,

@@ -125,7 +125,7 @@ export const Router: FC = () => {
           }
         />
         <Route
-          path="replaceConfirm/:initiatorSteamId/:whomSteamId"
+          path="rc/:initiatorSteamId/:whomSteamId"
           element={
             <Suspense>
               <ReplaceConfirm />
