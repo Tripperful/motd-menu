@@ -161,9 +161,16 @@ matchRouter.post('/replace/:whomSteamId/:withWhomSteamId', async (req, res) => {
       return res.status(400).end('The replacing player is not online');
     }
 
+    const profiles = await getPlayersProfiles([whomSteamId, withWhomSteamId]);
+
     srcds.send('motd_open', {
       clients: [withWhomSteamId],
       url: `rc/${steamId}/${whomSteamId}`,
+    });
+
+    srcds.send('chat_print', {
+      clients: [steamId],
+      text: `Waiting for ${profiles[withWhomSteamId]?.name ?? withWhomSteamId} to accept the replacement...`,
     });
 
     res.status(200).end();
@@ -184,7 +191,7 @@ matchRouter.post('/rc/:whomSteamId', async (req, res) => {
     const profiles = await getPlayersProfiles([whomSteamId, steamId]);
 
     srcds.send('run_command', {
-      commands: `mm_substitute ${whomSteamId} ${steamId} "${profiles[whomSteamId]?.name ?? whomSteamId}" "${profiles[steamId]?.name ?? steamId}"`,
+      commands: `mm_substitute ${whomSteamId} ${steamId} "${btoa(profiles[whomSteamId]?.name ?? whomSteamId)}" "${btoa(profiles[steamId]?.name ?? steamId)}"`,
     });
 
     res.status(200).end();
