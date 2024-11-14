@@ -181,8 +181,10 @@ matchRouter.post('/rc/:whomSteamId', async (req, res) => {
   } = res.locals;
 
   try {
+    const profiles = await getPlayersProfiles([whomSteamId, steamId]);
+
     srcds.send('run_command', {
-      commands: `mm_substitute ${whomSteamId} ${steamId}`,
+      commands: `mm_substitute ${whomSteamId} ${steamId} "${profiles[whomSteamId]?.name ?? whomSteamId}" "${profiles[steamId]?.name ?? steamId}"`,
     });
 
     res.status(200).end();
