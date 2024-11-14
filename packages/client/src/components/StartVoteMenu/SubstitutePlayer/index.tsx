@@ -239,13 +239,17 @@ const SubstitutePlayerContent: FC = () => {
           }}
         >
           Do you want to replace{' '}
-          <CopyOnClick
-            className={c.copy}
-            copyText={steamProfileLink(replacement.whom)}
-            what="Profile link"
-          >
-            {profiles[replacement.whom]?.name}
-          </CopyOnClick>{' '}
+          {replacement.whom === mySteamId ? (
+            'yourself'
+          ) : (
+            <CopyOnClick
+              className={c.copy}
+              copyText={steamProfileLink(replacement.whom)}
+              what="Profile link"
+            >
+              {profiles[replacement.whom]?.name}
+            </CopyOnClick>
+          )}{' '}
           {replacement.withWhom !== mySteamId && (
             <>
               {'with '}
