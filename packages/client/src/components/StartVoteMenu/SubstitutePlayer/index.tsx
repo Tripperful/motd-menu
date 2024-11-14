@@ -227,7 +227,14 @@ const SubstitutePlayerContent: FC = () => {
             setReplacement(undefined);
           }}
           onConfirm={() => {
-            motdApi.replaceMatchPlayer(replacement.whom, replacement.withWhom);
+            if (replacement.withWhom === mySteamId) {
+              motdApi.confirmReplacePlayer(replacement.whom);
+            } else {
+              motdApi.replaceMatchPlayer(
+                replacement.whom,
+                replacement.withWhom,
+              );
+            }
             motdApi.closeMenu();
           }}
         >

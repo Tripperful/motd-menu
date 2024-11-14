@@ -155,14 +155,6 @@ matchRouter.post('/replace/:whomSteamId/:withWhomSteamId', async (req, res) => {
       sessionData: { steamId },
     } = res.locals;
 
-    if (withWhomSteamId === steamId) {
-      srcds.send('run_command', {
-        commands: `mm_substitute ${whomSteamId} ${steamId}`,
-      });
-
-      return res.status(200).end();
-    }
-
     const onlinePlayers = await srcds.request('get_players_request');
 
     if (!onlinePlayers.some((p) => p.steamId === withWhomSteamId)) {
