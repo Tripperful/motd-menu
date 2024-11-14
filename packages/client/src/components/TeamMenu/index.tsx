@@ -22,16 +22,21 @@ export const TeamMenu: FC = () => {
 
   return (
     <>
-      <Menu
-        items={availableTeams.map((t) => ({
-          title: t.name,
-          link: t.joinIndex.toString(),
-          Icon: t.icon,
-          color: t.color,
-        }))}
-        title="Select your team"
-      />
       <Routes>
+        <Route
+          path="/*"
+          element={
+            <Menu
+              items={availableTeams.map((t) => ({
+                title: t.name,
+                link: t.joinIndex.toString(),
+                Icon: t.icon,
+                color: t.color,
+              }))}
+              title="Select your team"
+            />
+          }
+        />
         {availableTeams.map((t) => (
           <Route
             key={t.joinIndex}

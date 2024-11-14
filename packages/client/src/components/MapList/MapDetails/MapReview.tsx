@@ -174,12 +174,12 @@ export const MapReview: FC<{
 }> = ({ review, mapDetailsMode }) => {
   const c = useStyles();
 
-  const { mapName, rate, author, comment } = review;
+  const { mapName, rate, author, comment, steamId } = review;
 
   const canEditReviews = useCheckPermission('comments_edit');
-  const steamId = useMySteamId();
+  const mySteamId = useMySteamId();
 
-  const canDelete = steamId === review.steamId || canEditReviews;
+  const canDelete = mySteamId === steamId || canEditReviews;
 
   const onDeleteConfirm = async () => {
     try {

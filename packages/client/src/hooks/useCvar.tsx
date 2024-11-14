@@ -55,8 +55,10 @@ export const useCvar = (cvar: Cvar) => {
   );
 
   useMount(async () => {
-    setLoading(true);
     try {
+      if (cvars[cvar] == null) {
+        setLoading(true);
+      }
       const value = await fetchCvarDebounced(cvar);
       setCvarLocal(cvar, value);
     } finally {

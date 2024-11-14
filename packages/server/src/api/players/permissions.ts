@@ -16,7 +16,7 @@ permissionsRouter.get('/:steamId', async (req, res) => {
     const { steamId } = req.params;
     const result = (await db.permissions.get(steamId)) ?? [];
 
-    res.status(200).end(JSON.stringify(result));
+    res.status(200).json(result);
   } catch (e) {
     console.error(e);
     res.status(500).end();

@@ -1,5 +1,6 @@
 import React, { FC, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ReplaceConfirm } from '~components/common/ReplaceConfirm';
 import { Exit } from '~components/Exit';
 import { MainMenu } from '~components/MainMenu';
 import { TeamMenu } from '~components/TeamMenu';
@@ -39,6 +40,10 @@ const StreamerOverlay = React.lazy(
     import(
       /* webpackChunkName: "streamer-overlay" */ '~components/StreamerOverlay'
     ),
+);
+
+const StartVote = React.lazy(
+  () => import(/* webpackChunkName: "lazy-main" */ '~components/StartVoteMenu'),
 );
 
 export const Router: FC = () => {
@@ -108,6 +113,22 @@ export const Router: FC = () => {
           element={
             <Suspense>
               <Vote />
+            </Suspense>
+          }
+        />
+        <Route
+          path="startVote/*"
+          element={
+            <Suspense>
+              <StartVote />
+            </Suspense>
+          }
+        />
+        <Route
+          path="replaceConfirm/:initiatorSteamId/:whomSteamId"
+          element={
+            <Suspense>
+              <ReplaceConfirm />
             </Suspense>
           }
         />

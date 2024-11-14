@@ -10,7 +10,7 @@ newsReactionsRouter.get('/:newsId', async (req, res) => {
 
     const reactions = await db.news.reactions.get(newsId);
 
-    res.status(200).end(JSON.stringify(reactions));
+    res.status(200).json(reactions);
   } catch (e) {
     console.error(e);
     res.status(500).end();

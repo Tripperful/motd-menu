@@ -2,9 +2,7 @@ import classNames from 'classnames';
 import React, {
   FC,
   MouseEventHandler,
-  Suspense,
-  useLayoutEffect,
-  useState,
+  Suspense
 } from 'react';
 import { createPortal } from 'react-dom';
 import { createUseStyles } from 'react-jss';
@@ -28,7 +26,7 @@ export const usePopupStyles = createUseStyles({
     backgroundColor: theme.bg1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.5em',
+    gap: '1em',
     padding: '1em',
     borderRadius: '1em',
   },
@@ -54,12 +52,6 @@ export const Popup: FC<
     onClose: () => void;
   } & ClassNameProps
 > = ({ children, title, onClose, className }) => {
-  const [shown, setShown] = useState(false);
-
-  useLayoutEffect(() => {
-    setShown(true);
-  }, []);
-
   const c = usePopupStyles();
 
   const onBgClick: MouseEventHandler = (e) => {
@@ -68,23 +60,20 @@ export const Popup: FC<
     onClose();
   };
 
-  return (
-    shown &&
-    createPortal(
-      <div className={c.bg} onPointerDown={onBgClick}>
-        <div className={classNames(c.root, className)}>
-          <div className={c.header}>
-            <Suspense fallback="Loading...">
-              <div className={c.title}>{title}</div>
-            </Suspense>
-            <div className={c.closeButton} onClick={() => onClose()}>
-              <CloseIcon />
-            </div>
+  return createPortal(
+    <div className={c.bg} onPointerDown={onBgClick}>
+      <div className={classNames(c.root, className)}>
+        <div className={c.header}>
+          <Suspense fallback="Loading...">
+            <div className={c.title}>{title}</div>
+          </Suspense>
+          <div className={c.closeButton} onClick={() => onClose()}>
+            <CloseIcon />
           </div>
-          <Suspense fallback={<Spinner />}>{children}</Suspense>
         </div>
-      </div>,
-      document.getElementById('modalRoot'),
-    )
+        <Suspense fallback={<Spinner />}>{children}</Suspense>
+      </div>
+    </div>,
+    document.getElementById('modalRoot'),
   );
 };

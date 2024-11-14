@@ -46,6 +46,23 @@ export interface SetCvarData {
   value: string;
 }
 
+export const enum MatchState {
+  MatchChangelevel = 0,
+  NotMatch,
+  MatchCountdown,
+  MatchInProgress,
+  MatchInAutopause,
+  MatchPaused,
+  MatchPausedVoteInProgress,
+  PostMatch,
+}
+
+export interface MatchStateData {
+  state: MatchState;
+  matchGuid?: string;
+  participants?: string[];
+}
+
 export interface RunCommandData {
   commands: string;
 }

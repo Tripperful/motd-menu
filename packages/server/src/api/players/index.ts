@@ -26,7 +26,7 @@ playersRouter.get('/', async (_req, res) => {
       player.steamProfile = playerProfiles[player.steamId];
     }
 
-    res.status(200).end(JSON.stringify(Object.values(onlinePlayers)));
+    res.status(200).json(Object.values(onlinePlayers));
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -39,7 +39,7 @@ playersRouter.get('/:steamId', async (req, res) => {
 
     const playerProfile = await getPlayerProfile(steamId);
 
-    res.status(200).end(JSON.stringify(playerProfile));
+    res.status(200).json(playerProfile);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -52,7 +52,7 @@ playersRouter.get('/stats/:steamId', async (req, res) => {
 
     const efpsRank = await getEfpsRank(steamId);
 
-    res.status(200).end(JSON.stringify({ efpsRank }));
+    res.status(200).json({ efpsRank });
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -81,7 +81,7 @@ playersRouter.get('/smurfs/:steamId', async (req, res) => {
 
     const smurfs = (await db.client.getSmurfSteamIds(steamId)) ?? [];
 
-    res.status(200).end(JSON.stringify(smurfs));
+    res.status(200).json(smurfs);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -94,7 +94,7 @@ playersRouter.get('/names/:steamId', async (req, res) => {
 
     const names = (await db.client.getNames(steamId)) ?? [];
 
-    res.status(200).end(JSON.stringify(names));
+    res.status(200).json(names);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -106,7 +106,7 @@ playersRouter.get('/findByName/:name', async (req, res) => {
     const { name } = req.params;
 
     if (name.length < 3) {
-      return res.status(200).end(JSON.stringify([]));
+      return res.status(200).json([]);
     }
 
     const steamIds = await db.client.findByName(name);
@@ -114,7 +114,7 @@ playersRouter.get('/findByName/:name', async (req, res) => {
       ? Object.values(await getPlayersProfiles(steamIds))
       : [];
 
-    res.status(200).end(JSON.stringify(profiles));
+    res.status(200).json(profiles);
   } catch (e) {
     console.error(e);
     res.status(500).end();

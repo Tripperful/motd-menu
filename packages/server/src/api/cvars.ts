@@ -32,7 +32,7 @@ cvarsRouter.post('/get/:cvar?', async (req, res) => {
 
     const cvarsValues = await srcds.request('get_cvars_request', cvars);
 
-    res.status(200).end(JSON.stringify(cvarsValues));
+    res.status(200).json(cvarsValues);
   } catch (e) {
     console.error(e);
     res.status(500).end();

@@ -1,4 +1,4 @@
-import { SteamPlayerData } from '@motd-menu/common';
+import { errorSteamProfile, SteamPlayerData } from '@motd-menu/common';
 
 interface PlayerSummary {
   steamid: string;
@@ -21,14 +21,6 @@ const playersProfilesCache: Record<
     data: PlayerSummary;
   }
 > = {};
-
-const errorProfile = (steamId: string) =>
-  ({
-    steamId,
-    name: steamId,
-    avatar:
-      'https://avatars.akamai.steamstatic.com/fef49e7fa7e1997310d705b2a6158ff8dc1cdfeb_full.jpg',
-  }) as SteamPlayerData;
 
 export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
   try {
@@ -85,13 +77,13 @@ export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
           steamId,
           profile
             ? { steamId, name: profile.personaname, avatar: profile.avatarfull }
-            : errorProfile(steamId),
+            : errorSteamProfile(steamId),
         ];
       }),
     );
   } catch {
     return Object.fromEntries(
-      steamIds64.map((steamId) => [steamId, errorProfile(steamId)]),
+      steamIds64.map((steamId) => [steamId, errorSteamProfile(steamId)]),
     );
   }
 };
@@ -108,7 +100,7 @@ const flushProfiles = async () => {
     profiles = await getPlayersProfilesNoBatch(Array.from(profilesToFetch));
   } catch {
     profiles = Object.fromEntries(
-      Array.from(profilesToFetch).map((id) => [id, errorProfile(id)]),
+      Array.from(profilesToFetch).map((id) => [id, errorSteamProfile(id)]),
     );
   }
 
@@ -150,7 +142,7 @@ export const getPlayersProfiles = async (steamIds64: string[]) =>
 export const getPlayerProfile = async (steamId64: string) =>
   new Promise<SteamPlayerData>((resolve) => {
     profilesCallbacks.push((profiles) =>
-      resolve(profiles[steamId64] ?? errorProfile(steamId64)),
+      resolve(profiles[steamId64] ?? errorSteamProfile(steamId64)),
     );
     profilesToFetch.add(steamId64);
 

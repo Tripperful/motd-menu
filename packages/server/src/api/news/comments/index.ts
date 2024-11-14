@@ -12,7 +12,7 @@ newsCommentsRouter.get('/:newsId', async (req, res) => {
 
     const comments = await db.news.comments.get(newsId);
 
-    res.status(200).end(JSON.stringify(comments));
+    res.status(200).json(comments);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -29,7 +29,7 @@ newsCommentsRouter.post('/:newsId', async (req, res) => {
 
     const commentId = await db.news.comments.add(newsId, steamId, content);
 
-    res.status(200).end(JSON.stringify({ commentId }));
+    res.status(200).json({ commentId });
   } catch (e) {
     console.error(e);
     res.status(500).end();

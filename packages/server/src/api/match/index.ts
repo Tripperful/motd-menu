@@ -12,6 +12,18 @@ import { sanitizeCvarValue } from 'src/util';
 
 export const matchRouter = Router();
 
+matchRouter.get('/', async (req, res) => {
+  try {
+    const { srcds } = res.locals;
+    const result = await srcds.request('get_match_state_request');
+
+    res.status(200).json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
 matchRouter.get('/results/:offset?', async (req, res) => {
   try {
     const { offset } = req.params;
@@ -47,7 +59,7 @@ matchRouter.get('/results/:offset?', async (req, res) => {
       }
     }
 
-    res.status(200).end(JSON.stringify(result));
+    res.status(200).json(result);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -76,7 +88,7 @@ matchRouter.get('/:matchId', async (req, res) => {
       }
     }
 
-    res.status(200).end(JSON.stringify(result));
+    res.status(200).json(result);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -89,7 +101,7 @@ matchRouter.get('/deaths/:matchId', async (req, res) => {
 
     const result = await db.matches.getMatchDeaths(matchId);
 
-    res.status(200).end(JSON.stringify(result));
+    res.status(200).json(result);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -102,7 +114,7 @@ matchRouter.get('/damage/:matchId', async (req, res) => {
 
     const result = await db.matches.getMatchDamage(matchId);
 
-    res.status(200).end(JSON.stringify(result));
+    res.status(200).json(result);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -115,7 +127,7 @@ matchRouter.get('/accuracy/:matchId', async (req, res) => {
 
     const result = await db.matches.getMatchAccuracy(matchId);
 
-    res.status(200).end(JSON.stringify(result));
+    res.status(200).json(result);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -128,7 +140,60 @@ matchRouter.get('/misc/:matchId/:steamId', async (req, res) => {
 
     const result = await db.matches.getMiscPlayerStats(matchId, steamId);
 
-    res.status(200).end(JSON.stringify(result));
+    res.status(200).json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+matchRouter.post('/replace/:whomSteamId/:withWhomSteamId', async (req, res) => {
+  try {
+    const { whomSteamId, withWhomSteamId } = req.params;
+    const {
+      srcds,
+      sessionData: { steamId },
+    } = res.locals;
+
+    if (withWhomSteamId === steamId) {
+      srcds.send('run_command', {
+        commands: `mm_substitute ${whomSteamId} ${steamId}`,
+      });
+
+      return res.status(200).end();
+    }
+
+    const onlinePlayers = await srcds.request('get_players_request');
+
+    if (!onlinePlayers.some((p) => p.steamId === withWhomSteamId)) {
+      return res.status(400).end('The replacing player is not online');
+    }
+
+    srcds.send('motd_open', {
+      clients: [withWhomSteamId],
+      url: `replaceConfirm/${steamId}/${whomSteamId}`,
+    });
+
+    res.status(200).end();
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+matchRouter.post('/replaceConfirm/:whomSteamId', async (req, res) => {
+  const { whomSteamId } = req.params;
+  const {
+    srcds,
+    sessionData: { steamId },
+  } = res.locals;
+
+  try {
+    srcds.send('run_command', {
+      commands: `mm_substitute ${whomSteamId} ${steamId}`,
+    });
+
+    res.status(200).end();
   } catch (e) {
     console.error(e);
     res.status(500).end();

@@ -27,7 +27,7 @@ reviewsRouter.get('/:mapName', async (req, res) => {
       }
     }
 
-    res.status(200).end(JSON.stringify(reviews));
+    res.status(200).json(reviews);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -48,7 +48,7 @@ reviewsRouter.get('/player/:steamId', async (req, res) => {
       }
     }
 
-    res.status(200).end(JSON.stringify(reviews));
+    res.status(200).json(reviews);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -69,7 +69,7 @@ reviewsRouter.post('/:mapName', async (req, res) => {
     review.author = await getPlayerProfile(steamId);
     review.timestamp = Number(timestamp);
 
-    res.status(200).end(JSON.stringify(review));
+    res.status(200).json(review);
   } catch (e) {
     console.error(e);
     res.status(500).end();

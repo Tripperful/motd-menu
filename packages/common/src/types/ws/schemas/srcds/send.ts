@@ -5,6 +5,7 @@ import type {
   ChangeLevelData,
   ChatPrintData,
   ClientCexecData,
+  MatchStateData,
   MotdOpenData,
   RankData,
   RunCommandData,
@@ -24,6 +25,10 @@ export type SrcdsWsSendSchema = WsApiSchema<{
   get_maps_request: {
     resType: 'get_maps_response';
     resData: string[];
+  };
+  get_match_state_request: {
+    resType: 'get_match_state_response';
+    resData: MatchStateData;
   };
   get_players_request: {
     resType: 'get_players_response';
@@ -46,7 +51,7 @@ export type SrcdsWsSendSchema = WsApiSchema<{
   set_cvar: {
     reqData: SetCvarData;
   };
-  client_cexec: {
+  client_exec: {
     reqData: ClientCexecData;
   };
   rank_update: {

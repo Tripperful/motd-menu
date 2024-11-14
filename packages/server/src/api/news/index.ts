@@ -24,7 +24,7 @@ newsRouter.get('/previews/:offset', async (req, res) => {
       searchText,
     );
 
-    res.status(200).end(JSON.stringify(newsPreviews));
+    res.status(200).json(newsPreviews);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -40,7 +40,7 @@ newsRouter.get('/:id', async (req, res) => {
 
     const news = await db.news.getById(id, steamId);
 
-    res.status(200).end(JSON.stringify(news));
+    res.status(200).json(news);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -63,7 +63,7 @@ newsRouter.post('/', async (req, res) => {
     const newsId = await db.news.create(steamId, title, content);
     const news = await db.news.getById(newsId, steamId);
 
-    res.status(200).end(JSON.stringify(news));
+    res.status(200).json(news);
   } catch (e) {
     console.error(e);
     res.status(500).end();
@@ -87,7 +87,7 @@ newsRouter.put('/:id', async (req, res) => {
     await db.news.edit(id, title, content);
     const news = await db.news.getById(id, steamId);
 
-    res.status(200).end(JSON.stringify(news));
+    res.status(200).json(news);
   } catch (e) {
     console.error(e);
     res.status(500).end();

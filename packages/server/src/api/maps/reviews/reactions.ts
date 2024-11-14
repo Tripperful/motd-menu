@@ -14,7 +14,7 @@ mapsReviewsReactionsRouter.get(
         (await db.maps.reviews.reactions.get(mapName, reviewAuthorSteamId)) ??
         [];
 
-      res.status(200).end(JSON.stringify(reactions));
+      res.status(200).json(reactions);
     } catch {
       res.status(500).end();
     }

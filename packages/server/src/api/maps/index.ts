@@ -29,7 +29,7 @@ mapsRouter.get('/', async (_req, res) => {
       }
     }
 
-    res.status(200).end(JSON.stringify(mapPreviews));
+    res.status(200).json(mapPreviews);
   } catch (e) {
     console.error(e);
     res.status(500).end();

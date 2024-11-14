@@ -1,4 +1,8 @@
-import { getEditableCvars, getViewableCvars } from '@motd-menu/common';
+import {
+  cvarsInfo,
+  getEditableCvars,
+  getViewableCvars,
+} from '@motd-menu/common';
 import React, { FC, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
@@ -70,7 +74,9 @@ export const ServerSettings: FC = () => {
   const c = useStyles();
   const permissions = useMyPermissions();
 
-  const viewableCvars = getViewableCvars(permissions);
+  const viewableCvars = getViewableCvars(permissions).filter(
+    (cvar) => cvarsInfo[cvar].description != null,
+  );
   const editableCvars = getEditableCvars(permissions);
   const canRunCommands = permissions.includes('rcon');
 

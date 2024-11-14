@@ -26,7 +26,7 @@ menuRouter.post('/clientExec', async (req, res) => {
     } = res.locals;
 
     const { command } = req.body;
-    srcds.send('client_cexec', { steamId, command });
+    srcds.send('client_exec', { steamId, command });
 
     res.status(200).end();
   } catch (e) {

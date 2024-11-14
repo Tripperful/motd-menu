@@ -8,7 +8,7 @@ playerSettingsRouter.get('/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
-    res.status(200).end(JSON.stringify(await db.client.settings.get(steamId)));
+    res.status(200).json(await db.client.settings.get(steamId));
   } catch (e) {
     console.error(e);
     res.status(500).end();

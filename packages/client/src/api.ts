@@ -8,6 +8,7 @@ import {
   MatchDamageData,
   MatchDeathData,
   MatchFilters,
+  MatchStateData,
   MatchSummary,
   MiscPlayerMatchStats,
   NewsCommentData,
@@ -329,6 +330,20 @@ class MotdApi {
     await this.delete(
       `maps/reviews/reactions/${mapName}/${reviewAuthorSteamId}/${reaction}`,
     );
+  }
+
+  public async getMatchState() {
+    const res = await this.get('match');
+
+    return JSON.parse(res) as MatchStateData;
+  }
+
+  public async replaceMatchPlayer(fromSteamId: string, toSteamId: string) {
+    await this.post(`match/replace/${fromSteamId}/${toSteamId}`);
+  }
+
+  public async confirmReplacePlayer(whomSteamId: string) {
+    await this.post(`match/replaceConfirm/${whomSteamId}`);
   }
 
   public async getMatchResults(offset?: number, filters?: MatchFilters) {

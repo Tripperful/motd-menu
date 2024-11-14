@@ -1,6 +1,10 @@
 import { SteamPlayerData } from '@motd-menu/common';
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, {
+  forwardRef,
+  ForwardRefRenderFunction,
+  HTMLAttributes,
+} from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
 import { activeItem } from '~styles/elements';
@@ -37,13 +41,15 @@ export const useStyles = createUseStyles({
   },
 });
 
-export const PlayerItem: FC<
+export const PlayerItem = forwardRef<
+  HTMLDivElement,
   {
     profile: SteamPlayerData;
     link?: string;
     onClick?: (steamId: string) => void;
-  } & ClassNameProps
-> = ({ profile, className, ...action }) => {
+  } & HTMLAttributes<HTMLDivElement> &
+    ClassNameProps
+>(({ profile, className, link, onClick, ...attrs }, ref) => {
   const c = useStyles();
 
   const content = (
@@ -56,7 +62,6 @@ export const PlayerItem: FC<
     </>
   );
 
-  const { link, onClick } = action;
   const cn = classNames(c.root, { [c.active]: link || onClick }, className);
 
   return link ? (
@@ -65,10 +70,12 @@ export const PlayerItem: FC<
     </Link>
   ) : (
     <div
+      ref={ref}
       className={cn}
       onClick={onClick ? () => onClick(profile.steamId) : null}
+      {...attrs}
     >
       {content}
     </div>
   );
-};
+});

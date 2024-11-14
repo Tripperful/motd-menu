@@ -10,7 +10,7 @@ mapsReactionsRouter.get('/:mapName', async (req, res) => {
   try {
     const reactions = (await db.maps.reactions.get(mapName)) ?? [];
 
-    res.status(200).end(JSON.stringify(reactions));
+    res.status(200).json(reactions);
   } catch (e) {
     console.error(e);
     res.status(500).end();

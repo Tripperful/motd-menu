@@ -11,6 +11,7 @@ const useStyles = createUseStyles({
     position: 'absolute',
     transform: 'translate(-50%, -50%)',
     borderRadius: '100em',
+    transition: 'transform 0.25s',
   },
   '@keyframes popin': popin,
   button: {

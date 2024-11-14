@@ -1,44 +1,29 @@
 import React, { useMemo, useState } from 'react';
-import { createUseStyles } from 'react-jss';
-import { Popup } from '~components/common/Popup';
-import { outlineButton } from '~styles/elements';
+import { ConfirmDialog } from '~components/common/ConfirmDialog';
 
-const useStyles = createUseStyles({
-  content: {
-    display: 'flex',
-    gap: '1em',
-  },
-  actionButton: {
-    ...outlineButton(),
-    flex: '1 1 100%',
-  },
-});
-
-export const useConfirmDialog = (title: string, onConfirm: () => void) => {
-  const c = useStyles();
+export const useConfirmDialog = (
+  title: string,
+  onConfirm: () => void,
+  onCancel?: () => void,
+) => {
   const [show, setShow] = useState(false);
 
   const dialogElement = useMemo(
     () =>
       show && (
-        <Popup title={title} onClose={() => setShow(false)}>
-          <div className={c.content}>
-            <div className={c.actionButton} onClick={() => setShow(false)}>
-              No
-            </div>
-            <div
-              className={c.actionButton}
-              onClick={() => {
-                setShow(false);
-                onConfirm();
-              }}
-            >
-              Yes
-            </div>
-          </div>
-        </Popup>
+        <ConfirmDialog
+          title={title}
+          onConfirm={() => {
+            setShow(false);
+            onConfirm();
+          }}
+          onCancel={() => {
+            setShow(false);
+            onCancel?.();
+          }}
+        />
       ),
-    [c.actionButton, c.content, onConfirm, show, title],
+    [onConfirm, show, title],
   );
 
   return [dialogElement, () => setShow(true)] as const;

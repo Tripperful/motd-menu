@@ -50,7 +50,7 @@ export type Cvar =
   | 'mp_forcerespawn'
   | 'mp_timelimit'
   | 'mp_fraglimit'
-  | 'mm_match'
+  | 'mp_match'
   | 'mm_equalizer'
   | 'mm_overtime'
   | 'mm_hotbolt_fix'
@@ -60,6 +60,7 @@ export type Cvar =
   | 'mm_esp_teammates'
   | 'mm_rpg_spawn_time';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface BoolCvarProps {}
 
 export interface NumberCvarProps {
@@ -87,7 +88,7 @@ export type CvarProps =
 export type CvarType = CvarProps['type'];
 
 export type CvarInfo = {
-  description: string;
+  description?: string;
   permissions: CvarPermissions;
   executeBeforeMatch?: boolean;
   mockValue: string;
@@ -122,7 +123,11 @@ const registeredCvarsInfo: Record<Cvar, CvarInfo> = {
     permissions: adminEditPermissions,
     mockValue: '0',
   },
-  mm_match: null, // Don't show in the UI
+  mp_match: {
+    type: 'bool',
+    permissions: matchmakingPermissions,
+    mockValue: '0',
+  },
   mm_equalizer: {
     description: 'Equalizer',
     type: 'bool',
@@ -278,7 +283,7 @@ const registeredCvarsInfo: Record<Cvar, CvarInfo> = {
 };
 
 export const cvarsInfo = Object.fromEntries(
-  Object.entries(registeredCvarsInfo).filter(([cvar, info]) => Boolean(info)),
+  Object.entries(registeredCvarsInfo).filter(([, info]) => Boolean(info)),
 ) as Record<Cvar, CvarInfo>;
 
 const getAccessibleCvars = (

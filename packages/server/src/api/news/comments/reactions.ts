@@ -10,7 +10,7 @@ newsCommentsReactionsRouter.get('/:commentId', async (req, res) => {
 
     const reactions = await db.news.comments.reactions.get(commentId);
 
-    res.status(200).end(JSON.stringify(reactions));
+    res.status(200).json(reactions);
   } catch (e) {
     console.error(e);
     res.status(500).end();
