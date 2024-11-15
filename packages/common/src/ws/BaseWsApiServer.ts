@@ -100,12 +100,19 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
 
           clearTimeout(timeout);
           resolve(client);
+
+          this.onClientConnected(client);
         } catch (e) {
           console.error(e);
         }
       });
     });
   }
+
+  protected async onClientConnected(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    client: BaseWsApiClient<TWsSendSchema, TClientInfo>,
+  ) {}
 
   getClient(
     clientIdOrWs: string | WebSocket,

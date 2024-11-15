@@ -8,7 +8,7 @@ import {
 import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
-import { sanitizeCvarValue } from 'src/util';
+import { chatColor, sanitizeCvarValue } from 'src/util';
 
 export const matchRouter = Router();
 
@@ -170,7 +170,7 @@ matchRouter.post('/replace/:whomSteamId/:withWhomSteamId', async (req, res) => {
 
     srcds.send('chat_print', {
       clients: [steamId],
-      text: `Waiting for ${profiles[withWhomSteamId]?.name ?? withWhomSteamId} to accept the replacement...`,
+      text: `${chatColor.Info}Waiting for ${chatColor.Value}${profiles[withWhomSteamId]?.name ?? withWhomSteamId}${chatColor.Info} to accept the replacement...`,
     });
 
     res.status(200).end();

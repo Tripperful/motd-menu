@@ -7,6 +7,7 @@ import type {
 import { BaseWsApiServer } from '@motd-menu/common';
 import type { IncomingMessage } from 'http';
 import { db } from 'src/db';
+import { chatColor } from 'src/util';
 
 export class SrcdsWsApiServer extends BaseWsApiServer<
   SrcdsWsRecvSchema,
@@ -37,6 +38,34 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
       clientId: `SRCDS (${serverInfo.id}) ${serverInfo.name}`,
       clientInfo: serverInfo,
     };
+  }
+
+  protected override async onClientConnected(client: SrcdsWsApiClientType) {
+    try {
+      const onlinePlayers = await client.request('get_players_request');
+      const playersPermissions = Object.fromEntries(
+        await Promise.all(
+          onlinePlayers.map(
+            async (player) =>
+              [
+                player.steamId,
+                await db.permissions.get(player.steamId),
+              ] as const,
+          ),
+        ),
+      );
+
+      const devsSteamIds = onlinePlayers
+        .filter((player) => playersPermissions[player.steamId].includes('dev'))
+        .map((player) => player.steamId);
+
+      if (devsSteamIds.length > 0) {
+        client.send('chat_print', {
+          clients: devsSteamIds,
+          text: `${chatColor.MOTD}[MOTD] ${chatColor.Allow}Connected`,
+        });
+      }
+    } catch {}
   }
 
   public static getInstace() {
