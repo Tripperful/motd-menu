@@ -6,7 +6,9 @@ import { motdApi } from 'src/api';
 import { setMapDetails, useMapDetails } from 'src/hooks/state/mapDetails';
 import { addNotification } from 'src/hooks/state/notifications';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
+import { useCvar } from 'src/hooks/useCvar';
 import { SidePanel } from '~components/common/SidePanel';
+import { Spinner } from '~components/common/Spinner';
 import HeartEmptyIcon from '~icons/heart-outline.svg';
 import HeartIcon from '~icons/heart.svg';
 import PencilIcon from '~icons/pencil.svg';
@@ -15,11 +17,10 @@ import { outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { EditDescriptionPopup } from './EditDescriptionPopup';
 import { MapImages } from './MapImages';
+import { MapReactions } from './MapReactions';
 import { MapReviews } from './MapReviews';
 import { MapTags } from './MapTags';
 import { OtherVersions } from './OtherVersions';
-import { MapReactions } from './MapReactions';
-import { Spinner } from '~components/common/Spinner';
 
 const useStyles = createUseStyles({
   root: {
@@ -205,6 +206,10 @@ export const MapDetails: FC<MapDetailsProps> = ({
     motdApi.closeMenu();
   };
 
+  const [mmPublic] = useCvar('mm_public');
+  const isPublic = mmPublic === '1';
+  const canChangeMap = useCheckPermission('pub_change_maps') || !isPublic;
+
   return (
     <SidePanel
       backPath={backPath}
@@ -220,10 +225,12 @@ export const MapDetails: FC<MapDetailsProps> = ({
           <Suspense>
             <FavButton mapName={mapName} />
           </Suspense>
-          <div className={c.actionButton} onClick={onRunMapClick}>
-            Run map
-            <ArrowRightIcon />
-          </div>
+          {canChangeMap && (
+            <div className={c.actionButton} onClick={onRunMapClick}>
+              Run map
+              <ArrowRightIcon />
+            </div>
+          )}
         </div>
       </div>
     </SidePanel>

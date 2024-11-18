@@ -58,7 +58,8 @@ export type Cvar =
   | 'mm_shotgun_spread_angle'
   | 'mm_shotgun_tracehull_size'
   | 'mm_esp_teammates'
-  | 'mm_rpg_spawn_time';
+  | 'mm_rpg_spawn_time'
+  | 'mm_public';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface BoolCvarProps {}
@@ -279,6 +280,12 @@ const registeredCvarsInfo: Record<Cvar, CvarInfo> = {
     max: 300,
     permissions: matchmakingPermissions,
     mockValue: '20',
+  },
+  mm_public: {
+    description: 'Public mode',
+    type: 'bool',
+    permissions: adminEditPermissions,
+    mockValue: '0',
   },
 };
 

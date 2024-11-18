@@ -200,8 +200,17 @@ mapsRouter.post('/changelevel/:mapName', async (req, res) => {
   try {
     const {
       srcds,
-      sessionData: { token, steamId },
+      sessionData: { token, steamId, permissions },
     } = res.locals;
+
+    const { mm_public } = await srcds.request('get_cvars_request', [
+      'mm_public',
+    ]);
+    const isPublic = mm_public === '1';
+
+    if (isPublic && !permissions.includes('pub_change_maps')) {
+      return res.status(403).end();
+    }
 
     const { mapName } = req.params;
 
