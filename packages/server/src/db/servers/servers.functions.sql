@@ -1,18 +1,23 @@
 CREATE
-OR REPLACE FUNCTION server_json (server servers) RETURNS json AS $$ BEGIN RETURN json_build_object(
-  'id',
-  server.id,
-  'ip',
-  server.ip::text,
-  'port',
-  server.port,
-  'name',
-  server.name,
-  'blocked',
-  server.blocked,
-  'isDev',
-  server.is_dev
-);
+OR REPLACE FUNCTION server_json (server servers) RETURNS json AS $$ BEGIN
+RETURN (
+  CASE WHEN server IS NULL THEN NULL
+  ELSE
+  json_build_object(
+    'id',
+    server.id,
+    'ip',
+    server.ip::text,
+    'port',
+    server.port,
+    'name',
+    server.name,
+    'blocked',
+    server.blocked,
+    'isDev',
+    server.is_dev
+  )
+END);
 END;
 $$ LANGUAGE plpgsql;
 
