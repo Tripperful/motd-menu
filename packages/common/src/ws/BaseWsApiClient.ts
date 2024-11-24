@@ -7,6 +7,7 @@ export class BaseWsApiClient<TWsSendSchema, TClientInfo>
   implements WsApiClient<TWsSendSchema, TClientInfo>
 {
   private requests: Record<string, (data: any) => void> = {};
+  private connectedTimestamp = Date.now();
 
   constructor(
     private id: string,
@@ -24,6 +25,10 @@ export class BaseWsApiClient<TWsSendSchema, TClientInfo>
 
   getInfo(): TClientInfo {
     return this.info;
+  }
+
+  getConnectedDuration(): number {
+    return Date.now() - this.connectedTimestamp;
   }
 
   send(type: string, data?: unknown, guid?: string): void {

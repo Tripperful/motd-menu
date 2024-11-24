@@ -1,5 +1,6 @@
 import './config';
-import './ws/servers/srcds';
+import './ws/servers';
+
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import express from 'express';
@@ -7,12 +8,13 @@ import expressStaticGzip from 'express-static-gzip';
 import http from 'http';
 import https from 'https';
 import path from 'path';
+
+import { BaseWsApiServer } from '@motd-menu/common';
 import { WebSocketServer } from 'ws';
 import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
 import { EfpsWatchdog } from './util/efps';
-import { SrcdsWsApiServer } from './ws/servers/srcds/SrcdsWsApiServer';
 
 const app = express();
 
@@ -81,8 +83,6 @@ if (process.env.MOTD_WEB_PORT_HTTPS) {
 
 console.log('Connecting to database...');
 
-const wsApiServers = [SrcdsWsApiServer.getInstace()];
-
 db.init().then(() => {
   console.log('Database initialized');
 
@@ -98,10 +98,17 @@ db.init().then(() => {
     const wsServer = new WebSocketServer({ noServer: true });
 
     server.on('upgrade', async (req, socket, head) => {
-      for (const wsApiServer of wsApiServers) {
-        const client = await wsApiServer.onUpgrade(req, socket, head, wsServer);
+      for (const wsApiServer of BaseWsApiServer.getRegisteredWsApiServers()) {
+        if (wsApiServer.canHandleUpgrade(req)) {
+          const client = await wsApiServer.onUpgrade(
+            req,
+            socket,
+            head,
+            wsServer,
+          );
 
-        if (client) break;
+          if (client) break;
+        }
       }
     });
 

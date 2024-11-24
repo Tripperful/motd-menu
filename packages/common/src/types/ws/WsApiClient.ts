@@ -1,10 +1,10 @@
+import type { WebSocket } from 'ws';
 import type {
   WsFetchRequestType,
   WsQueryRequestType,
   WsSendDataActionType,
   WsSignalActionType,
 } from './util';
-import type { WebSocket } from 'ws';
 
 /**
  * WebSocket API client
@@ -24,6 +24,11 @@ export interface WsApiClient<TWsSendSchema = unknown, TClientInfo = unknown> {
    * Returns the client info
    */
   getInfo(): TClientInfo;
+
+  /**
+   * Returns the duration in milliseconds this client has been connected
+   */
+  getConnectedDuration(): number;
 
   /**
    * Send a signal message

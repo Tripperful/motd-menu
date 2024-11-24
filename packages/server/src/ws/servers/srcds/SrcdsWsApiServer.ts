@@ -16,13 +16,27 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
 > {
   private static instance: SrcdsWsApiServer;
 
-  public async authenticate(req: IncomingMessage) {
+  private getAuthParams(req: IncomingMessage) {
     const searchParams = new URL(req.url, `http://${req.headers.host}`)
       ?.searchParams;
 
     const auth = searchParams?.get('auth')?.toLowerCase();
     const sessionId = searchParams?.get('guid');
     const versionHash = searchParams?.get('ver');
+
+    if (auth && sessionId) {
+      return { auth, sessionId, versionHash };
+    }
+
+    return null;
+  }
+
+  public canHandleUpgrade(req: IncomingMessage) {
+    return !!this.getAuthParams(req);
+  }
+
+  public async authenticate(req: IncomingMessage) {
+    const { auth, sessionId, versionHash } = this.getAuthParams(req);
     const ip = req.socket.remoteAddress.split(':').pop();
     const port = req.socket.remotePort;
 
@@ -71,11 +85,7 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
   public static getInstace() {
     this.instance ??= new SrcdsWsApiServer();
 
-    return this.instance as WsApiServer<
-      SrcdsWsRecvSchema,
-      SrcdsWsSendSchema,
-      ServerInfo
-    >;
+    return this.instance;
   }
 }
 

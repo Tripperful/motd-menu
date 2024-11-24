@@ -1,0 +1,2 @@
+import './motd';
+import './srcds';

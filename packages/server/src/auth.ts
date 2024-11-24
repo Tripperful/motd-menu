@@ -1,4 +1,5 @@
 import { OnlinePlayerInfo, Permission } from '@motd-menu/common';
+import type { Request } from 'express';
 import { RequestHandler } from 'express';
 import { db } from './db';
 import { dbgWarn, logDbgInfo } from './util';
@@ -24,7 +25,7 @@ const authVersion = '1';
 const authCacheLifetime = 1000 * 60 * 60; // 1 hour
 const authCache: Record<string, AuthCacheEntry> = {};
 
-const getUserCredentials = async (
+export const getMotdUserCredentials = async (
   token: string,
   srcds?: SrcdsWsApiClientType,
 ): Promise<OnlinePlayerInfo> => {
@@ -66,12 +67,19 @@ export const dropAuthCache = (token: string) => {
   delete authCache[token];
 };
 
+export const getMotdReqAuthParams = (req: Request) => {
+  const reqAuthVersion = req.cookies?.version ?? authVersion;
+  const cookie = reqAuthVersion === authVersion ? req.cookies : null;
+  const token: string = (req.query?.token as string) ?? cookie?.token;
+  const remoteId: string = (req.query?.guid as string) ?? cookie?.remoteId;
+
+  return { reqAuthVersion, cookie, token, remoteId };
+};
+
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   try {
-    const reqAuthVersion = req.cookies?.version ?? authVersion;
-    const cookie = reqAuthVersion === authVersion ? req.cookies : null;
-    const token: string = (req.query?.token as string) ?? cookie?.token;
-    const remoteId: string = (req.query?.guid as string) ?? cookie?.remoteId;
+    const { reqAuthVersion, cookie, token, remoteId } =
+      getMotdReqAuthParams(req);
 
     if (!token) {
       dbgWarn(
@@ -99,7 +107,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       res.locals.srcds = srcds;
     }
 
-    const { steamId, userId } = await getUserCredentials(token, srcds);
+    const { steamId, userId } = await getMotdUserCredentials(token, srcds);
     const permissions = await db.permissions.get(steamId);
 
     res.locals.sessionData = {

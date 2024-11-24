@@ -1,4 +1,6 @@
-import type { WebSocketServer, WebSocket } from 'ws';
+import type { IncomingMessage } from 'http';
+import type { Duplex } from 'stream';
+import type { WebSocket, WebSocketServer } from 'ws';
 import type {
   WsFetchRequestType,
   WsQueryRequestType,
@@ -7,8 +9,6 @@ import type {
   WsSignalActionType,
 } from './util';
 import type { WsApiClient } from './WsApiClient';
-import type { IncomingMessage } from 'http';
-import type { Duplex } from 'stream';
 
 /**
  * WebSocket API server
@@ -18,6 +18,23 @@ export interface WsApiServer<
   TWsSendSchema = unknown,
   TClientInfo = unknown,
 > {
+  /**
+   * Check if this server is supposed to handle this type of upgrade request
+   */
+  canHandleUpgrade(req: IncomingMessage): boolean;
+
+  /**
+   * Authenticate a client
+   *
+   * @param req Incoming HTTP request
+   *
+   * @returns Client ID if successful, otherwise null
+   */
+  authenticate(req: IncomingMessage): Promise<{
+    clientId: string;
+    clientInfo: TClientInfo;
+  }>;
+
   /**
    * Authenticate a client and connect them if successful
    */

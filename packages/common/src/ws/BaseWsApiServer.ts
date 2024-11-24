@@ -13,6 +13,22 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
     {};
   private subscriptions: Record<string, ((...args: any[]) => Promise<any>)[]> =
     {};
+  private static wsApiServers: WsApiServer[] = [];
+
+  public static registerWsApiServer<TServer extends WsApiServer<any, any, any>>(
+    wsApiServer: TServer,
+  ) {
+    this.wsApiServers.push(wsApiServer);
+  }
+
+  public static getRegisteredWsApiServers() {
+    return this.wsApiServers;
+  }
+
+  /**
+   * Check if this server is supposed to handle this type of upgrade request
+   */
+  public abstract canHandleUpgrade(req: http.IncomingMessage): boolean;
 
   /**
    * Authenticate a client
@@ -23,7 +39,7 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
    */
   public abstract authenticate(req: http.IncomingMessage): Promise<{
     clientId: string;
-    clientInfo: any;
+    clientInfo: TClientInfo;
   }>;
 
   onUpgrade(

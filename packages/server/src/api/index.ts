@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { cvarsRouter } from './cvars';
+import { debugRouter } from './debug';
 import { logRouter } from './log';
 import { mapsRouter } from './maps';
 import { matchRouter } from './match';
@@ -21,4 +22,5 @@ api.use('/cvars', cvarsRouter);
 api.use('/match', matchRouter);
 api.use('/srcds', srcdsRouter);
 api.use('/news', newsRouter);
+api.use('/debug', debugRouter);
 api.use((_, res) => res.status(400).end());
