@@ -104,5 +104,9 @@ db.init().then(() => {
         if (client) break;
       }
     });
+
+    server.on('error', (err) => {
+      console.error('WS server error:', err);
+    });
   });
 });
