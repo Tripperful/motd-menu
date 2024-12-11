@@ -31,7 +31,7 @@ export type SrcdsWsRecvSchema = WsApiSchema<{
   get_settings_request: {
     reqData: string;
     resType: 'get_settings_response';
-    resData: ClientSettingsData & { aka: string };
+    resData: ClientSettingsData & { aka: string; geo: string };
   };
   set_settings: {
     reqData: SetSettingsData;

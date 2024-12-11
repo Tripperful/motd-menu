@@ -1653,3 +1653,14 @@ OR REPLACE FUNCTION get_not_sent_to_efps () RETURNS json AS $$ BEGIN
   AND matches.status = 'completed';
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_last_client_ip (steam_id text) RETURNS text AS $$ BEGIN
+  RETURN (
+    SELECT host(ip)
+    FROM client_connections
+    ORDER BY connected DESC
+    LIMIT 1
+  );
+END;
+$$ LANGUAGE plpgsql;

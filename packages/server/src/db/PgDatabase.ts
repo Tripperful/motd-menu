@@ -207,6 +207,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
       }
     },
     getAka: (steamId: string) => this.select<string>('client_get_aka', steamId),
+    getLastIp: (steamId: string) =>
+      this.select<string>('get_last_client_ip', steamId),
 
     settings: {
       get: async (steamId: string) => {

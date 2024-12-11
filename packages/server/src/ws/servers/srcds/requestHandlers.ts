@@ -1,5 +1,6 @@
 import { db } from 'src/db';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
+import geoip from 'geoip-lite';
 
 const srcdsWsServer = SrcdsWsApiServer.getInstace();
 
@@ -27,6 +28,9 @@ srcdsWsServer.onRequest('get_settings_request', async (srcds, data) => {
   } = await db.client.settings.get(data);
 
   const aka = (await db.client.getAka(data)) ?? '';
+  const lastIp = (await db.client.getLastIp(data)) ?? '';
+  const geoData = geoip.lookup(lastIp);
+  const geo = geoData ? `${geoData.city}, ${geoData.country}` : '';
 
   return {
     type: 'get_settings_response',
@@ -41,6 +45,7 @@ srcdsWsServer.onRequest('get_settings_request', async (srcds, data) => {
       killsound: killSound ? 1 : 0,
       kevlarsound: kevlarSound ? 1 : 0,
       aka,
+      geo,
     },
   };
 });

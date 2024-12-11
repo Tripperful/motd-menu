@@ -85,7 +85,11 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
   public static getInstace() {
     this.instance ??= new SrcdsWsApiServer();
 
-    return this.instance;
+    return this.instance as WsApiServer<
+      SrcdsWsRecvSchema,
+      SrcdsWsSendSchema,
+      ServerInfo
+    >;
   }
 }
 

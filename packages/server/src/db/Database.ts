@@ -157,6 +157,7 @@ export interface Database {
       rank: string,
       color: [number, number, number],
     ): Promise<void>;
+    getLastIp(steamId: string): Promise<string>;
   };
   server: {
     getById(serverId: number): Promise<ServerInfo>;

@@ -24,5 +24,6 @@ declare namespace NodeJS {
     MOTD_SSL_CERT: string;
     MOTD_SSL_PRIVATE_KEY: string;
     MOTD_EFPS_KEY: string;
+    MOTD_MAXMIND_LICENSE_KEY: string;
   }
 }
