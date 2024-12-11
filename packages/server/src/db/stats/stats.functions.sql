@@ -1659,6 +1659,7 @@ OR REPLACE FUNCTION get_last_client_ip (steam_id text) RETURNS text AS $$ BEGIN
   RETURN (
     SELECT host(ip)
     FROM client_connections
+    WHERE client_connections.steam_id = get_last_client_ip.steam_id::bigint
     ORDER BY connected DESC
     LIMIT 1
   );
