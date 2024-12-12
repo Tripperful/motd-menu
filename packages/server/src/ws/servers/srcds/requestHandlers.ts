@@ -1,6 +1,7 @@
 import { db } from 'src/db';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
 import geoip from 'geoip-lite';
+import { countryNameByCode } from 'src/util/countries';
 
 const srcdsWsServer = SrcdsWsApiServer.getInstace();
 
@@ -30,7 +31,13 @@ srcdsWsServer.onRequest('get_settings_request', async (srcds, data) => {
   const aka = (await db.client.getAka(data)) ?? '';
   const lastIp = (await db.client.getLastIp(data)) ?? '';
   const geoData = geoip.lookup(lastIp);
-  const geo = geoData ? `${geoData.city}, ${geoData.country}` : '';
+
+  let geo = '';
+
+  if (geoData?.country) {
+    const countryName = countryNameByCode[geoData.country];
+    geo = `${geoData.city ?? 'Unknown City'}, ${countryName ?? 'Unknown Country'}`;
+  }
 
   return {
     type: 'get_settings_response',
