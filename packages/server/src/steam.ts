@@ -1,4 +1,5 @@
-import { errorSteamProfile, SteamPlayerData } from '@motd-menu/common';
+import { errorSteamProfile, GeoData, SteamPlayerData } from '@motd-menu/common';
+import { getPlayerGeoData } from './util/countries';
 
 interface PlayerSummary {
   steamid: string;
@@ -24,6 +25,7 @@ const playersProfilesCache: Record<
 
 export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
   try {
+    const geoBySteamId: Record<string, GeoData> = {};
     const profilesBySteamId: Record<string, PlayerSummary> = {};
 
     let cachedSteamIds: string[] = [];
@@ -47,8 +49,8 @@ export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
       (_, i) => uncachedSteamIds.slice(i * 100, i * 100 + 100),
     );
 
-    await Promise.all(
-      batches.map((batch) =>
+    await Promise.all([
+      ...batches.map((batch) =>
         fetch(
           `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${
             process.env.MOTD_STEAM_API_KEY
@@ -67,7 +69,12 @@ export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
             }
           }),
       ),
-    );
+      ...steamIds64.map((steamId) =>
+        getPlayerGeoData(steamId).then((geo) => {
+          geoBySteamId[steamId] = geo;
+        }),
+      ),
+    ]);
 
     return Object.fromEntries(
       steamIds64.map((steamId) => {
@@ -76,7 +83,12 @@ export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
         return [
           steamId,
           profile
-            ? { steamId, name: profile.personaname, avatar: profile.avatarfull }
+            ? {
+                steamId,
+                name: profile.personaname,
+                avatar: profile.avatarfull,
+                geo: geoBySteamId[steamId],
+              }
             : errorSteamProfile(steamId),
         ];
       }),
