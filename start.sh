@@ -6,7 +6,7 @@ if [ ! -d "/motd-menu" ]; then
   git clone --recursive https://github.com/Tripperful/motd-menu.git
   cd /motd-menu
   echo "Installing packages..."
-  npm ci
+  npm i
   echo "Building..."
   npm run build
 fi
@@ -30,7 +30,7 @@ while :; do
     echo "Remote changed, pulling changes and re-building"
     git reset --hard origin/master
     echo "Installing packages..."
-    npm ci
+    npm i
     echo "Building..."
     npm run build
     echo "Stopping the server..."
