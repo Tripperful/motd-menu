@@ -1,8 +1,8 @@
-import React, { FC, Suspense } from 'react';
+import React, { FC } from 'react';
+import { createUseStyles } from 'react-jss';
 import { useMySteamId } from 'src/hooks/useMySteamId';
 import { Page } from '~components/common/Page';
 import { PlayerSettings } from '~components/common/PlayerSettings';
-import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({
   root: {

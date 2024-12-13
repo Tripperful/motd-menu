@@ -1,6 +1,6 @@
 import { Permission } from '@motd-menu/common';
 import debounce from 'lodash/debounce';
-import React, { FC, Suspense, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useMyPermissions } from 'src/hooks/state/permissions';

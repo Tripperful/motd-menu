@@ -1,14 +1,12 @@
-import React, { useMemo, useState } from 'react';
-import { FC } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { MatchKillFeed } from './MatchKillFeed';
 import { useMatchDeaths } from 'src/hooks/state/matchDeaths';
-import { MatchDeathData } from '@motd-menu/common';
 import { itemNameToIconGlyph } from 'src/util/iconGlyph';
 import { Toggle } from '~components/common/Toggle';
-import EyeIcon from '~icons/eye.svg';
 import EyeCrossedIcon from '~icons/eye-crossed.svg';
+import EyeIcon from '~icons/eye.svg';
 import { outlineButton } from '~styles/elements';
+import { MatchKillFeed } from './MatchKillFeed';
 
 const useStyles = createUseStyles({
   root: {

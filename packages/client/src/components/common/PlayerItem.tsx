@@ -1,10 +1,6 @@
 import { SteamPlayerData } from '@motd-menu/common';
 import classNames from 'classnames';
-import React, {
-  forwardRef,
-  ForwardRefRenderFunction,
-  HTMLAttributes,
-} from 'react';
+import React, { forwardRef, HTMLAttributes } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
 import { activeItem } from '~styles/elements';

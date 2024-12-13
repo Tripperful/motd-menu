@@ -82,7 +82,6 @@ srcdsWsServer.onMessage('client_cvars', async (srcds, data) => {
   await db.client.saveCvars(steamId, cvars);
 });
 
-
 srcdsWsServer.onMessage('set_settings', async (srcds, data) => {
   const { steamId, settings: s } = data;
 

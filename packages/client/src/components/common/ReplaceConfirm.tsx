@@ -46,7 +46,6 @@ const ReplaceConfirmContent: FC<{
 };
 
 export const ReplaceConfirm: FC = () => {
-  const c = useStyles();
   const { initiatorSteamId, whomSteamId } = useParams();
 
   const onConfirm = () => {

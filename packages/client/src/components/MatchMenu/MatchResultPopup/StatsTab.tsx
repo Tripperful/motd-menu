@@ -1,5 +1,4 @@
 import { MatchSummaryTeam, MatchSummaryTeamPlayer } from '@motd-menu/common';
-import { WeaponType } from '@motd-menu/common/src/types/weapons';
 import React, { FC, Fragment, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
@@ -13,17 +12,13 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { useMatchAccuracy } from 'src/hooks/state/matchAccuracy';
 import { useMatchDamage } from 'src/hooks/state/matchDamage';
 import { useMatchDeaths } from 'src/hooks/state/matchDeaths';
 import { useMatchResult } from 'src/hooks/state/matchResults';
 import { getContrastingColor } from 'src/util/color';
-import { itemNameToIconGlyph } from 'src/util/iconGlyph';
 import { teamInfoByIdx } from 'src/util/teams';
-import { CopyOnClick } from '~components/common/CopyOnClick';
 import { Flag } from '~components/common/Flag';
-import LinkIcon from '~icons/link.svg';
-import { activeItem, outlineButton } from '~styles/elements';
+import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({

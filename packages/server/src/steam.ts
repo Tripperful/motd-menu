@@ -28,8 +28,8 @@ export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
     const geoBySteamId: Record<string, GeoData> = {};
     const profilesBySteamId: Record<string, PlayerSummary> = {};
 
-    let cachedSteamIds: string[] = [];
-    let uncachedSteamIds: string[] = [];
+    const cachedSteamIds: string[] = [];
+    const uncachedSteamIds: string[] = [];
 
     for (const steamId of steamIds64) {
       const cache = playersProfilesCache[steamId];

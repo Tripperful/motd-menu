@@ -1,9 +1,5 @@
 import classNames from 'classnames';
-import React, {
-  FC,
-  MouseEventHandler,
-  Suspense
-} from 'react';
+import React, { FC, MouseEventHandler, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { createUseStyles } from 'react-jss';
 import CloseIcon from '~icons/close.svg';

@@ -1,11 +1,10 @@
+import classNames from 'classnames';
 import React, { FC, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
+import { useParams } from 'react-router-dom';
 import { useGlobalStyles } from '~styles/global';
 import { PlayerOverlayItem } from './PlayerOverlayItem';
 import { useDelayedStreamFrame } from './useDelayedStreamFrame';
-import { useParams } from 'react-router-dom';
-import { OnlinePlayerInfo } from '@motd-menu/common';
-import classNames from 'classnames';
 
 const useStyles = createUseStyles({
   root: {

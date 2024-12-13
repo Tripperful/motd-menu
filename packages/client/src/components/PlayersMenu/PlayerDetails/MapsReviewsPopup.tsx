@@ -1,4 +1,4 @@
-import React, { FC, Suspense, useState } from 'react';
+import React, { FC, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Routes, useParams } from 'react-router-dom';
 import { usePlayerSteamProfile } from 'src/hooks/state/players';

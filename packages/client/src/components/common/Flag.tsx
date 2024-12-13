@@ -1,5 +1,5 @@
 import { CountryCode } from '@motd-menu/common';
-import React, { FC, Suspense } from 'react';
+import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({

@@ -9,7 +9,6 @@ import React, {
 import { createUseStyles } from 'react-jss';
 import { useMapPreview } from 'src/hooks/state/mapPreviews';
 import placeholderSrc from '~assets/map.png';
-import { Spinner } from './Spinner';
 
 const useStyles = createUseStyles({
   root: {

@@ -1,11 +1,10 @@
-import React, { FC, Suspense, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
 import { useOnlineServers } from 'src/hooks/state/onlineServers';
 import { useOnlineServersMaps } from 'src/hooks/state/onlineServersMaps';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { Popup } from '~components/common/Popup';
-import { Spinner } from '~components/common/Spinner';
 import { activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
 

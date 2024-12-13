@@ -30,7 +30,7 @@ export const getMotdUserCredentials = async (
   srcds?: SrcdsWsApiClientType,
 ): Promise<OnlinePlayerInfo> => {
   try {
-    let tokenAuthCache = authCache[token];
+    const tokenAuthCache = authCache[token];
 
     if (tokenAuthCache) {
       if (Date.now() - tokenAuthCache.ts < authCacheLifetime) {
