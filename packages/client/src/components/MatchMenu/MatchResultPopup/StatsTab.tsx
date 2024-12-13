@@ -21,6 +21,7 @@ import { getContrastingColor } from 'src/util/color';
 import { itemNameToIconGlyph } from 'src/util/iconGlyph';
 import { teamInfoByIdx } from 'src/util/teams';
 import { CopyOnClick } from '~components/common/CopyOnClick';
+import { Flag } from '~components/common/Flag';
 import LinkIcon from '~icons/link.svg';
 import { activeItem, outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
@@ -103,11 +104,13 @@ const MatchTeamPlayer: FC<{
 }> = ({ player }) => {
   const c = useStyles();
   const { profile } = player;
+  const countryCode = profile.geo?.countryCode;
 
   return (
     <>
       <Link to={`player/${player.steamId}`} className={c.player}>
         <img src={profile.avatar} className={c.avatar} />
+        {countryCode && <Flag code={countryCode} />}
         <span>{profile.name}</span>
       </Link>
       <span className={c.alignCenter}>{player.kills}</span>

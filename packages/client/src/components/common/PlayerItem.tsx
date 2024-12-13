@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { ClassNameProps } from '~types/props';
+import { Flag } from './Flag';
 
 export const useStyles = createUseStyles({
   root: {
@@ -36,6 +37,11 @@ export const useStyles = createUseStyles({
     flexDirection: 'column',
     gap: '0.5em',
   },
+  nameWrapper: {
+    display: 'flex',
+    gap: '0.5em',
+    alignItems: 'center',
+  },
   steamId: {
     fontSize: '0.8em',
   },
@@ -51,12 +57,16 @@ export const PlayerItem = forwardRef<
     ClassNameProps
 >(({ profile, className, link, onClick, ...attrs }, ref) => {
   const c = useStyles();
+  const countryCode = profile.geo?.countryCode;
 
   const content = (
     <>
       <img className={c.avatar} src={profile.avatar} />
       <div className={c.playerInfo}>
-        <div>{profile.name}</div>
+        <div className={c.nameWrapper}>
+          {countryCode && <Flag code={countryCode} />}
+          {profile.name}
+        </div>
         <div className={c.steamId}>{profile.steamId}</div>
       </div>
     </>

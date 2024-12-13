@@ -1,7 +1,9 @@
+import { CountryCode } from '../util/countries';
+
 export interface GeoData {
   city: string;
   country: string;
-  countryCode: string;
+  countryCode: CountryCode;
   full: string;
 }
 

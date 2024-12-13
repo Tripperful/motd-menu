@@ -9,6 +9,7 @@ import {
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { steamProfileLink } from 'src/util';
+import { Flag } from '~components/common/Flag';
 import { IFramePopup } from '~components/common/IFramePopup';
 import { LineWithCopy } from '~components/common/LineWithCopy';
 import { PlayerSettings } from '~components/common/PlayerSettings';
@@ -26,6 +27,7 @@ import { PlayerTimePlayed } from './PlayerTimePlayed';
 import { SetAkaPopup } from './SetAkaPopup';
 import { SetPlayerTeam } from './SetPlayerTeam';
 import { SmurfsPopup } from './SmurfsPopup';
+import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
   root: {
@@ -52,9 +54,7 @@ const useStyles = createUseStyles({
   },
   playerName: {
     fontSize: '1.2em',
-  },
-  steamId: {
-    fontSize: '1em',
+    color: theme.fg1,
   },
   profileButtons: {
     display: 'flex',
@@ -64,6 +64,9 @@ const useStyles = createUseStyles({
   },
   profileButton: {
     ...outlineButton(),
+  },
+  value: {
+    color: theme.fg1,
   },
 });
 
@@ -91,6 +94,8 @@ const PlayerDetailsContent: FC = () => {
   const profileLink = steamProfileLink(player.steamId);
   const canViewPermissions = useCheckPermission('permissions_view');
   const canEditTeam = useCheckPermission('teams_others_edit') && isOnline;
+  const countryCode = player.geo?.countryCode;
+  const lastGeo = player.geo?.full;
 
   return (
     <>
@@ -102,16 +107,16 @@ const PlayerDetailsContent: FC = () => {
             copyText={player.name}
             what="Player's name"
           >
+            {countryCode && <Flag code={countryCode} />}
             {player.name}
             <PlayerAka steamId={steamId} />
           </LineWithCopy>
           <LineWithCopy
-            className={c.steamId}
             copyText={player.steamId}
             what="Player's Steam ID"
             link={{ url: profileLink, copy: true, open: true }}
           >
-            Steam ID: {player.steamId}
+            Steam ID: <span className={c.value}>{player.steamId}</span>
           </LineWithCopy>
           <div className={c.profileButtons}>
             <Link className={c.profileButton} to="smurfs">
@@ -130,6 +135,11 @@ const PlayerDetailsContent: FC = () => {
         </div>
       </div>
       <PlayerTimePlayed steamId={steamId} />
+      {lastGeo && (
+        <div>
+          Last connected from: <span className={c.value}>{lastGeo}</span>
+        </div>
+      )}
       {canEditTeam && <SetPlayerTeam steamId={steamId} />}
       <PlayerStats steamId={steamId} />
       <div className={c.playerInfoList}>
