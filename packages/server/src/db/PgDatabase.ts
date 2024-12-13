@@ -27,6 +27,7 @@ import {
   PlayerDamageData,
   PlayerDeathData,
   PlayerRespawnData,
+  PlayerSubstitutionData,
   ProjectileBounceData,
   ProjectileDeathData,
   ProjectileLifetimeResetData,
@@ -319,6 +320,8 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.call('projectile_lifetime_reset', data),
     entityTeleport: (data: EntityTeleportData) =>
       this.call('entity_teleport', data),
+    playerSubstitution: (data: PlayerSubstitutionData) =>
+      this.call('player_substitution', data),
   };
 
   matches = {

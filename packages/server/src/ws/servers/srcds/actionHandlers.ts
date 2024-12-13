@@ -203,3 +203,7 @@ srcdsWsServer.onMessage('projectile_lifetime_reset', (srcds, data) =>
 srcdsWsServer.onMessage('ent_teleport', (srcds, data) =>
   db.matchStats.entityTeleport(data),
 );
+
+srcdsWsServer.onMessage('player_substitution', (srcds, data) =>
+  db.matchStats.playerSubstitution(data),
+);

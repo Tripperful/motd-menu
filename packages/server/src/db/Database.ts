@@ -27,6 +27,7 @@ import {
   PlayerDamageData,
   PlayerDeathData,
   PlayerRespawnData,
+  PlayerSubstitutionData,
   ProjectileBounceData,
   ProjectileDeathData,
   ProjectileLifetimeResetData,
@@ -185,6 +186,7 @@ export interface Database {
     projectileOwnerChange(data: ProjectileOwnerChangeData): Promise<void>;
     projectileLifetimeReset(data: ProjectileLifetimeResetData): Promise<void>;
     entityTeleport(data: EntityTeleportData): Promise<void>;
+    playerSubstitution(data: PlayerSubstitutionData): Promise<void>;
   };
   matches: {
     get(

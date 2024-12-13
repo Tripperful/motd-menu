@@ -344,3 +344,13 @@ CREATE TABLE IF NOT EXISTS
     is_secondary BOOLEAN,
     attack_type TEXT
   );
+
+CREATE TABLE IF NOT EXISTS
+  player_substitutions (
+    id SERIAL PRIMARY KEY,
+    match_id uuid REFERENCES matches (id) ON DELETE CASCADE,
+    tick int,
+    curtime float,
+    from_steam_id bigint,
+    to_steam_id bigint
+  );

@@ -1072,6 +1072,30 @@ OR REPLACE PROCEDURE entity_teleport (teleport_data json) AS $$ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
+CREATE
+OR REPLACE PROCEDURE player_substitution (substitution_data json) AS $$ BEGIN
+  IF NOT EXISTS ( -- Don't save if not tied to an existing match
+    SELECT FROM matches m WHERE m.id = (substitution_data->>'id')::uuid
+  ) THEN
+    RETURN;
+  END IF;
+  INSERT INTO player_substitutions (
+    match_id,
+    tick,
+    curtime,
+    from_steam_id,
+    to_steam_id
+  ) VALUES (
+    (teleport_data->>'id')::uuid,
+    (teleport_data->>'tick')::int,
+    (teleport_data->>'curtime')::float,
+    (teleport_data->>'oldPlayer')::bigint,
+    (teleport_data->>'newPlayer')::bigint
+  );
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE
 OR REPLACE FUNCTION match_json (match matches) RETURNS json AS $$ BEGIN RETURN json_build_object(
   'id',

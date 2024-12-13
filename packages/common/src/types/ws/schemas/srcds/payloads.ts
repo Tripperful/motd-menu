@@ -321,3 +321,8 @@ export interface EntityTeleportData extends BaseStatsData {
   prevPos: Vec3;
   newPos: Vec3;
 }
+
+export interface PlayerSubstitutionData {
+  oldPlayer: string;
+  newPlayer: string;
+}

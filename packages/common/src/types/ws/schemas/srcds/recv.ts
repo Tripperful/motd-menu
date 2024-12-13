@@ -18,6 +18,7 @@ import type {
   PlayerDeathData,
   PlayerDisconnectedData,
   PlayerRespawnData,
+  PlayerSubstitutionData,
   ProjectileBounceData,
   ProjectileDeathData,
   ProjectileLifetimeResetData,
@@ -114,5 +115,8 @@ export type SrcdsWsRecvSchema = WsApiSchema<{
   };
   ent_teleport: {
     reqData: EntityTeleportData;
+  };
+  player_substitution: {
+    reqData: PlayerSubstitutionData;
   };
 }>;
