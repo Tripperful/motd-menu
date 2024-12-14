@@ -42,7 +42,7 @@ srcdsWsServer.onRequest('get_settings_request', async (srcds, data) => {
       killsound: killSound ? 1 : 0,
       kevlarsound: kevlarSound ? 1 : 0,
       aka,
-      geo: (await getPlayerGeoData(data))?.full,
+      geo: (await getPlayerGeoData(data))?.full ?? '',
     },
   };
 });
