@@ -287,8 +287,10 @@ matchRouter.get('/efps/:matchId', async (req, res) => {
     const efpsStats = await db.matches.getEfpsStats(matchId);
 
     if (efpsStats) {
-      res.status(200).json(efpsStats);
+      return res.status(200).json(efpsStats);
     }
+
+    res.status(404).end();
   } catch (e) {
     console.error(e);
     res.status(500).end();
