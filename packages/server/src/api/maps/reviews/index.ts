@@ -9,6 +9,7 @@ reviewsRouter.use('/reactions', mapsReviewsReactionsRouter);
 
 reviewsRouter.get('/:mapName', async (req, res) => {
   const { mapName } = req.params;
+  const { permissions } = res.locals.sessionData;
 
   try {
     const reviews = (await db.maps.reviews.get(mapName)) ?? [];
@@ -20,7 +21,10 @@ reviewsRouter.get('/:mapName', async (req, res) => {
         authorsSteamIds.add(review.steamId);
       }
 
-      const authors = await getPlayersProfiles([...authorsSteamIds]);
+      const authors = await getPlayersProfiles(
+        [...authorsSteamIds],
+        permissions.includes('view_city'),
+      );
 
       for (const review of reviews) {
         review.author = authors[review.steamId];
@@ -36,12 +40,16 @@ reviewsRouter.get('/:mapName', async (req, res) => {
 
 reviewsRouter.get('/player/:steamId', async (req, res) => {
   const { steamId } = req.params;
+  const { permissions } = res.locals.sessionData;
 
   try {
     const reviews = (await db.maps.reviews.getByAuthor(steamId)) ?? [];
 
     if (reviews.length > 0) {
-      const author = await getPlayerProfile(steamId);
+      const author = await getPlayerProfile(
+        steamId,
+        permissions.includes('view_city'),
+      );
 
       for (const review of reviews) {
         review.author = author;
@@ -57,6 +65,7 @@ reviewsRouter.get('/player/:steamId', async (req, res) => {
 
 reviewsRouter.post('/:mapName', async (req, res) => {
   const { mapName } = req.params;
+  const { permissions } = res.locals.sessionData;
   const review: MapReviewData = req.body;
 
   const steamId = res.locals.sessionData.steamId;
@@ -66,7 +75,10 @@ reviewsRouter.post('/:mapName', async (req, res) => {
     const timestamp = await db.maps.reviews.set(mapName, review);
 
     review.mapName = mapName;
-    review.author = await getPlayerProfile(steamId);
+    review.author = await getPlayerProfile(
+      steamId,
+      permissions.includes('view_city'),
+    );
     review.timestamp = Number(timestamp);
 
     res.status(200).json(review);

@@ -28,6 +28,7 @@ matchRouter.get('/results/:offset?', async (req, res) => {
   try {
     const { offset } = req.params;
     const { mapName, players, serverName, matchStatuses } = req.query;
+    const { permissions } = res.locals.sessionData;
 
     const filters: MatchFilters = {};
 
@@ -49,7 +50,10 @@ matchRouter.get('/results/:offset?', async (req, res) => {
       ),
     ];
 
-    const profiles = await getPlayersProfiles(playersSteamIds);
+    const profiles = await getPlayersProfiles(
+      playersSteamIds,
+      permissions.includes('view_city'),
+    );
 
     for (const match of result.data) {
       for (const team of match.teams) {
@@ -69,6 +73,7 @@ matchRouter.get('/results/:offset?', async (req, res) => {
 matchRouter.get('/:matchId', async (req, res) => {
   try {
     const { matchId } = req.params;
+    const { permissions } = res.locals.sessionData;
 
     const result = await db.matches.get(matchId);
 
@@ -80,7 +85,10 @@ matchRouter.get('/:matchId', async (req, res) => {
       ),
     ];
 
-    const profiles = await getPlayersProfiles(playersSteamIds);
+    const profiles = await getPlayersProfiles(
+      playersSteamIds,
+      permissions.includes('view_city'),
+    );
 
     for (const team of result.teams) {
       for (const player of team.players) {

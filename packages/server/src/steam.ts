@@ -134,7 +134,10 @@ const debounceProfilesFetch = () => {
   fetchTimeout = setTimeout(flushProfiles, 100);
 };
 
-export const getPlayersProfiles = async (steamIds64: string[]) =>
+export const getPlayersProfiles = async (
+  steamIds64: string[],
+  includeCity = false,
+) =>
   new Promise<Record<string, SteamPlayerData>>((resolve) => {
     for (const id of steamIds64) {
       profilesToFetch.add(id);
@@ -145,17 +148,42 @@ export const getPlayersProfiles = async (steamIds64: string[]) =>
         steamIds64.map((id) => [id, profiles[id]]),
       );
 
+      if (!includeCity) {
+        for (const profile of Object.values(requestedProfiles)) {
+          if (profile.geo?.city) {
+            profile.geo = {
+              country: profile.geo.country,
+              countryCode: profile.geo.countryCode,
+              full: profile.geo.country,
+            };
+          }
+        }
+      }
+
       resolve(requestedProfiles);
     });
 
     debounceProfilesFetch();
   });
 
-export const getPlayerProfile = async (steamId64: string) =>
+export const getPlayerProfile = async (
+  steamId64: string,
+  includeCity = false,
+) =>
   new Promise<SteamPlayerData>((resolve) => {
-    profilesCallbacks.push((profiles) =>
-      resolve(profiles[steamId64] ?? errorSteamProfile(steamId64)),
-    );
+    profilesCallbacks.push((profiles) => {
+      const profile = profiles[steamId64] ?? errorSteamProfile(steamId64);
+
+      if (!includeCity && profile.geo?.city) {
+        profile.geo = {
+          country: profile.geo.country,
+          countryCode: profile.geo.countryCode,
+          full: profile.geo.country,
+        };
+      }
+
+      resolve(profile);
+    });
     profilesToFetch.add(steamId64);
 
     debounceProfilesFetch();

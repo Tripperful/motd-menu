@@ -16,6 +16,7 @@ export const permissionDescriptions = {
   news_publish: 'Publish news',
   rcon: 'Run server concommands via the menu',
   streamer: 'Allow streamer overlay',
+  view_city: "View players' cities",
   dev: 'Developer',
 };
 

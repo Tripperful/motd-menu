@@ -14,12 +14,16 @@ playersRouter.use('/settings', playerSettingsRouter);
 
 playersRouter.get('/', async (_req, res) => {
   try {
-    const { srcds } = res.locals;
+    const {
+      srcds,
+      sessionData: { permissions },
+    } = res.locals;
 
     const onlinePlayers = (await srcds.request('get_players_request')) ?? [];
 
     const playerProfiles = await getPlayersProfiles(
       onlinePlayers.map((p) => p.steamId),
+      permissions.includes('view_city'),
     );
 
     for (const player of onlinePlayers) {
@@ -36,8 +40,12 @@ playersRouter.get('/', async (_req, res) => {
 playersRouter.get('/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
+    const { permissions } = res.locals.sessionData;
 
-    const playerProfile = await getPlayerProfile(steamId);
+    const playerProfile = await getPlayerProfile(
+      steamId,
+      permissions.includes('view_city'),
+    );
 
     res.status(200).json(playerProfile);
   } catch (e) {
@@ -104,6 +112,7 @@ playersRouter.get('/names/:steamId', async (req, res) => {
 playersRouter.get('/findByName/:name', async (req, res) => {
   try {
     const { name } = req.params;
+    const { permissions } = res.locals.sessionData;
 
     if (name.length < 3) {
       return res.status(200).json([]);
@@ -111,7 +120,9 @@ playersRouter.get('/findByName/:name', async (req, res) => {
 
     const steamIds = await db.client.findByName(name);
     const profiles = steamIds?.length
-      ? Object.values(await getPlayersProfiles(steamIds))
+      ? Object.values(
+          await getPlayersProfiles(steamIds, permissions.includes('view_city')),
+        )
       : [];
 
     res.status(200).json(profiles);
