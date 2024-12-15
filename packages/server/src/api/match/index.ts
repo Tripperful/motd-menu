@@ -274,3 +274,23 @@ matchRouter.post('/start', async (req, res) => {
     res.status(500).end();
   }
 });
+
+matchRouter.get('/efps/:matchId', async (req, res) => {
+  try {
+    const { permissions } = res.locals.sessionData;
+    const { matchId } = req.params;
+
+    if (!permissions.includes('dev')) {
+      return res.status(403).end();
+    }
+
+    const efpsStats = await db.matches.getEfpsStats(matchId);
+
+    if (efpsStats) {
+      res.status(200).json(efpsStats);
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
