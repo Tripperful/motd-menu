@@ -52,7 +52,7 @@ const defaultSettings: PlayerClientSettings = {
   magnumZoomFov: 0,
   crossbowZoomFov: 20,
   drawViewmodel: true,
-  esp: false,
+  esp: true,
   dsp: true,
   hitSound: true,
   killSound: true,
