@@ -1087,11 +1087,11 @@ OR REPLACE PROCEDURE player_substitution (substitution_data json) AS $$ BEGIN
     from_steam_id,
     to_steam_id
   ) VALUES (
-    (teleport_data->>'id')::uuid,
-    (teleport_data->>'tick')::int,
-    (teleport_data->>'curtime')::float,
-    (teleport_data->>'oldPlayer')::bigint,
-    (teleport_data->>'newPlayer')::bigint
+    (substitution_data->>'id')::uuid,
+    (substitution_data->>'tick')::int,
+    (substitution_data->>'curtime')::float,
+    (substitution_data->>'oldPlayer')::bigint,
+    (substitution_data->>'newPlayer')::bigint
   );
 END;
 $$ LANGUAGE plpgsql;
