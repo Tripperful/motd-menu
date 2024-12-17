@@ -32,11 +32,18 @@ export const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
+    overflow: 'hidden',
   },
   nameWrapper: {
     display: 'flex',
     gap: '0.5em',
     alignItems: 'center',
+  },
+  name: {
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    minWidth: 0,
   },
   steamId: {
     fontSize: '0.8em',
@@ -61,7 +68,7 @@ export const PlayerItem = forwardRef<
       <div className={c.playerInfo}>
         <div className={c.nameWrapper}>
           {countryCode && <Flag code={countryCode} />}
-          {profile.name}
+          <span className={c.name}>{profile.name}</span>
         </div>
         <div className={c.steamId}>{profile.steamId}</div>
       </div>
