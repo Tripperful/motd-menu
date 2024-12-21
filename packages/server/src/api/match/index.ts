@@ -2,6 +2,7 @@ import {
   Cvar,
   MatchFilters,
   StartMatchSettings,
+  base64encode,
   cvarsInfo,
   matchCvars,
 } from '@motd-menu/common';
@@ -198,8 +199,15 @@ matchRouter.post('/rc/:whomSteamId', async (req, res) => {
   try {
     const profiles = await getPlayersProfiles([whomSteamId, steamId]);
 
+    const whomNameEncoded = base64encode(
+      profiles[whomSteamId]?.name ?? whomSteamId,
+    );
+    const withWhomNameEncoded = base64encode(
+      profiles[steamId]?.name ?? steamId,
+    );
+
     srcds.send('run_command', {
-      commands: `mm_substitute ${whomSteamId} ${steamId} "${btoa(profiles[whomSteamId]?.name ?? whomSteamId)}" "${btoa(profiles[steamId]?.name ?? steamId)}"`,
+      commands: `mm_substitute ${whomSteamId} ${steamId} "${whomNameEncoded}" "${withWhomNameEncoded}"`,
     });
 
     res.status(200).end();
