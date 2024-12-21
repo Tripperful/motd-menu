@@ -16,7 +16,6 @@ import button9 from '~assets/game/sound/buttons/button9.wav';
 import friend_join from '~assets/game/sound/friends/friend_join.wav';
 import message from '~assets/game/sound/friends/message.wav';
 import squashed from '~assets/game/sound/npc/antlion_grub/squashed.wav';
-import aheli_crash_alert2 from '~assets/game/sound/npc/attack_helicopter/aheli_crash_alert2.wav';
 import alert2 from '~assets/game/sound/npc/crow/alert2.wav';
 import alert3 from '~assets/game/sound/npc/crow/alert3.wav';
 import pain1 from '~assets/game/sound/npc/crow/pain1.wav';
@@ -80,7 +79,6 @@ export const srcdsAssets = {
     friend_join,
     message,
     squashed,
-    aheli_crash_alert2,
     alert2,
     alert3,
     pain1,

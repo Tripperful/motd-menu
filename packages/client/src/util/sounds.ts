@@ -35,9 +35,6 @@ export const hitSounds = {
   friend_join: assetPathToSrcdsSoundPath(srcdsAssets.sounds.friend_join),
   message: assetPathToSrcdsSoundPath(srcdsAssets.sounds.message),
   squashed: assetPathToSrcdsSoundPath(srcdsAssets.sounds.squashed),
-  aheli_crash_alert2: assetPathToSrcdsSoundPath(
-    srcdsAssets.sounds.aheli_crash_alert2,
-  ),
   alert2: assetPathToSrcdsSoundPath(srcdsAssets.sounds.alert2),
   alert3: assetPathToSrcdsSoundPath(srcdsAssets.sounds.alert3),
   pain1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.pain1),
@@ -115,7 +112,6 @@ export const hitSoundNames: Record<HitSoundType, string> = {
   friend_join: 'friend_join',
   message: 'message',
   squashed: 'squashed',
-  aheli_crash_alert2: 'aheli_crash_alert2',
   alert2: 'alert2',
   alert3: 'alert3',
   pain1: 'pain1',
