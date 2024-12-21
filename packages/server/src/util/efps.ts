@@ -1,5 +1,4 @@
-import { steamId64ToLegacy } from '@motd-menu/common';
-import { RankData } from '@motd-menu/common/src/types/ws/schemas/srcds/payloads';
+import { steamId64ToLegacy, RankData } from '@motd-menu/common';
 import { db } from 'src/db';
 import { dbgErr } from '.';
 import { colorByRank } from './ranks';

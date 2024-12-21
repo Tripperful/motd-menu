@@ -1,4 +1,4 @@
-import { WeaponType } from '@motd-menu/common/src/types/weapons';
+import { WeaponType } from '@motd-menu/common';
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useMatchAccuracy } from 'src/hooks/state/matchAccuracy';

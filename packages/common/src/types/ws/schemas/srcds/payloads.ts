@@ -1,4 +1,4 @@
-import { HitSoundPathsData } from 'src/types/players';
+import { HitSoundPathsData } from '../../../players';
 import type { Cvar } from '../../../../cvars';
 import type { WeaponType } from '../../../weapons';
 
