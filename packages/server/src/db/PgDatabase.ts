@@ -47,7 +47,7 @@ import { BasePgDatabase } from './BasePgDatabase';
 import { Database } from './Database';
 import { LogEventType } from './LogEventType';
 
-const defaultSettings: PlayerClientSettings = {
+export const defaultSettings: PlayerClientSettings = {
   fov: 90,
   magnumZoomFov: 0,
   crossbowZoomFov: 20,
@@ -220,17 +220,19 @@ export class PgDatabase extends BasePgDatabase implements Database {
 
         const settings: PlayerClientSettings = {
           ...defaultSettings,
-          ...storedSettings,
+          ...(storedSettings ?? {}),
         };
 
-        for (const key of Object.keys(settings.hitSoundPaths)) {
-          if (!settings.hitSoundPaths[key]) {
-            delete settings.hitSoundPaths[key];
+        if (settings.hitSoundPaths) {
+          for (const key of Object.keys(settings.hitSoundPaths)) {
+            if (!settings.hitSoundPaths[key]) {
+              delete settings.hitSoundPaths[key];
+            }
           }
-        }
 
-        if (Object.keys(settings.hitSoundPaths).length === 0) {
-          delete settings.hitSoundPaths;
+          if (Object.keys(settings.hitSoundPaths).length === 0) {
+            delete settings.hitSoundPaths;
+          }
         }
 
         return settings;
