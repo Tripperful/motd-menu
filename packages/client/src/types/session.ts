@@ -4,5 +4,6 @@ export interface SessionData {
   steamId: string;
   userId?: number;
   permissions: Permission[];
+  volume?: number;
   // tgConnected: boolean;
 }

@@ -14,6 +14,14 @@ export interface OnlinePlayerInfo {
   steamProfile?: SteamPlayerData;
 }
 
+export interface HitSoundPathsData {
+  head?: string;
+  body?: string;
+  kill?: string;
+  hskill?: string;
+  teamkill?: string;
+}
+
 export interface PlayerClientSettings {
   hitSound: boolean;
   killSound: boolean;
@@ -24,4 +32,5 @@ export interface PlayerClientSettings {
   esp: boolean;
   dsp: boolean;
   drawViewmodel: boolean;
+  hitSoundPaths?: HitSoundPathsData;
 }

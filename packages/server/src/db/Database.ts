@@ -150,6 +150,7 @@ export interface Database {
       set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;
     };
     saveCvars(steamId: string, cvars: Record<string, string>): Promise<void>;
+    getLastSavedCvar(steamId: string, cvar: string): Promise<string>;
     getCustomRank(
       steamId: string,
     ): Promise<{ rank: string; color: [number, number, number] }>;

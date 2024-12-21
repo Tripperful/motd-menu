@@ -23,6 +23,13 @@ const config: ({}, { mode }) => Configuration = (_, { mode }) => {
       path: buildDir,
       clean: true,
       publicPath: '/',
+      assetModuleFilename: (pathData, assetInfo) => {
+        const { filename } = pathData;
+        if (filename.startsWith('src/assets/game/')) {
+          return filename.substring('src/assets/'.length);
+        }
+        return '[hash][ext][query]';
+      },
     },
     resolve: {
       extensions: ['.ts', '.tsx', '.js'],

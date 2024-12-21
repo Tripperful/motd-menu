@@ -14,6 +14,7 @@ export interface MotdSessionData {
   steamId: string;
   userId?: number;
   permissions: Permission[];
+  volume?: number;
 }
 
 interface AuthCacheEntry {
@@ -109,6 +110,8 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
 
     const { steamId, userId } = await getMotdUserCredentials(token, srcds);
     const permissions = await db.permissions.get(steamId);
+    const storedVolume = await db.client.getLastSavedCvar(steamId, 'volume');
+    const volume = storedVolume ? Number(storedVolume) : 1;
 
     res.locals.sessionData = {
       remoteId,
@@ -116,6 +119,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       userId,
       steamId,
       permissions,
+      volume,
     };
 
     const queryAuth = Boolean(req.query?.token);
@@ -139,6 +143,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       }
 
       res.cookie('permissions', JSON.stringify(permissions));
+      res.cookie('volume', volume.toString());
     }
 
     next();

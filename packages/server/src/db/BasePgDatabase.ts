@@ -65,8 +65,6 @@ export class BasePgDatabase {
         return this.pgEscText(arg);
       case 'object':
         return arg === null ? 'NULL' : this.pgJson(arg);
-
-      case 'undefined':
       default:
         return String(arg);
     }

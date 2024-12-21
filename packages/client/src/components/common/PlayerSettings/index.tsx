@@ -10,15 +10,18 @@ import {
   usePlayerSettings,
 } from 'src/hooks/state/playerSettings';
 import { useMySteamId } from 'src/hooks/useMySteamId';
+import { defaultHitSounds, hitSounds } from 'src/util/sounds';
 import { LabeledSwitch } from '~components/common/LabeledSwitch';
 import { ClassNameProps } from '~types/props';
-import { LabeledInput } from './LabeledInput';
+import { LabeledInput } from '../LabeledInput';
+import { HitSoundPicker } from './HitSoundPicker';
 
 const useStyles = createUseStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
+    overflow: 'hidden scroll',
   },
   settings: {
     display: 'flex',
@@ -29,6 +32,18 @@ const useStyles = createUseStyles({
     display: 'flex',
     gap: '0.5em',
     height: '2em',
+  },
+  hitsoundsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, max-content)',
+    alignItems: 'center',
+    gap: '0.5em',
+  },
+  sectionTitle: {
+    fontSize: '1.5em',
+    '&:not(:first-child)': {
+      marginTop: '0.5em',
+    },
   },
 });
 
@@ -70,6 +85,22 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     settings.crossbowZoomFov,
   );
   const [xbowZFovStr, setXbowZFovStr] = useState(String(crossbowZoomFov));
+
+  const [bodyHitSound, setBodyHitSound] = useState(
+    settings.hitSoundPaths?.body ?? hitSounds.sf_body,
+  );
+  const [headHitSound, setHeadHitSound] = useState(
+    settings.hitSoundPaths?.head ?? hitSounds.sf_head,
+  );
+  const [bodyKillSound, setBodyKillSound] = useState(
+    settings.hitSoundPaths?.kill ?? hitSounds.sf_kill,
+  );
+  const [headKillSound, setHeadKillSound] = useState(
+    settings.hitSoundPaths?.hskill ?? hitSounds.sf_hskill,
+  );
+  const [teamKillSound, setTeamKillSound] = useState(
+    settings.hitSoundPaths?.teamkill ?? hitSounds.sf_teamkill,
+  );
 
   const onFovBlur = () => {
     if (!fovStr) {
@@ -137,12 +168,31 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
       crossbowZoomFov,
     };
 
+    const hitSoundPaths = {
+      body: bodyHitSound,
+      head: headHitSound,
+      kill: bodyKillSound,
+      hskill: headKillSound,
+      teamkill: teamKillSound,
+    };
+
+    for (const type in defaultHitSounds) {
+      if (hitSoundPaths[type] === defaultHitSounds[type]) {
+        delete hitSoundPaths[type];
+      }
+    }
+
+    if (Object.keys(hitSoundPaths).length) {
+      newSettings.hitSoundPaths = hitSoundPaths;
+    }
+
     if (isEqual(settings, newSettings)) return;
 
     motdApi
       .setPlayerSettings(newSettings)
       .then(() => {
         setPlayerSettings(steamId, newSettings);
+        addNotification('success', 'Settings saved');
       })
       .catch(() => {
         addNotification('error', 'Failed to save settings');
@@ -159,6 +209,11 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     hitSound,
     killSound,
     kevlarSound,
+    bodyHitSound,
+    headHitSound,
+    bodyKillSound,
+    headKillSound,
+    teamKillSound,
     steamId,
     settings,
   ]);
@@ -166,24 +221,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   return (
     <div className={classNames(c.root, className)}>
       <div className={c.settings}>
-        <LabeledSwitch
-          active={killSound}
-          setActive={setKillSound}
-          label="Kill sound"
-          disabled={disabled}
-        />
-        <LabeledSwitch
-          active={hitSound}
-          setActive={setHitSound}
-          label="Hit sound"
-          disabled={disabled}
-        />
-        <LabeledSwitch
-          active={kevlarSound}
-          setActive={setKevlarSound}
-          label="Kevlar sound"
-          disabled={disabled}
-        />
+        <div className={c.sectionTitle}>General</div>
         <LabeledSwitch
           active={esp}
           setActive={setEsp}
@@ -259,6 +297,37 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
               label={`FOV (${zoomFovMin} - ${zoomFovMax})`}
             />
           )}
+        </div>
+        <div className={c.sectionTitle}>Hit & Kill sounds</div>
+        <LabeledSwitch
+          active={killSound}
+          setActive={setKillSound}
+          label="Kill sounds enabled"
+          disabled={disabled}
+        />
+        <LabeledSwitch
+          active={hitSound}
+          setActive={setHitSound}
+          label="Hit sounds enabled"
+          disabled={disabled}
+        />
+        <LabeledSwitch
+          active={kevlarSound}
+          setActive={setKevlarSound}
+          label="Kevlar sound"
+          disabled={disabled}
+        />
+        <div className={c.hitsoundsGrid}>
+          <span>Body shot</span>
+          <HitSoundPicker sound={bodyHitSound} setSound={setBodyHitSound} />
+          <span>Head shot</span>
+          <HitSoundPicker sound={headHitSound} setSound={setHeadHitSound} />
+          <span>Body kill</span>
+          <HitSoundPicker sound={bodyKillSound} setSound={setBodyKillSound} />
+          <span>Head kill</span>
+          <HitSoundPicker sound={headKillSound} setSound={setHeadKillSound} />
+          <span>Team kill</span>
+          <HitSoundPicker sound={teamKillSound} setSound={setTeamKillSound} />
         </div>
       </div>
     </div>

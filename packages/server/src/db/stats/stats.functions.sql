@@ -109,7 +109,20 @@ OR REPLACE FUNCTION get_client_settings (steam_id text) RETURNS json AS $$ BEGIN
   'dsp',
   client_settings.dsp,
   'drawViewmodel',
-  client_settings.draw_viewmodel
+  client_settings.draw_viewmodel,
+  'hitSoundPaths',
+  json_build_object(
+    'body',
+    client_settings.hitsound_body_path,
+    'head',
+    client_settings.hitsound_head_path,
+    'kill',
+    client_settings.killsound_body_path,
+    'hskill',
+    client_settings.killsound_head_path,
+    'teamkill',
+    client_settings.killsound_teammate_path
+  )
 )
 FROM client_settings
 WHERE client_settings.steam_id = get_client_settings.steam_id::bigint;
@@ -127,7 +140,12 @@ OR REPLACE PROCEDURE set_client_settings (
   crossbow_zoom_fov int,
   esp boolean,
   dsp boolean,
-  draw_viewmodel boolean
+  draw_viewmodel boolean,
+  hitsound_body_path text,
+  hitsound_head_path text,
+  killsound_body_path text,
+  killsound_head_path text,
+  killsound_teammate_path text
 ) AS $$ BEGIN
 INSERT INTO client_settings (
   steam_id,
@@ -139,7 +157,12 @@ INSERT INTO client_settings (
   crossbow_zoom_fov,
   esp,
   dsp,
-  draw_viewmodel
+  draw_viewmodel,
+  hitsound_body_path,
+  hitsound_head_path,
+  killsound_body_path,
+  killsound_head_path,
+  killsound_teammate_path
 )
 VALUES (
   steam_id::bigint,
@@ -151,7 +174,12 @@ VALUES (
   crossbow_zoom_fov,
   esp,
   dsp,
-  draw_viewmodel
+  draw_viewmodel,
+  hitsound_body_path,
+  hitsound_head_path,
+  killsound_body_path,
+  killsound_head_path,
+  killsound_teammate_path
 ) ON CONFLICT ON CONSTRAINT client_settings_pkey DO UPDATE
 SET
   hit_sound = EXCLUDED.hit_sound,
@@ -162,7 +190,12 @@ SET
   crossbow_zoom_fov = EXCLUDED.crossbow_zoom_fov,
   esp = EXCLUDED.esp,
   dsp = EXCLUDED.dsp,
-  draw_viewmodel = EXCLUDED.draw_viewmodel;
+  draw_viewmodel = EXCLUDED.draw_viewmodel,
+  hitsound_body_path = EXCLUDED.hitsound_body_path,
+  hitsound_head_path = EXCLUDED.hitsound_head_path,
+  killsound_body_path = EXCLUDED.killsound_body_path,
+  killsound_head_path = EXCLUDED.killsound_head_path,
+  killsound_teammate_path = EXCLUDED.killsound_teammate_path;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -269,6 +302,17 @@ BEGIN
     INSERT INTO client_cvars (steam_id, fetch_id, cvar, value, created_on)
     VALUES (steam_id_text::BIGINT, fetch_id, cvar_key, cvar_value, NOW());
   END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_last_saved_cvar (steam_id text, cvar text) RETURNS text AS $$ BEGIN
+RETURN value
+FROM client_cvars
+WHERE client_cvars.steam_id = get_last_saved_cvar.steam_id::bigint
+  AND client_cvars.cvar = get_last_saved_cvar.cvar
+ORDER BY created_on DESC
+LIMIT 1;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -1071,7 +1115,6 @@ OR REPLACE PROCEDURE entity_teleport (teleport_data json) AS $$ BEGIN
   );
 END;
 $$ LANGUAGE plpgsql;
-
 
 CREATE
 OR REPLACE PROCEDURE player_substitution (substitution_data json) AS $$ BEGIN

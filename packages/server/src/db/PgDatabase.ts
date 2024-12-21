@@ -223,6 +223,16 @@ export class PgDatabase extends BasePgDatabase implements Database {
           ...storedSettings,
         };
 
+        for (const key of Object.keys(settings.hitSoundPaths)) {
+          if (!settings.hitSoundPaths[key]) {
+            delete settings.hitSoundPaths[key];
+          }
+        }
+
+        if (Object.keys(settings.hitSoundPaths).length === 0) {
+          delete settings.hitSoundPaths;
+        }
+
         return settings;
       },
       set: async (
@@ -237,6 +247,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
           esp,
           dsp,
           drawViewmodel,
+          hitSoundPaths,
         }: PlayerClientSettings,
       ) => {
         const curSettings = await this.client.settings.get(steamId);
@@ -253,12 +264,20 @@ export class PgDatabase extends BasePgDatabase implements Database {
           esp ?? curSettings.esp,
           dsp ?? curSettings.dsp,
           drawViewmodel ?? curSettings.drawViewmodel,
+          hitSoundPaths?.body,
+          hitSoundPaths?.head,
+          hitSoundPaths?.kill,
+          hitSoundPaths?.hskill,
+          hitSoundPaths?.teamkill,
         );
       },
     },
 
     saveCvars: (steamId: string, cvars: Record<string, string>) =>
       this.call('save_client_cvars', steamId, cvars),
+
+    getLastSavedCvar: (steamId: string, cvar: string) =>
+      this.select<string>('get_last_saved_cvar', steamId, cvar),
 
     getCustomRank: async (steamId: string) =>
       this.select<{ rank: string; color: [number, number, number] }>(

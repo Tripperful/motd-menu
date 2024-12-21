@@ -36,3 +36,9 @@ declare module '*.webm' {
 
   export default src;
 }
+
+declare module '~assets/*.wav' {
+  const src: string;
+
+  export default src;
+}

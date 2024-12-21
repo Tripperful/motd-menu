@@ -7,7 +7,12 @@ ALTER TABLE IF EXISTS client_settings
 ADD COLUMN IF NOT EXISTS dsp boolean DEFAULT true,
 ADD COLUMN IF NOT EXISTS kevlar_sound boolean DEFAULT true,
 ADD COLUMN IF NOT EXISTS magnum_zoom_fov int DEFAULT 0,
-ADD COLUMN IF NOT EXISTS crossbow_zoom_fov int DEFAULT 20;
+ADD COLUMN IF NOT EXISTS crossbow_zoom_fov int DEFAULT 20,
+ADD COLUMN IF NOT EXISTS hitsound_body_path text,
+ADD COLUMN IF NOT EXISTS hitsound_head_path text,
+ADD COLUMN IF NOT EXISTS killsound_body_path text,
+ADD COLUMN IF NOT EXISTS killsound_head_path text,
+ADD COLUMN IF NOT EXISTS killsound_teammate_path text;
 
 -- Drop the old get_matches function without filters
 DROP FUNCTION IF EXISTS get_matches (lmt int, ofst int);
@@ -44,4 +49,4 @@ BEGIN
   ALTER TABLE projectile_spawns RENAME COLUMN temp_col_name TO entity_id;
 END IF; 
 END
-$$ 
+$$

@@ -25,6 +25,7 @@ srcdsWsServer.onRequest('get_settings_request', async (srcds, data) => {
     hitSound,
     killSound,
     kevlarSound,
+    hitSoundPaths,
   } = await db.client.settings.get(data);
 
   const aka = (await db.client.getAka(data)) ?? '';
@@ -43,6 +44,7 @@ srcdsWsServer.onRequest('get_settings_request', async (srcds, data) => {
       kevlarsound: kevlarSound ? 1 : 0,
       aka,
       geo: (await getPlayerGeoData(data))?.country ?? '',
+      hitSoundPaths,
     },
   };
 });

@@ -1,3 +1,4 @@
+import { HitSoundPathsData } from 'src/types/players';
 import type { Cvar } from '../../../../cvars';
 import type { WeaponType } from '../../../weapons';
 
@@ -26,6 +27,7 @@ export interface ClientSettingsData {
   hitsound: 1 | 0;
   killsound: 1 | 0;
   kevlarsound: 1 | 0;
+  hitSoundPaths?: HitSoundPathsData;
 }
 
 export interface SetSettingsData {

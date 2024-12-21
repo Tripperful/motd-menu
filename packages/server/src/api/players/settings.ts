@@ -22,7 +22,7 @@ playerSettingsRouter.post('/', async (req, res) => {
 
     await db.client.settings.set(steamId, settings);
 
-    const netSettings: SetSettingsData = {
+    const newSettings: SetSettingsData = {
       steamId,
       settings: {
         drawviewmodel: settings.drawViewmodel ? 1 : 0,
@@ -34,10 +34,11 @@ playerSettingsRouter.post('/', async (req, res) => {
         hitsound: settings.hitSound ? 1 : 0,
         killsound: settings.killSound ? 1 : 0,
         kevlarsound: settings.kevlarSound ? 1 : 0,
+        hitSoundPaths: settings.hitSoundPaths,
       },
     };
 
-    res.locals.srcds.send('apply_settings', netSettings);
+    res.locals.srcds.send('apply_settings', newSettings);
 
     res.status(200).end();
   } catch (e) {

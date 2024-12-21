@@ -37,7 +37,12 @@ CREATE TABLE IF NOT EXISTS
     crossbow_zoom_fov int,
     esp boolean,
     dsp boolean,
-    draw_viewmodel boolean
+    draw_viewmodel boolean,
+    hitsound_body_path text,
+    hitsound_head_path text,
+    killsound_body_path text,
+    killsound_head_path text,
+    killsound_teammate_path text
   );
 
 CREATE TABLE IF NOT EXISTS
