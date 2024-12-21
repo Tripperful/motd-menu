@@ -319,15 +319,35 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
         />
         <div className={c.hitsoundsGrid}>
           <span>Body shot</span>
-          <HitSoundPicker sound={bodyHitSound} setSound={setBodyHitSound} />
+          <HitSoundPicker
+            sound={bodyHitSound}
+            setSound={setBodyHitSound}
+            disabled={disabled}
+          />
           <span>Head shot</span>
-          <HitSoundPicker sound={headHitSound} setSound={setHeadHitSound} />
+          <HitSoundPicker
+            sound={headHitSound}
+            setSound={setHeadHitSound}
+            disabled={disabled}
+          />
           <span>Body kill</span>
-          <HitSoundPicker sound={bodyKillSound} setSound={setBodyKillSound} />
+          <HitSoundPicker
+            sound={bodyKillSound}
+            setSound={setBodyKillSound}
+            disabled={disabled}
+          />
           <span>Head kill</span>
-          <HitSoundPicker sound={headKillSound} setSound={setHeadKillSound} />
+          <HitSoundPicker
+            sound={headKillSound}
+            setSound={setHeadKillSound}
+            disabled={disabled}
+          />
           <span>Team kill</span>
-          <HitSoundPicker sound={teamKillSound} setSound={setTeamKillSound} />
+          <HitSoundPicker
+            sound={teamKillSound}
+            setSound={setTeamKillSound}
+            disabled={disabled}
+          />
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@ const hitSoundOptions: SoundInfo[] = Object.entries(hitSounds).map(
   }),
 );
 
-export const HitSoundPicker: FC<HitSoundPicker> = ({ sound, setSound }) => {
+export const HitSoundPicker: FC<HitSoundPicker> = ({ sound, setSound, disabled }) => {
   return (
     <SoundPicker
       sound={srcdsSoundPathToAssetPath(sound)}
@@ -27,6 +27,7 @@ export const HitSoundPicker: FC<HitSoundPicker> = ({ sound, setSound }) => {
         name,
         path: srcdsSoundPathToAssetPath(path),
       }))}
+      disabled={disabled}
     />
   );
 };

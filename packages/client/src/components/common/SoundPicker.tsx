@@ -44,7 +44,8 @@ const SoundPickerOption: FC<{
   selected?: boolean;
   onClick: () => void;
   editable?: boolean;
-}> = ({ sound, selected, onClick, editable }) => {
+  disabled?: boolean;
+}> = ({ sound, selected, onClick, editable, disabled }) => {
   const c = useStyles();
 
   const volume = usePreferredVolume();
@@ -75,9 +76,10 @@ const SoundPickerOption: FC<{
         className={classNames(c.active, c.row)}
         onClick={onClick}
         data-active={selected}
+        data-disabled={disabled}
       >
         {sound?.name ?? 'Unknown'}
-        {editable && <EditIcon className={c.editIcon} />}
+        {editable && !disabled && <EditIcon className={c.editIcon} />}
       </span>
     </span>
   );
@@ -87,7 +89,8 @@ export const SoundPicker: FC<{
   sound: string;
   setSound: (sound: string) => void;
   options: SoundInfo[];
-}> = ({ sound, setSound, options }) => {
+  disabled?: boolean;
+}> = ({ sound, setSound, options, disabled }) => {
   const c = useStyles();
   const [pickerActive, setPickerActive] = React.useState(false);
 
@@ -97,8 +100,9 @@ export const SoundPicker: FC<{
     <div className={c.root}>
       <SoundPickerOption
         sound={selectedOption}
-        onClick={() => setPickerActive(true)}
-        editable
+        onClick={disabled ? undefined : () => setPickerActive(true)}
+        editable={!disabled}
+        disabled={disabled}
       />
       {pickerActive && (
         <Popup title="Select a sound" onClose={() => setPickerActive(false)}>
