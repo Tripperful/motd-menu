@@ -55,3 +55,27 @@ srcdsRouter.get('/onlineServers/maps', async (_, res) => {
     res.status(500).end();
   }
 });
+
+srcdsRouter.get('/onlineServers/players', async (_, res) => {
+  try {
+    const { permissions } = res.locals.sessionData;
+
+    if (!permissions.includes('dev')) return res.status(403).end();
+
+    const onlineServers = SrcdsWsApiServer.getInstace().getConnectedClients();
+
+    const players = await Promise.all(
+      onlineServers.map(async (srcds) => {
+        return {
+          serverInfo: srcds.getInfo(),
+          players: await srcds.request('get_players_request'),
+        };
+      }),
+    );
+
+    res.status(200).json(players);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});

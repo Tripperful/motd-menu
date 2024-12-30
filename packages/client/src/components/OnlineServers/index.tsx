@@ -3,7 +3,9 @@ import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
 import { useOnlineServers } from 'src/hooks/state/onlineServers';
 import { useOnlineServersMaps } from 'src/hooks/state/onlineServersMaps';
+import { useOnlineServersPlayers } from 'src/hooks/state/onlineServersPlayers';
 import { useGoBack } from 'src/hooks/useGoBack';
+import { PlayerItem } from '~components/common/PlayerItem';
 import { Popup } from '~components/common/Popup';
 import { activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
@@ -22,6 +24,8 @@ const useStyles = createUseStyles({
   },
   otherLinks: {
     position: 'absolute',
+    display: 'flex',
+    gap: '1em',
     top: '2em',
     right: '2em',
   },
@@ -33,14 +37,14 @@ const useStyles = createUseStyles({
   link: {
     ...activeItemNoTransform(),
   },
-  mapsPopup: {
+  otherPopup: {
     width: 'calc(100vw - 2em)',
     height: 'calc(100vh - 2em)',
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
   },
-  mapsList: {
+  otherList: {
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
@@ -116,7 +120,7 @@ const AllServersMaps: FC<{ search: string }> = ({ search }) => {
   const allServernames = maps.map(({ serverInfo }) => serverInfo.name);
 
   return (
-    <div className={c.mapsList}>
+    <div className={c.otherList}>
       {filteredMaps.map((map) => (
         <MapListItem
           key={map}
@@ -138,7 +142,7 @@ const MapsPopup: FC = () => {
   const [search, setSearch] = useState('');
 
   return (
-    <Popup onClose={goBack} title="Maps" className={c.mapsPopup}>
+    <Popup onClose={goBack} title="Maps" className={c.otherPopup}>
       <input
         type="text"
         placeholder="Search maps..."
@@ -146,6 +150,32 @@ const MapsPopup: FC = () => {
         onChange={(e) => setSearch(e.currentTarget.value)}
       />
       <AllServersMaps search={search} />
+    </Popup>
+  );
+};
+
+const PlayersPopup: FC = () => {
+  const c = useStyles();
+  const goBack = useGoBack();
+  const serversPlayers = useOnlineServersPlayers();
+
+  return (
+    <Popup onClose={goBack} title="Players" className={c.otherPopup}>
+      <div className={c.otherList}>
+        {serversPlayers.map(({ serverInfo, players }) => (
+          <div key={serverInfo.id}>
+            {serverInfo.name}
+            <div>
+              {players?.map((player) => (
+                <PlayerItem
+                  key={player.steamId}
+                  profile={player.steamProfile}
+                />
+              )) ?? 'No players connected'}
+            </div>
+          </div>
+        ))}
+      </div>
     </Popup>
   );
 };
@@ -187,12 +217,14 @@ export const OnlineServers: FC = () => {
           </Link>
         </span>
       ))}
-      <Routes>
-        <Route path="maps" element={<MapsPopup />} />
-      </Routes>
       <div className={c.otherLinks}>
+        <Link to="players">Players</Link>
         <Link to="maps">Maps</Link>
       </div>
+      <Routes>
+        <Route path="maps" element={<MapsPopup />} />
+        <Route path="players" element={<PlayersPopup />} />
+      </Routes>
     </div>
   );
 };

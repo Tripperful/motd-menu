@@ -418,6 +418,31 @@ class MotdApi {
     }[];
   }
 
+  public async getOnlineServersPlayers() {
+    const res = await this.get('srcds/onlineServers/players');
+
+    const result = JSON.parse(res) as {
+      serverInfo: ServerInfo;
+      players: OnlinePlayerInfo[];
+    }[];
+
+    const fetchProfilesTasks: Promise<void>[] = [];
+
+    for (const server of result) {
+      for (const player of server.players ?? []) {
+        fetchProfilesTasks.push(
+          this.getPlayerSteamProfile(player.steamId).then((profile) => {
+            player.steamProfile = profile;
+          }),
+        );
+      }
+    }
+
+    await Promise.all(fetchProfilesTasks);
+
+    return result;
+  }
+
   public async clientExec(command: string) {
     await this.post(`menu/clientExec`, JSON.stringify({ command }));
   }
