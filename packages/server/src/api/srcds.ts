@@ -68,7 +68,7 @@ srcdsRouter.get('/onlineServers/players', async (_, res) => {
       onlineServers.map(async (srcds) => {
         return {
           serverInfo: srcds.getInfo(),
-          players: await srcds.request('get_players_request'),
+          players: await srcds.request('get_players_request').catch(() => []),
         };
       }),
     );
