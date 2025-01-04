@@ -1,6 +1,6 @@
+import { ChatCommandInfo } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
-import { serverChatCommands } from 'src/util/chatCommands';
 import { SrcdsWsApiServer } from 'src/ws/servers/srcds/SrcdsWsApiServer';
 
 export const srcdsRouter = Router();
@@ -81,13 +81,18 @@ srcdsRouter.get('/onlineServers/players', async (_, res) => {
   }
 });
 
+const serverChatCommands: Record<number, ChatCommandInfo[]> = {};
+
 srcdsRouter.get('/chatCommands', async (_, res) => {
   try {
     const { srcds } = res.locals;
+    const srcdsId = srcds.getInfo().id;
 
-    const commands = serverChatCommands[srcds.getInfo().id] ?? [];
+    serverChatCommands[srcdsId] ??= await srcds.request(
+      'get_chat_commands_request',
+    );
 
-    res.status(200).json(commands);
+    res.status(200).json(serverChatCommands[srcdsId]);
   } catch (e) {
     console.error(e);
     res.status(500).end();

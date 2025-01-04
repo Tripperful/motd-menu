@@ -8,7 +8,6 @@ import { BaseWsApiServer } from '@motd-menu/common';
 import type { IncomingMessage } from 'http';
 import { db } from 'src/db';
 import { chatColor } from 'src/util';
-import { serverChatCommands } from 'src/util/chatCommands';
 
 export class SrcdsWsApiServer extends BaseWsApiServer<
   SrcdsWsRecvSchema,
@@ -80,10 +79,6 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
           text: `${chatColor.MOTD}[MOTD] ${chatColor.Allow}Connected`,
         });
       }
-
-      serverChatCommands[client.getInfo().id] = await client.request(
-        'get_chat_commands_request',
-      );
     } catch {}
   }
 
