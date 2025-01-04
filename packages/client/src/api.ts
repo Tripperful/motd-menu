@@ -1,5 +1,6 @@
 import {
   ArrayElementType,
+  ChatCommandInfo,
   Cvar,
   EfpsMatchSummaryStat,
   MapDetailsData,
@@ -441,6 +442,12 @@ class MotdApi {
     await Promise.all(fetchProfilesTasks);
 
     return result;
+  }
+
+  public async getChatCommands() {
+    const res = await this.get('srcds/chatCommands');
+
+    return JSON.parse(res) as ChatCommandInfo[];
   }
 
   public async clientExec(command: string) {

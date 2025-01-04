@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from 'src/db';
+import { serverChatCommands } from 'src/util/chatCommands';
 import { SrcdsWsApiServer } from 'src/ws/servers/srcds/SrcdsWsApiServer';
 
 export const srcdsRouter = Router();
@@ -74,6 +75,19 @@ srcdsRouter.get('/onlineServers/players', async (_, res) => {
     );
 
     res.status(200).json(players);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+srcdsRouter.get('/chatCommands', async (_, res) => {
+  try {
+    const { srcds } = res.locals;
+
+    const commands = serverChatCommands[srcds.getInfo().id] ?? [];
+
+    res.status(200).json(commands);
   } catch (e) {
     console.error(e);
     res.status(500).end();

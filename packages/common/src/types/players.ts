@@ -14,6 +14,13 @@ export interface OnlinePlayerInfo {
   steamProfile?: SteamPlayerData;
 }
 
+export interface ChatCommandInfo {
+  name: string;
+  help: string;
+  matchmakingOnly: boolean;
+  shortcuts: string[];
+}
+
 export interface HitSoundPathsData {
   head?: string;
   body?: string;

@@ -7,9 +7,11 @@ import { useMyPermissions } from 'src/hooks/state/permissions';
 import { NewsBadge } from '~components/News/NewsBadge';
 import BackIcon from '~icons/chevron-left.svg';
 import CrossIcon from '~icons/close.svg';
+import HelpIcon from '~icons/help.svg';
 import { filterShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
 import { SidePanel } from '../SidePanel';
+import { MenuBadge } from './MenuBadge';
 import { MenuItem } from './MenuItem';
 
 const useStyles = createUseStyles({
@@ -57,10 +59,14 @@ const useStyles = createUseStyles({
     bottom: '50%',
     transform: 'translateY(50%)',
   },
-  newsBadge: {
+  badges: {
     position: 'absolute',
     right: '1em',
     top: '1em',
+    display: 'flex',
+    gap: '1em',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
 });
 
@@ -99,6 +105,10 @@ const buildTimestampFormat = Intl.DateTimeFormat(navigator.language, {
 
 const LazyNews = React.lazy(
   () => import(/* webpackChunkName: "lazy-main" */ '~components/News'),
+);
+
+const LazyHelp = React.lazy(
+  () => import(/* webpackChunkName: "lazy-main" */ '~components/Help'),
 );
 
 export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
@@ -172,13 +182,26 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
           />
         ))}
       </div>
-      <NewsBadge className={c.newsBadge} to="news" />
+      <div className={c.badges}>
+        <NewsBadge to="news" />
+        <MenuBadge to="help">
+          <HelpIcon />
+        </MenuBadge>
+      </div>
       <Routes>
         <Route
           path="news/*"
           element={
             <SidePanel title={<h2>News</h2>}>
               <LazyNews />
+            </SidePanel>
+          }
+        />
+        <Route
+          path="help/*"
+          element={
+            <SidePanel title={<h2>Help</h2>}>
+              <LazyHelp />
             </SidePanel>
           }
         />

@@ -1,5 +1,5 @@
 import type { Cvar } from '../../../../cvars';
-import type { OnlinePlayerInfo } from '../../../players';
+import type { ChatCommandInfo, OnlinePlayerInfo } from '../../../players';
 import type { WsApiSchema } from '../WsApiSchema';
 import type {
   ChangeLevelData,
@@ -33,6 +33,10 @@ export type SrcdsWsSendSchema = WsApiSchema<{
   get_players_request: {
     resType: 'get_players_response';
     resData: OnlinePlayerInfo[];
+  };
+  get_chat_commands_request: {
+    resType: 'get_chat_commands_response';
+    resData: ChatCommandInfo[];
   };
   run_command: {
     reqData: RunCommandData;

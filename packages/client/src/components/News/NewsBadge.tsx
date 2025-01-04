@@ -1,23 +1,12 @@
-import classNames from 'classnames';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
-import { Link, LinkProps } from 'react-router-dom';
+import { LinkProps } from 'react-router-dom';
 import { useNewsPreviews } from 'src/hooks/state/news';
+import { MenuBadge } from '~components/common/Menu/MenuBadge';
 import EnvelopeIcon from '~icons/envelope.svg';
-import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
-  root: {
-    ...activeItem(),
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '2.5em',
-    height: '2.5em',
-    borderRadius: '50%',
-    backgroundColor: theme.bg1,
-  },
   dot: {
     position: 'absolute',
     top: '-0.5em',
@@ -52,15 +41,13 @@ const NewsBadgeDot: FC = () => {
   return unread ? <div className={c.dot}>{unread}</div> : null;
 };
 
-export const NewsBadge: FC<LinkProps> = ({ to, className }) => {
-  const c = useStyles();
-
+export const NewsBadge: FC<LinkProps> = (props) => {
   return (
-    <Link className={classNames(c.root, className)} to={to}>
+    <MenuBadge {...props}>
       <EnvelopeIcon />
       <Suspense>
         <NewsBadgeDot />
       </Suspense>
-    </Link>
+    </MenuBadge>
   );
 };
