@@ -1,4 +1,4 @@
-import React, { FC, Suspense, useContext } from 'react';
+import React, { FC, Suspense, useContext, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { motdApi } from 'src/api';
 import { setMapDetails } from 'src/hooks/state/mapDetails';
@@ -10,6 +10,7 @@ import { Toggle } from '~components/common/Toggle';
 import DeleteIcon from '~icons/delete.svg';
 import FavoritesIcon from '~icons/heart-outline.svg';
 import FavoritesActiveIcon from '~icons/heart.svg';
+import EditIcon from '~icons/pencil.svg';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { FiltersContext } from './FiltersContext';
@@ -53,10 +54,13 @@ const useStyles = createUseStyles({
   },
 });
 
-const TagToggle: FC<{ tag: string }> = ({ tag }) => {
+const TagToggle: FC<{ tag: string; editMode?: boolean }> = ({
+  tag,
+  editMode,
+}) => {
   const c = useStyles();
   const { tags, setTags } = useContext(FiltersContext);
-  const canEditMaps = useCheckPermission('maps_edit');
+  const canEditMaps = useCheckPermission('maps_edit') && editMode;
 
   const active = tags.includes(tag);
   const setActive = (active: boolean) => {
@@ -132,6 +136,8 @@ const TagToggle: FC<{ tag: string }> = ({ tag }) => {
 const TagsContent: FC = () => {
   const c = useStyles();
   const tags = useAllMapsTags();
+  const [editMode, setEditMode] = useState(false);
+  const canEditMaps = useCheckPermission('maps_edit');
 
   return (
     <div
@@ -144,7 +150,12 @@ const TagsContent: FC = () => {
         });
       }}
     >
-      {tags?.map((t) => <TagToggle key={t} tag={t} />)}
+      {tags?.map((t) => <TagToggle key={t} tag={t} editMode={editMode} />)}
+      {canEditMaps && (
+        <Toggle active={editMode} setActive={setEditMode}>
+          <EditIcon />
+        </Toggle>
+      )}
     </div>
   );
 };
