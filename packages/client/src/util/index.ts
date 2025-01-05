@@ -1,5 +1,3 @@
-import { MapSorting } from '~components/MapList/Sorting';
-
 export const copyToClipboard = async (text: string) => {
   try {
     if (navigator.clipboard?.writeText) {
@@ -61,29 +59,4 @@ export const playTimeFormat = (playtimeSec: number) => {
   return [hours ? hours + 'h' : null, playtimeMin ? playtimeMin + 'm' : null]
     .filter(Boolean)
     .join(' ');
-};
-
-const lsDefaults = {
-  favsOnly: false as boolean,
-  tagFilters: [] as string[],
-  mapSorting: { type: 'name', dir: 'asc' } as MapSorting,
-} as const;
-
-type LocalStorageKey = keyof typeof lsDefaults;
-
-type StoredDefaultsType = typeof lsDefaults;
-
-export const lsGet = <TKey extends LocalStorageKey>(
-  key: TKey,
-): StoredDefaultsType[TKey] => {
-  const val = localStorage.getItem(key);
-
-  return val ? JSON.parse(val) : lsDefaults[key];
-};
-
-export const lsSet = <TKey extends LocalStorageKey>(
-  key: TKey,
-  value: StoredDefaultsType[TKey],
-) => {
-  localStorage.setItem(key, JSON.stringify(value));
 };

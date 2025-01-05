@@ -11,7 +11,6 @@ import React, {
 import { createUseStyles } from 'react-jss';
 import { Link, useParams } from 'react-router-dom';
 import { useMapsPreviews } from 'src/hooks/state/mapPreviews';
-import { lsGet, lsSet } from 'src/util';
 import { Page } from '~components/common/Page';
 import ClearFiltersIcon from '~icons/filter-clear.svg';
 import { activeItem, skeletonBg } from '~styles/elements';
@@ -130,10 +129,10 @@ const MapListSkeleton: FC = () => {
 
 export const MapList: FC = () => {
   const [search, setSearch] = useState('');
-  const [tags, setTags] = useState(() => lsGet('tagFilters'));
-  const [favs, setFavs] = useState(() => lsGet('favsOnly'));
+  const [tags, setTags] = useState(() => []);
+  const [favs, setFavs] = useState(false);
   const [sorting, setSorting] = useState(
-    () => lsGet('mapSorting') ?? ({ type: 'name', dir: 'asc' } as MapSorting),
+    () => ({ type: 'name', dir: 'asc' }) as MapSorting,
   );
 
   const clearFilters = useCallback(() => {
@@ -141,18 +140,6 @@ export const MapList: FC = () => {
     setTags([]);
     setFavs(false);
   }, []);
-
-  useEffect(() => {
-    lsSet('favsOnly', favs);
-  }, [favs]);
-
-  useEffect(() => {
-    lsSet('tagFilters', tags);
-  }, [tags]);
-
-  useEffect(() => {
-    lsSet('mapSorting', sorting);
-  }, [sorting]);
 
   const { mapName } = useParams();
 
