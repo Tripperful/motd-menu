@@ -101,7 +101,7 @@ export const Router: FC = () => {
           }
         />
         <Route
-          path="streamerOverlay/:sessionId"
+          path="streamerOverlay/*"
           element={
             <Suspense>
               <StreamerOverlay />

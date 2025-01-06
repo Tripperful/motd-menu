@@ -4,9 +4,11 @@ import { Link, Route, Routes } from 'react-router-dom';
 import { useOnlineServers } from 'src/hooks/state/onlineServers';
 import { useOnlineServersMaps } from 'src/hooks/state/onlineServersMaps';
 import { useOnlineServersPlayers } from 'src/hooks/state/onlineServersPlayers';
+import { useCheckPermission } from 'src/hooks/useCheckPermission';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { PlayerItem } from '~components/common/PlayerItem';
 import { Popup } from '~components/common/Popup';
+import HudIcon from '~icons/hud.svg';
 import { activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
 
@@ -199,11 +201,25 @@ export const OnlineServers: FC = () => {
     [servers],
   );
 
+  const isStreamer = useCheckPermission('streamer');
+
   return (
     <div className={c.root}>
       <h2>Online servers ({sortedServers.length})</h2>
       {sortedServers.map((serverInfo) => (
         <span className={c.serverRow} key={serverInfo.id}>
+          {isStreamer && (
+            <Link
+              key={serverInfo.id}
+              className={c.link}
+              to={`../streamerOverlay/?guid=${serverInfo.sessionId}&token=${new URLSearchParams(
+                location.search,
+              ).get('token')}`}
+              target="_blank"
+            >
+              <HudIcon />
+            </Link>
+          )}
           <Link
             className={c.link}
             to={`/?guid=${serverInfo.sessionId}&token=${new URLSearchParams(

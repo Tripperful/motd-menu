@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { uuid, type WsApiClient } from '@motd-menu/common';
-import { WebSocket } from 'ws';
+import type { WsApiClient, WsClient } from '@motd-menu/common';
+import { uuid } from '@motd-menu/common';
 
 export class BaseWsApiClient<TWsSendSchema, TClientInfo>
   implements WsApiClient<TWsSendSchema, TClientInfo>
@@ -11,11 +11,11 @@ export class BaseWsApiClient<TWsSendSchema, TClientInfo>
 
   constructor(
     private id: string,
-    private socket: WebSocket,
+    private socket: WsClient,
     private info: TClientInfo,
   ) {}
 
-  getSocket(): WebSocket {
+  getSocket(): WsClient {
     return this.socket;
   }
 

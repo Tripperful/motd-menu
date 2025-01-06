@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import React, { FC, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
-import { useParams } from 'react-router-dom';
 import { useGlobalStyles } from '~styles/global';
 import { PlayerOverlayItem } from './PlayerOverlayItem';
 import { useDelayedStreamFrame } from './useDelayedStreamFrame';
@@ -29,16 +28,17 @@ const useStyles = createUseStyles({
 export const StreamerOverlay: FC = () => {
   useGlobalStyles();
   const c = useStyles();
-  const { sessionId } = useParams();
 
-  const { scale, delay, center } = useMemo(() => {
+  const { sessionId, scale, delay, center } = useMemo(() => {
     const params = new URLSearchParams(location.search);
 
+    const sessionId = params.get('guid');
     const scaleStr = params.get('scale') ?? '1';
     const delayStr = params.get('delay') ?? '0';
     const center = params.get('center') === '1';
 
     return {
+      sessionId,
       scale: Number(scaleStr),
       delay: Number(delayStr),
       center,
@@ -75,10 +75,9 @@ export const StreamerOverlay: FC = () => {
         <div key={idx} className={c.team}>
           {team.map((player) => (
             <PlayerOverlayItem
+              steamId={player.steamId}
               key={player.steamId}
               teamIdx={player.teamIdx}
-              name={player.steamProfile?.name ?? 'Unknown'}
-              avatarUrl={player.steamProfile?.avatar}
               kills={player.kills}
               deaths={player.deaths}
               hp={player.health}

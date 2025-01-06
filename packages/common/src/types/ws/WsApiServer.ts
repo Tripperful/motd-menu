@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 import type { Duplex } from 'stream';
-import type { WebSocket, WebSocketServer } from 'ws';
+import type { WebSocketServer } from 'ws';
 import type {
   WsFetchRequestType,
   WsQueryRequestType,
@@ -9,6 +9,7 @@ import type {
   WsSignalActionType,
 } from './util';
 import type { WsApiClient } from './WsApiClient';
+import { WsClient } from './WsClient';
 
 /**
  * WebSocket API server
@@ -50,7 +51,7 @@ export interface WsApiServer<
    *
    * @param clientWs Client WebSocket connection
    */
-  getClient(clientWs: WebSocket): WsApiClient<TWsSendSchema, TClientInfo>;
+  getClient(clientWs: WsClient): WsApiClient<TWsSendSchema, TClientInfo>;
 
   /**
    * Returns a client by their ID

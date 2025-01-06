@@ -189,9 +189,6 @@ const SubstitutePlayerContent: FC = () => {
                 if (steamId === replacement?.whom) {
                   steamId = replacement.withWhom;
                 }
-                if (!profiles[steamId]) {
-                  debugger;
-                }
                 const player = players.find((p) => p.steamId === steamId);
                 const teamColor = player
                   ? teamInfoByIdx[player.teamIdx].color

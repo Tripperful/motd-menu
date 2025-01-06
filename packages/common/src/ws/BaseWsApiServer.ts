@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { WsApiClient, WsApiServer } from '@motd-menu/common';
+import type { WsApiClient, WsApiServer, WsClient } from '@motd-menu/common';
 import type http from 'http';
 import type { Duplex } from 'stream';
-import type { WebSocket, WebSocketServer } from 'ws';
+import type { WebSocketServer } from 'ws';
 import { BaseWsApiClient } from './BaseWsApiClient';
 
 export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
@@ -131,7 +131,7 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
   ) {}
 
   getClient(
-    clientIdOrWs: string | WebSocket,
+    clientIdOrWs: string | WsClient,
   ): WsApiClient<TWsSendSchema, TClientInfo> {
     return typeof clientIdOrWs === 'string'
       ? this.clients[clientIdOrWs]

@@ -1,10 +1,10 @@
-import type { WebSocket } from 'ws';
 import type {
   WsFetchRequestType,
   WsQueryRequestType,
   WsSendDataActionType,
   WsSignalActionType,
 } from './util';
+import { WsClient } from './WsClient';
 
 /**
  * WebSocket API client
@@ -13,7 +13,7 @@ export interface WsApiClient<TWsSendSchema = unknown, TClientInfo = unknown> {
   /**
    * Returns the WebSocket connection for this client
    */
-  getSocket(): WebSocket;
+  getSocket(): WsClient;
 
   /**
    * Returns the ID for this client

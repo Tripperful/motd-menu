@@ -8,16 +8,19 @@ export const useDelayedStreamFrame = (sessionId: string, delay: number) => {
 
   useEffect(() => {
     streamQueue.length = 0;
-    const eventSource = new EventSource(`/api/stream/${sessionId}`);
 
-    eventSource.onmessage = (event) => {
-      const frame = JSON.parse(event.data) as StreamFrame;
+    const wsUrl = new URL(window.location.origin.replace(/^http/, 'ws'));
+    wsUrl.searchParams.set('guid', sessionId);
 
-      streamQueue.push(frame);
+    const ws = new WebSocket(wsUrl.href);
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      streamQueue.push(data.data);
     };
 
     return () => {
-      eventSource.close();
+      ws.close();
     };
   }, [sessionId, delay]);
 

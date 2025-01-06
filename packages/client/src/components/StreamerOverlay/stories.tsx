@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { PlayerOverlayItem } from './PlayerOverlayItem';
+import { PlayerOverlayItemContent } from './PlayerOverlayItem';
 
 const meta = {
   title: 'Example/StreamerOverlay',
-  component: PlayerOverlayItem,
+  component: PlayerOverlayItemContent,
   argTypes: {
     teamIdx: { name: 'Team Index', control: 'number' },
     name: { name: 'Name', control: 'text' },
@@ -35,7 +35,7 @@ const meta = {
       ],
     },
   },
-} satisfies Meta<typeof PlayerOverlayItem>;
+} satisfies Meta<typeof PlayerOverlayItemContent>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

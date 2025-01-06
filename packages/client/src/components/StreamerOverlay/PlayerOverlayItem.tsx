@@ -1,7 +1,9 @@
+import { errorSteamProfile } from '@motd-menu/common';
 import classNames from 'classnames';
-import React, { FC, useState } from 'react';
+import React, { FC, Suspense, useMemo, useState } from 'react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import { createUseStyles } from 'react-jss';
+import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { itemNameToIconGlyph } from 'src/util/iconGlyph';
 import { teamInfoByIdx } from 'src/util/teams';
 import FlashlightIcon from '~icons/flashlight.svg';
@@ -140,7 +142,7 @@ const useStyles = createUseStyles({
 const maxHp = 100;
 const maxAp = 200;
 
-export const PlayerOverlayItem: FC<{
+export interface PlayerOverlayItemContentProps {
   teamIdx: number;
   name: string;
   avatarUrl: string;
@@ -152,7 +154,9 @@ export const PlayerOverlayItem: FC<{
   flashlight: boolean;
   weapon: string;
   flip?: boolean;
-}> = ({
+}
+
+export const PlayerOverlayItemContent: FC<PlayerOverlayItemContentProps> = ({
   teamIdx,
   name,
   avatarUrl,
@@ -240,5 +244,46 @@ export const PlayerOverlayItem: FC<{
         />
       </div>
     </div>
+  );
+};
+
+type PlayerOverlayItemProps = Omit<
+  PlayerOverlayItemContentProps,
+  'name' | 'avatarUrl'
+> & { steamId: string };
+
+const PlayerOverlayItemWithSteamId: FC<PlayerOverlayItemProps> = ({
+  steamId,
+  ...props
+}) => {
+  const profile = usePlayerSteamProfile(steamId);
+
+  return (
+    <PlayerOverlayItemContent
+      {...props}
+      name={profile.name}
+      avatarUrl={profile.avatar}
+    />
+  );
+};
+
+export const PlayerOverlayItem: FC<PlayerOverlayItemProps> = (props) => {
+  const errorProfile = useMemo(
+    () => errorSteamProfile(props.steamId),
+    [props.steamId],
+  );
+
+  return (
+    <Suspense
+      fallback={
+        <PlayerOverlayItemContent
+          {...props}
+          name={errorProfile.name}
+          avatarUrl={errorProfile.avatar}
+        />
+      }
+    >
+      <PlayerOverlayItemWithSteamId {...props} />
+    </Suspense>
   );
 };
