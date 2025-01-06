@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
+import { useLocation } from 'react-use';
 import snowflakesVideoUrl from '~assets/snow.webm';
 
 const useStyles = createUseStyles({
@@ -16,6 +17,11 @@ const useStyles = createUseStyles({
 
 export const SnowOverlay: FC = () => {
   const c = useStyles();
+  const { pathname } = useLocation();
+
+  if (pathname.startsWith('/streamerOverlay')) {
+    return null;
+  }
 
   const date = new Date();
   const m = date.getMonth();
