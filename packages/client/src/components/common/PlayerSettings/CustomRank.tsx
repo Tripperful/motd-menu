@@ -51,7 +51,8 @@ export const CustomRank: FC<{ steamId: string }> = ({ steamId }) => {
   const customRank = rankData?.customRank;
   const [editing, setEditing] = useState(false);
 
-  const isSubscriptionActive = (rankData.customRankExpiresOn ?? 0) > Date.now();
+  const isSubscriptionActive =
+    (rankData?.customRankExpiresOn ?? 0) > Date.now();
   const canEdit =
     (mySteamId === steamId || canEditOthersRanks) && isSubscriptionActive;
 
@@ -87,7 +88,7 @@ export const CustomRank: FC<{ steamId: string }> = ({ steamId }) => {
       />
       <span className={c.subscription}>
         (
-        {rankData.customRankExpiresOn
+        {rankData?.customRankExpiresOn
           ? `expire${isSubscriptionActive ? 's' : 'd'} on ${dateFormat(rankData.customRankExpiresOn)}`
           : 'no subscription'}
         )
