@@ -13,4 +13,5 @@ export const theme = {
   fgSuccess: '#6eb41e',
   fgArmor: '#0f96d7',
   backdrop: '#888b',
+  rainbowGradient: `linear-gradient(in hsl longer hue 90deg, red 0 0);`,
 };

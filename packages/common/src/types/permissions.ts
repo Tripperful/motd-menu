@@ -14,6 +14,7 @@ export const permissionDescriptions = {
   permissions_edit: "Edit players' permissions",
   news_create: 'Create news',
   news_publish: 'Publish news',
+  custom_ranks_edit: "Edit players' custom ranks",
   rcon: 'Run server concommands via the menu',
   streamer: 'Allow streamer overlay',
   view_city: "View players' cities",

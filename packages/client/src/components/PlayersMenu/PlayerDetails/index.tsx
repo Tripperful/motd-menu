@@ -18,6 +18,7 @@ import MatchesIcon from '~icons/playlist.svg';
 import StarIcon from '~icons/star.svg';
 import UserInspectIcon from '~icons/user-inspect.svg';
 import { outlineButton } from '~styles/elements';
+import { theme } from '~styles/theme';
 import { MapsReviewsPopup } from './MapsReviewsPopup';
 import { PlayerAka } from './PlayerAka';
 import { PlayerMatchesPopup } from './PlayerMatchesPopup';
@@ -27,7 +28,6 @@ import { PlayerTimePlayed } from './PlayerTimePlayed';
 import { SetAkaPopup } from './SetAkaPopup';
 import { SetPlayerTeam } from './SetPlayerTeam';
 import { SmurfsPopup } from './SmurfsPopup';
-import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
   root: {
@@ -70,8 +70,7 @@ const useStyles = createUseStyles({
   },
 });
 
-const EfpsStatsPopup: FC = () => {
-  const { steamId } = useParams();
+const EfpsStatsPopup: FC<{ steamId: string }> = ({ steamId }) => {
   const goBack = useGoBack();
 
   return (
@@ -85,10 +84,9 @@ const EfpsStatsPopup: FC = () => {
   );
 };
 
-const PlayerDetailsContent: FC = () => {
+const PlayerDetailsContent: FC<{ steamId: string }> = ({ steamId }) => {
   const c = useStyles();
 
-  const { steamId } = useParams();
   const player = usePlayerSteamProfile(steamId);
   const isOnline = useIsPlayerOnline(steamId);
   const profileLink = steamProfileLink(player.steamId);
@@ -146,23 +144,10 @@ const PlayerDetailsContent: FC = () => {
         <div>Client settings</div>
         <PlayerSettings steamId={steamId} />
       </div>
-      {canViewPermissions && <PlayerPermissions />}
-    </>
-  );
-};
-
-export const PlayerDetails: FC<{ backPath?: string }> = ({ backPath }) => {
-  const c = useStyles();
-  const { steamId } = useParams();
-
-  return (
-    <SidePanel title={<h2>Player details</h2>} backPath={backPath}>
-      <div className={c.root}>
-        <PlayerDetailsContent />
-      </div>
+      {canViewPermissions && <PlayerPermissions steamId={steamId} />}
       <Routes>
-        <Route path="/smurfs/*" element={<SmurfsPopup />} />
-        <Route path="/efps/*" element={<EfpsStatsPopup />} />
+        <Route path="/smurfs/*" element={<SmurfsPopup steamId={steamId} />} />
+        <Route path="/efps/*" element={<EfpsStatsPopup steamId={steamId} />} />
         <Route path="/setAka/*" element={<SetAkaPopup steamId={steamId} />} />
         <Route
           path="/matches/*"
@@ -173,6 +158,23 @@ export const PlayerDetails: FC<{ backPath?: string }> = ({ backPath }) => {
           element={<MapsReviewsPopup steamId={steamId} />}
         />
       </Routes>
+    </>
+  );
+};
+
+export const PlayerDetails: FC<{ backPath?: string; steamId?: string }> = ({
+  backPath,
+  steamId,
+}) => {
+  const c = useStyles();
+  const routeSteamId = useParams().steamId;
+  steamId ??= routeSteamId;
+
+  return (
+    <SidePanel title={<h2>Player details</h2>} backPath={backPath}>
+      <div className={c.root}>
+        <PlayerDetailsContent steamId={steamId} />
+      </div>
     </SidePanel>
   );
 };

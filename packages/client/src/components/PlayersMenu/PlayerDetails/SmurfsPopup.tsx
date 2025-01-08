@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
-import { Route, Routes, useParams } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import {
   usePlayerNames,
   usePlayerSmurfSteamIds,
@@ -80,9 +80,8 @@ export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
   );
 };
 
-export const SmurfsPopup: FC = () => {
+export const SmurfsPopup: FC<{ steamId: string }> = ({ steamId }) => {
   const c = useStyles();
-  const { steamId } = useParams();
   const goBack = useGoBack();
 
   return (

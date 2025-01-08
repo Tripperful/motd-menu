@@ -4,10 +4,9 @@ import type {
   SrcdsWsSendSchema,
   WsApiServer,
 } from '@motd-menu/common';
-import { BaseWsApiServer } from '@motd-menu/common';
+import { BaseWsApiServer, chatColor } from '@motd-menu/common';
 import type { IncomingMessage } from 'http';
 import { db } from 'src/db';
-import { chatColor } from 'src/util';
 
 export class SrcdsWsApiServer extends BaseWsApiServer<
   SrcdsWsRecvSchema,

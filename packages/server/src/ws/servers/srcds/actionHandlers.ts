@@ -1,9 +1,14 @@
-import { PlayerClientSettings } from '@motd-menu/common';
+import {
+  PlayerClientSettings,
+  RankData,
+  RankUpdateData,
+} from '@motd-menu/common';
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { getPlayerProfile } from 'src/steam';
 import { dbgErr } from 'src/util';
-import { getEfpsRank, sendMatchToEfps } from 'src/util/efps';
+import { getRankData, sendMatchToEfps } from 'src/util/ranks';
+import { toSrcdsRankData } from 'src/util/ranks';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
 import { chargerUseHandler } from './chargerUseHandler';
 
@@ -24,10 +29,11 @@ srcdsWsServer.onMessage('player_connected', async (srcds, data) => {
   );
 
   try {
-    const rankData = await getEfpsRank(steamId);
+    const rankUpdateData = toSrcdsRankData(await getRankData(steamId));
+    rankUpdateData.show = false;
 
-    if (rankData?.rank) {
-      srcds.send('rank_update', [{ ...rankData, show: false }]);
+    if (rankUpdateData.rank) {
+      srcds.send('rank_update', [rankUpdateData]);
     }
   } catch (e) {
     dbgErr(e);
@@ -122,14 +128,19 @@ srcdsWsServer.onMessage('match_ended', async (srcds, data) => {
 
         const playersRanks = (
           await Promise.all(
-            players.map((player) => getEfpsRank(player.steamId)),
+            players.map((player) => getRankData(player.steamId)),
           )
         ).filter(Boolean);
 
         await db.matchStats.updateAfterMatchRanks(data.id, playersRanks);
         connectedSrcds.send(
           'rank_update',
-          playersRanks.map((rank) => ({ ...rank, show: true })),
+          playersRanks.map((rank) => {
+            const rankUpdateData = toSrcdsRankData(rank);
+            rankUpdateData.show = true;
+
+            return rankUpdateData;
+          }),
         );
       }),
     );

@@ -49,4 +49,9 @@ BEGIN
   ALTER TABLE projectile_spawns RENAME COLUMN temp_col_name TO entity_id;
 END IF; 
 END
-$$
+$$;
+
+ALTER TABLE IF EXISTS client_custom_ranks
+ADD COLUMN IF NOT EXISTS rank_data json DEFAULT NULL,
+DROP COLUMN IF EXISTS rank,
+DROP COLUMN IF EXISTS color;

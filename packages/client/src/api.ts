@@ -1,6 +1,7 @@
 import {
   ArrayElementType,
   ChatCommandInfo,
+  CustomRankData,
   Cvar,
   EfpsMatchSummaryStat,
   MapDetailsData,
@@ -177,10 +178,16 @@ class MotdApi {
   }
 
   public async getPlayerStats(steamId: string) {
-    return (
-      (JSON.parse(await this.get(`players/stats/${steamId}`)) as {
-        efpsRank: RankData;
-      }) || null
+    return JSON.parse(await this.get(`players/stats/${steamId}`)) as RankData;
+  }
+
+  public async setPlayerCustomRank(
+    steamId: string,
+    customRankData: CustomRankData,
+  ) {
+    await this.post(
+      `players/customRank/${steamId}`,
+      JSON.stringify(customRankData),
     );
   }
 

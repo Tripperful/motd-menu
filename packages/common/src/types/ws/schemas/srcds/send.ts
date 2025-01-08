@@ -7,7 +7,7 @@ import type {
   ClientCexecData,
   MatchStateData,
   MotdOpenData,
-  RankData,
+  RankUpdateData,
   RunCommandData,
   SetCvarData,
   SetCvarsResponseData,
@@ -59,7 +59,7 @@ export type SrcdsWsSendSchema = WsApiSchema<{
     reqData: ClientCexecData;
   };
   rank_update: {
-    reqData: RankData[];
+    reqData: RankUpdateData[];
   };
   changelevel: {
     reqData: ChangeLevelData;

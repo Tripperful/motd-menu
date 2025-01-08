@@ -1,6 +1,7 @@
 import {
   AmmoPickupData,
   BatteryPickupData,
+  CustomRankData,
   EfpsMatchSummary,
   EfpsMatchSummaryStat,
   EntityTeleportData,
@@ -151,14 +152,9 @@ export interface Database {
     };
     saveCvars(steamId: string, cvars: Record<string, string>): Promise<void>;
     getLastSavedCvar(steamId: string, cvar: string): Promise<string>;
-    getCustomRank(
-      steamId: string,
-    ): Promise<{ rank: string; color: [number, number, number] }>;
-    setCustomRank(
-      steamId: string,
-      rank: string,
-      color: [number, number, number],
-    ): Promise<void>;
+    getCustomRank(steamId: string): Promise<CustomRankData>;
+    setCustomRank(steamId: string, rank: CustomRankData): Promise<void>;
+    getCustomRankSubscription(steamId: string): Promise<number>;
     getLastIp(steamId: string): Promise<string>;
   };
   server: {

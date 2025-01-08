@@ -14,7 +14,7 @@ import { WebSocketServer } from 'ws';
 import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
-import { EfpsWatchdog } from './util/efps';
+import { EfpsWatchdog } from './util/ranks';
 
 const app = express();
 

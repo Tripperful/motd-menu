@@ -1,4 +1,8 @@
-import { MatchSummaryTeam, MatchSummaryTeamPlayer } from '@motd-menu/common';
+import {
+  getContrastingColor,
+  MatchSummaryTeam,
+  MatchSummaryTeamPlayer,
+} from '@motd-menu/common';
 import React, { FC, Fragment, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
@@ -15,7 +19,6 @@ import {
 import { useMatchDamage } from 'src/hooks/state/matchDamage';
 import { useMatchDeaths } from 'src/hooks/state/matchDeaths';
 import { useMatchResult } from 'src/hooks/state/matchResults';
-import { getContrastingColor } from 'src/util/color';
 import { teamInfoByIdx } from 'src/util/teams';
 import { Flag } from '~components/common/Flag';
 import { activeItem } from '~styles/elements';

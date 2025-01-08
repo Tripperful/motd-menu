@@ -4,10 +4,13 @@ import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useMyPermissions } from 'src/hooks/state/permissions';
+import { useMySteamId } from 'src/hooks/useMySteamId';
 import { NewsBadge } from '~components/News/NewsBadge';
+import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
 import BackIcon from '~icons/chevron-left.svg';
 import CrossIcon from '~icons/close.svg';
 import HelpIcon from '~icons/help.svg';
+import PersonIcon from '~icons/person.svg';
 import { filterShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
 import { SidePanel } from '../SidePanel';
@@ -118,6 +121,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   const c = useStyles();
   const [hoveredItem, setHoveredItem] = useState<MenuItemInfo>();
 
+  const mySteamId = useMySteamId();
   const permissions = useMyPermissions();
   const visibleItems = useMemo(
     () =>
@@ -187,6 +191,9 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
         <MenuBadge to="help">
           <HelpIcon />
         </MenuBadge>
+        <MenuBadge to="myProfile">
+          <PersonIcon />
+        </MenuBadge>
       </div>
       <Routes>
         <Route
@@ -202,6 +209,14 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
           element={
             <SidePanel title={<h2>Help</h2>}>
               <LazyHelp />
+            </SidePanel>
+          }
+        />
+        <Route
+          path="myProfile/*"
+          element={
+            <SidePanel title={<h2>Help</h2>}>
+              <PlayerDetails steamId={mySteamId} />
             </SidePanel>
           }
         />

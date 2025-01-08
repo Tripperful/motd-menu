@@ -24,10 +24,9 @@ const useStyles = createUseStyles({
 });
 
 const PermissionItem: FC<{
+  steamId: string;
   permission: Permission;
-}> = ({ permission }) => {
-  const { steamId } = useParams();
-
+}> = ({ steamId, permission }) => {
   const canEdit = useCheckPermission('permissions_edit');
   const granted = usePlayerPermissions(steamId).includes(permission);
 
@@ -55,14 +54,18 @@ const PermissionItem: FC<{
   );
 };
 
-export const PlayerPermissions: FC = () => {
+export const PlayerPermissions: FC<{ steamId: string }> = ({ steamId }) => {
   const c = useStyles();
 
   return (
     <div className={c.root}>
       <div>Permissions</div>
       {allPermissions.map((permission) => (
-        <PermissionItem key={permission} permission={permission} />
+        <PermissionItem
+          key={permission}
+          steamId={steamId}
+          permission={permission}
+        />
       ))}
     </div>
   );

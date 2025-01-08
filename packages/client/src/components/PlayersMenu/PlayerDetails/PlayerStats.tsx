@@ -1,10 +1,13 @@
-import React, { FC } from 'react';
+import { colorByRank, rgbToHsl } from '@motd-menu/common';
+import React, { FC, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
-import { usePlayerStats } from 'src/hooks/state/playerStats';
-import { theme } from '~styles/theme';
-import EfpsIcon from '~icons/efps.svg';
 import { Link } from 'react-router-dom';
+import { usePlayerStats } from 'src/hooks/state/playerStats';
+import { ColoredText } from '~components/common/ColoredText';
+import { CustomRank } from '~components/common/PlayerSettings/CustomRank';
+import EfpsIcon from '~icons/efps.svg';
 import { outlineButton } from '~styles/elements';
+import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
   root: {
@@ -22,6 +25,7 @@ const useStyles = createUseStyles({
     display: 'flex',
     paddingLeft: '0.5em',
     gap: '0.5em',
+    alignItems: 'center',
   },
   value: {
     color: theme.fg1,
@@ -34,39 +38,51 @@ const useStyles = createUseStyles({
 export const PlayerStats: FC<{ steamId: string }> = ({ steamId }) => {
   const c = useStyles();
 
-  const { efpsRank } = usePlayerStats(steamId);
-  const { r, g, b, pos, max, points } = efpsRank ?? {};
+  const { efpsRank, customRank, customRankExpiresOn } =
+    usePlayerStats(steamId) ?? {};
+
+  const efpsRankColorStops = useMemo(
+    () => efpsRank && [rgbToHsl(colorByRank(efpsRank.title))],
+    [efpsRank],
+  );
 
   return (
     <>
-      {efpsRank && (
-        <div className={c.root}>
-          <div className={c.sectionHeader}>
-            <Link className={c.button} to="efps">
-              <EfpsIcon />
-              eFPS stats
-            </Link>
-          </div>
-          <div className={c.line}>
-            <span>Rank:</span>
-            <span style={{ color: `rgb(${r} ${g} ${b})` }}>
-              {efpsRank.rank}
-            </span>
-          </div>
-          <div className={c.line}>
-            <span>Place:</span>
-            <span>
-              <span className={c.value}>{pos}</span>
-              &nbsp;of&nbsp;
-              <span className={c.value}>{max}</span>
-            </span>
-          </div>
-          <div className={c.line}>
-            <span>Points:</span>
-            <span className={c.value}>{points}</span>
-          </div>
+      <div className={c.root}>
+        <div className={c.sectionHeader}>
+          <Link className={c.button} to="efps">
+            <EfpsIcon />
+            eFPS stats
+          </Link>
         </div>
-      )}
+        <div className={c.line}>
+          <span>Custom rank:</span>
+          <CustomRank steamId={steamId} />
+        </div>
+        {efpsRank && (
+          <>
+            <div className={c.line}>
+              <span>eFPS Rank:</span>
+              <ColoredText
+                text={efpsRank.title}
+                colorStops={efpsRankColorStops}
+              />
+            </div>
+            <div className={c.line}>
+              <span>Place:</span>
+              <span>
+                <span className={c.value}>{efpsRank.pos}</span>
+                &nbsp;of&nbsp;
+                <span className={c.value}>{efpsRank.max}</span>
+              </span>
+            </div>
+            <div className={c.line}>
+              <span>Points:</span>
+              <span className={c.value}>{efpsRank.points}</span>
+            </div>
+          </>
+        )}
+      </div>
     </>
   );
 };

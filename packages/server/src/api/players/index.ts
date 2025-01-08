@@ -1,10 +1,16 @@
+import {
+  CustomRankData,
+  maxColorRankLength,
+  maxGradientRankLength,
+} from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
+import { getRankData, toSrcdsRankData } from 'src/util/ranks';
 import { akaRouter } from './aka';
 import { permissionsRouter } from './permissions';
 import { playerSettingsRouter } from './settings';
-import { getEfpsRank } from 'src/util/efps';
+import { SrcdsWsApiServer } from 'src/ws/servers/srcds/SrcdsWsApiServer';
 
 export const playersRouter = Router();
 
@@ -58,9 +64,52 @@ playersRouter.get('/stats/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
 
-    const efpsRank = await getEfpsRank(steamId);
+    const rankData = await getRankData(steamId);
 
-    res.status(200).json({ efpsRank });
+    res.status(200).json(rankData);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+playersRouter.post('/customRank/:steamId', async (req, res) => {
+  try {
+    const { steamId } = req.params;
+    const customRankData = req.body as CustomRankData;
+
+    const {
+      sessionData: { permissions, steamId: mySteamId },
+    } = res.locals;
+
+    if (
+      !(
+        permissions.includes('custom_ranks_edit') ||
+        (steamId === mySteamId && db.client.getCustomRankSubscription(steamId))
+      )
+    ) {
+      return res.status(403).end();
+    }
+
+    const maxRankLength =
+      customRankData.colorStops.length > 1
+        ? maxGradientRankLength
+        : maxColorRankLength;
+
+    if (customRankData.title.length > maxRankLength) {
+      return res.status(400).end();
+    }
+
+    await db.client.setCustomRank(steamId, customRankData);
+
+    for (const srcds of SrcdsWsApiServer.getInstace().getConnectedClients()) {
+      const rankUpdateData = toSrcdsRankData(await getRankData(steamId));
+      rankUpdateData.show = true;
+
+      srcds.send('rank_update', [rankUpdateData]);
+    }
+
+    res.status(200).end();
   } catch (e) {
     console.error(e);
     res.status(500).end();

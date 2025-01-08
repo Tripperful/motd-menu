@@ -1,6 +1,7 @@
 import {
   AmmoPickupData,
   BatteryPickupData,
+  CustomRankData,
   EfpsMatchSummary,
   EfpsMatchSummaryStat,
   EntityTeleportData,
@@ -282,23 +283,14 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.select<string>('get_last_saved_cvar', steamId, cvar),
 
     getCustomRank: async (steamId: string) =>
-      this.select<{ rank: string; color: [number, number, number] }>(
-        'get_client_custom_rank',
-        steamId,
-      ),
+      this.select<CustomRankData>('get_client_custom_rank', steamId),
 
-    setCustomRank: async (
-      steamId: string,
-      rank: string,
-      color: [number, number, number],
-    ) => {
-      await this.call(
-        'set_client_custom_rank',
-        steamId,
-        rank,
-        JSON.stringify(color),
-      );
+    setCustomRank: async (steamId: string, rank: CustomRankData) => {
+      await this.call('set_client_custom_rank', steamId, rank);
     },
+
+    getCustomRankSubscription: async (steamId: string) =>
+      this.select<number>('get_client_custom_rank_subscription', steamId),
   };
 
   server = {

@@ -66,6 +66,9 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE TABLE IF NOT EXISTS
+  client_custom_rank_subscriptions (steam_id bigint PRIMARY KEY, expires_on timestamp);
+
+CREATE TABLE IF NOT EXISTS
   matches (
     id uuid PRIMARY KEY,
     map_id int REFERENCES maps (id),

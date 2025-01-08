@@ -7,3 +7,8 @@ const playerStatsState = createGlobalState(fetchPlayerStats);
 
 export const usePlayerStats = (steamId: string) =>
   playerStatsState.useExternalState(steamId);
+
+export const setPlayerStats = (
+  steamId: string,
+  stats: Parameters<typeof playerStatsState.set>['0'],
+) => playerStatsState.set(stats, steamId);

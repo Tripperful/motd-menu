@@ -1,3 +1,4 @@
+import { HslColor } from './color';
 import type { SteamPlayerData } from './steam';
 
 export interface OnlinePlayerInfo {
@@ -40,4 +41,24 @@ export interface PlayerClientSettings {
   dsp: boolean;
   drawViewmodel: boolean;
   hitSoundPaths?: HitSoundPathsData;
+}
+
+export interface EfpsRankData {
+  title: string;
+  points: number;
+  pos: number;
+  max: number;
+}
+
+export interface CustomRankData {
+  title: string;
+  colorStops: HslColor[];
+}
+
+export interface RankData {
+  steamId: string;
+  efpsRank?: EfpsRankData;
+  customRank?: CustomRankData;
+  show?: boolean;
+  customRankExpiresOn?: number;
 }

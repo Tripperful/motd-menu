@@ -1,5 +1,5 @@
-import { HitSoundPathsData } from '../../../players';
 import type { Cvar } from '../../../../cvars';
+import type { HitSoundPathsData } from '../../../players';
 import type { WeaponType } from '../../../weapons';
 
 export interface PlayerConnectedData {
@@ -121,7 +121,7 @@ export interface ClientCexecData {
   command: string;
 }
 
-export interface RankData {
+export interface RankUpdateData {
   steamId: string;
   points: number;
   rank: string;

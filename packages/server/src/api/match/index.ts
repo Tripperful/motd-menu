@@ -3,13 +3,14 @@ import {
   MatchFilters,
   StartMatchSettings,
   base64encode,
+  chatColor,
   cvarsInfo,
   matchCvars,
 } from '@motd-menu/common';
 import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
-import { chatColor, sanitizeCvarValue } from 'src/util';
+import { sanitizeCvarValue } from 'src/util';
 
 export const matchRouter = Router();
 
