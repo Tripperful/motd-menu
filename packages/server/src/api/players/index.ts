@@ -91,13 +91,15 @@ playersRouter.post('/customRank/:steamId', async (req, res) => {
       return res.status(403).end();
     }
 
-    const maxRankLength =
-      customRankData.colorStops.length > 1
-        ? maxGradientRankLength
-        : maxColorRankLength;
+    if (customRankData?.title) {
+      const maxRankLength =
+        customRankData.colorStops.length > 1
+          ? maxGradientRankLength
+          : maxColorRankLength;
 
-    if (customRankData.title.length > maxRankLength) {
-      return res.status(400).end();
+      if (customRankData.title.length > maxRankLength) {
+        return res.status(400).end();
+      }
     }
 
     await db.client.setCustomRank(steamId, customRankData);

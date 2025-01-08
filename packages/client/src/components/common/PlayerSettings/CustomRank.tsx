@@ -64,7 +64,7 @@ export const CustomRank: FC<{ steamId: string }> = ({ steamId }) => {
 
   const onSubmit = async () => {
     try {
-      const customRank: CustomRankData = { title, colorStops };
+      const customRank: CustomRankData = title ? { title, colorStops } : null;
 
       await motdApi.setPlayerCustomRank(steamId, customRank);
       await setPlayerStats(steamId, async (oldStats) => ({

@@ -335,13 +335,13 @@ OR REPLACE PROCEDURE set_client_custom_rank (steam_id text, rank_data json) AS $
 IF set_client_custom_rank.rank_data IS NOT NULL THEN
   INSERT INTO client_custom_ranks (steam_id, rank_data)
   VALUES (
-    steam_id::bigint,
-    rank_data
+    set_client_custom_rank.steam_id::bigint,
+    set_client_custom_rank.rank_data
   ) ON CONFLICT ON CONSTRAINT client_custom_ranks_pkey DO
     UPDATE SET rank_data = EXCLUDED.rank_data;
 ELSE
   DELETE FROM client_custom_ranks
-  WHERE client_custom_ranks.steam_id = steam_id::bigint;
+  WHERE client_custom_ranks.steam_id = set_client_custom_rank.steam_id::bigint;
 END IF;
 END;
 $$ LANGUAGE plpgsql;
