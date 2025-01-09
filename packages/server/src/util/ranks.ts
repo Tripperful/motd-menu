@@ -38,21 +38,19 @@ export const getRankData = async (steamId: string) => {
       efpsUrl('player_stats', { steamId: steamId64ToLegacy(steamId) }),
     );
 
-    const data = (await res.json()) as Record<string, string>;
+    const efpsData = (await res.json()) as Record<string, string>;
 
-    if (!data.rank) {
-      return null as RankData;
+    if (efpsData.rank) {
+      const [pos, max] = efpsData.place.split(' of ').map(Number);
+      const title = efpsData.rank;
+
+      efpsRank = {
+        title,
+        points: Number(efpsData.points),
+        pos,
+        max,
+      };
     }
-
-    const [pos, max] = data.place.split(' of ').map(Number);
-    const title = data.rank;
-
-    efpsRank = {
-      title,
-      points: Number(data.points),
-      pos,
-      max,
-    };
   } catch {}
 
   return { steamId, efpsRank, customRank, customRankExpiresOn } as RankData;
