@@ -1,5 +1,5 @@
 import React, { FC, Suspense } from 'react';
-import { useCvar } from 'src/hooks/useCvar';
+import { useAvailableVotes } from 'src/hooks/useAvailableVotes';
 import { useSessionData } from 'src/hooks/useSessionData';
 import { Menu, MenuItemInfo } from '~components/common/Menu';
 import { Spinner } from '~components/common/Spinner';
@@ -12,9 +12,8 @@ import TerrainIcon from '~icons/terrain.svg';
 import VoteIcon from '~icons/vote.svg';
 
 export const MainMenu: FC = () => {
-  const [mmMatchValue] = useCvar('mp_match');
-  const isMatch = Number(mmMatchValue) > 0;
   const userId = useSessionData().userId;
+  const votes = useAvailableVotes();
 
   return (
     <Suspense fallback={<Spinner />}>
@@ -53,7 +52,7 @@ export const MainMenu: FC = () => {
               title: 'Start a vote',
               link: 'startVote',
               Icon: <VoteIcon />,
-              shouldShow: () => isMatch,
+              shouldShow: () => votes.length > 0,
             },
           ] as MenuItemInfo[]
         }
