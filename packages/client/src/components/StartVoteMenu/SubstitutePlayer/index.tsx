@@ -68,6 +68,12 @@ const useStyles = createUseStyles({
   copy: {
     ...activeItemNoTransform(),
   },
+  cant: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: '1 1 auto',
+  },
 });
 
 const useDraggableStyles = createUseStyles({
@@ -178,7 +184,9 @@ const SubstitutePlayerContent: FC = () => {
     }
   };
 
-  return (
+  const iAmPlaying = participantsSteamIds.includes(mySteamId);
+
+  return iAmPlaying ? (
     <DndContext onDragEnd={handleDragEnd}>
       <div className={c.root}>
         <div className={c.columns}>
@@ -263,6 +271,10 @@ const SubstitutePlayerContent: FC = () => {
         </ConfirmDialog>
       )}
     </DndContext>
+  ) : (
+    <div className={c.cant}>
+      <h2>You don't play in this match and can't replace players in it.</h2>
+    </div>
   );
 };
 
