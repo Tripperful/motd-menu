@@ -1,8 +1,6 @@
 import './config';
 import './ws/servers';
 
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
 import express from 'express';
 import expressStaticGzip from 'express-static-gzip';
 import http from 'http';
@@ -12,7 +10,6 @@ import path from 'path';
 import { BaseWsApiServer } from '@motd-menu/common';
 import { WebSocketServer } from 'ws';
 import { api } from './api';
-import { authMiddleware } from './auth';
 import { db } from './db';
 import { EfpsWatchdog } from './util/ranks';
 
@@ -34,10 +31,6 @@ const storybookStaticServer = expressStaticGzip(storybookStaticDir, {
 app.use('/healthcheck', (_req, res) => res.send('healthy'));
 app.set('x-powered-by', false);
 app.use('/storybook', storybookStaticServer);
-app.use(cookieParser());
-app.use('/', authMiddleware);
-// app.use(TelegramService.middleware);
-app.use(bodyParser.json({ strict: false }));
 app.use('/api', api);
 app.use(staticServer);
 app.use((_req, res) =>

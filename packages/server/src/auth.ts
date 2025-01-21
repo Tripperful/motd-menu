@@ -68,18 +68,37 @@ export const dropAuthCache = (token: string) => {
   delete authCache[token];
 };
 
-export const getMotdReqAuthParams = (req: Request) => {
+const getReqQueryParams = (req: Request) => {
+  const reqQuery = new URL(req.url, `http://${req.headers.host}`).searchParams;
+  const refererQuery = new URL(req.headers.referer).searchParams;
+  const query = reqQuery.get('token') ? reqQuery : refererQuery;
+
+  return {
+    token: query.get('token'),
+    remoteId: query.get('guid'),
+  };
+};
+
+const getMotdReqAuthParams = (req: Request) => {
+  const query = getReqQueryParams(req);
+
   const reqAuthVersion = req.cookies?.version ?? authVersion;
   const cookie = reqAuthVersion === authVersion ? req.cookies : null;
-  const token: string = (req.query?.token as string) ?? cookie?.token;
-  const remoteId: string = (req.query?.guid as string) ?? cookie?.remoteId;
+  const token: string = query.token ?? cookie?.token;
+  const remoteId: string = query.remoteId ?? cookie?.remoteId;
 
-  return { reqAuthVersion, cookie, token, remoteId };
+  return {
+    reqAuthVersion,
+    cookie,
+    token,
+    remoteId,
+    isQueryAuth: !!query.token,
+  };
 };
 
 export const authMiddleware: RequestHandler = async (req, res, next) => {
   try {
-    const { reqAuthVersion, cookie, token, remoteId } =
+    const { reqAuthVersion, cookie, token, remoteId, isQueryAuth } =
       getMotdReqAuthParams(req);
 
     if (!token) {
@@ -122,9 +141,7 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
       volume,
     };
 
-    const queryAuth = Boolean(req.query?.token);
-
-    if (queryAuth) {
+    if (isQueryAuth) {
       res.cookie('version', authVersion);
       res.cookie('token', token, { httpOnly: true });
       res.cookie('steamId', steamId);
