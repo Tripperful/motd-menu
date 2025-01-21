@@ -150,7 +150,7 @@ export const getPlayersProfiles = async (
 
       if (!includeCity) {
         for (const profile of Object.values(requestedProfiles)) {
-          if (profile.geo?.city) {
+          if (profile?.geo?.city) {
             profile.geo = {
               country: profile.geo.country,
               countryCode: profile.geo.countryCode,
