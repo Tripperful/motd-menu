@@ -2,7 +2,6 @@ import {
   Cvar,
   MatchFilters,
   StartMatchSettings,
-  base64encode,
   chatColor,
   cvarsInfo,
   matchCvars,
@@ -11,6 +10,7 @@ import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
 import { sanitizeCvarValue } from 'src/util';
+import { base64encode } from 'src/util/base64';
 
 export const matchRouter = Router();
 
