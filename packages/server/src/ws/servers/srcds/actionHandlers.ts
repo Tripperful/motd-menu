@@ -1,14 +1,9 @@
-import {
-  PlayerClientSettings,
-  RankData,
-  RankUpdateData,
-} from '@motd-menu/common';
+import { PlayerClientSettings } from '@motd-menu/common';
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { getPlayerProfile } from 'src/steam';
 import { dbgErr } from 'src/util';
-import { getRankData, sendMatchToEfps } from 'src/util/ranks';
-import { toSrcdsRankData } from 'src/util/ranks';
+import { getRankData, sendMatchToEfps, toSrcdsRankData } from 'src/util/ranks';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
 import { chargerUseHandler } from './chargerUseHandler';
 
@@ -64,16 +59,16 @@ srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
   const { steamId } = data;
   const cmd = data.msg.toLowerCase();
 
-  const permissions = await db.permissions.get(steamId);
-
-  // Only for dev for now
-  if (!permissions.includes('dev')) return;
-
   if (cmd === '!votespec') {
     const players = await srcds.request('get_players_request');
     const callee = players.find((p) => p.steamId === steamId);
 
     if (callee?.teamIdx === 1) return;
+
+    const isMatch =
+      (await srcds.request('get_cvars_request', ['mp_match'])).mp_match !== '0';
+
+    if (isMatch) return;
 
     srcds.send('motd_open', {
       url: 'vote/spec',

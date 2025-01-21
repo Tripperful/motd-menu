@@ -26,6 +26,7 @@ const useStyles = createUseStyles({
     overflow: 'hidden',
     backgroundColor: theme.bg1,
     borderRadius: '0.5em',
+    maxHeight: 'calc(100% - 8em)',
   },
   title: {
     fontSize: '1.5em',
@@ -36,8 +37,8 @@ const useStyles = createUseStyles({
     flexDirection: 'column',
     gap: '0.5em',
     overflow: 'hidden scroll',
-    paddingRight: '0.5em',
-    paddingLeft: '1em',
+    marginRight: '-0.5em',
+    width: '100%',
   },
   playerItem: {
     width: '20em',
@@ -125,16 +126,18 @@ const VoteSpec: FC = () => {
     <Page title={<h2>Move player to spectators</h2>} backPath="/">
       <div className={c.root}>
         <div className={c.title}>{title}</div>
-        <div className={c.playerList}>
-          {otherPlayers.map((p) => (
-            <PlayerItem
-              className={c.playerItem}
-              profile={p.steamProfile}
-              key={p.steamId}
-              onClick={() => onPlayerClick(p.steamId)}
-            />
-          ))}
-        </div>
+        {otherPlayers.length > 0 && (
+          <div className={c.playerList}>
+            {otherPlayers.map((p) => (
+              <PlayerItem
+                className={c.playerItem}
+                profile={p.steamProfile}
+                key={p.steamId}
+                onClick={() => onPlayerClick(p.steamId)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </Page>
   );
