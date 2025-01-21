@@ -170,7 +170,7 @@ const MatchScore: FC<{ data: MatchSummary }> = ({ data }) => {
           key={i}
           className={c.scoreItem}
           style={{
-            backgroundColor: Color(teamInfoByIdx[s.team].color)
+            backgroundColor: Color(teamInfoByIdx(s.team).color)
               .alpha(0.8)
               .hexa(),
           }}
@@ -215,7 +215,7 @@ const PlayersChips: FC<{ teams: MatchSummaryTeam[] }> = ({ teams }) => {
         <span
           key={p.steamId}
           className={c.chip}
-          style={{ color: teamInfoByIdx[p.team].color }}
+          style={{ color: teamInfoByIdx(p.team).color }}
         >
           <span>{p.profile.name}</span>
           <span className={c.chipScore}>

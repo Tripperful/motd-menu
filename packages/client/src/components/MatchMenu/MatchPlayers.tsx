@@ -90,7 +90,7 @@ const SetTeamButton: FC<{
   return (
     <div
       className={c.playerTeamButton}
-      style={{ color: teamInfoByIdx[teamIndex].color }}
+      style={{ color: teamInfoByIdx(teamIndex).color }}
       onClick={() => setTeamIndex(teamIndex)}
     >
       {teamIcons[teamIndex]}
@@ -108,7 +108,7 @@ const MatchPlayerItem: FC<{
 
   return (
     <div className={c.playerItem}>
-      <span style={{ color: teamInfoByIdx[teamIndex].color }}>
+      <span style={{ color: teamInfoByIdx(teamIndex).color }}>
         {player.steamProfile?.name ?? player.steamId}
       </span>
       <span className={c.playerTeamButtons}>
@@ -140,7 +140,7 @@ const TeamList: FC<{
     [players, teamIndex],
   );
 
-  const teamInfo = teamInfoByIdx[teamIndex];
+  const teamInfo = teamInfoByIdx(teamIndex);
 
   return (
     <div className={c.playerList}>

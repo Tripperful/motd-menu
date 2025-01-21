@@ -23,7 +23,7 @@ const useStyles = createUseStyles({
   button: (teamIndex: number) => ({
     ...outlineButton(),
     '&&': {
-      color: teamInfoByIdx[teamIndex]?.color,
+      color: teamInfoByIdx(teamIndex).color,
     },
   }),
 });

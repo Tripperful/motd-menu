@@ -84,10 +84,13 @@ const teamsInfo: PlayerTeam[] = [
   },
 ];
 
-export const teamInfoByIdx: readonly PlayerTeam[] = teamsInfo.reduce(
+const teamInfoByIdxMap: readonly PlayerTeam[] = teamsInfo.reduce(
   (acc, team) => {
     acc[team.index] = team;
     return acc;
   },
   [],
 );
+
+export const teamInfoByIdx = (idx: number) =>
+  teamInfoByIdxMap[idx] ?? teamsInfo[0];

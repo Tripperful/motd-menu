@@ -26,5 +26,5 @@ export const useAvailableTeams = () => {
     return tdmTeams;
   }, [teamplayValue, eqValue]);
 
-  return useMemo(() => teams.map((idx) => teamInfoByIdx[idx]), [teams]);
+  return useMemo(() => teams.map((idx) => teamInfoByIdx(idx)), [teams]);
 };

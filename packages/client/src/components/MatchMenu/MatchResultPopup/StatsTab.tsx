@@ -121,7 +121,7 @@ const MatchTeam: FC<{ team: MatchSummaryTeam }> = ({ team }) => {
   const c = useStyles();
 
   const teamTotalKills = team.players.reduce((acc, p) => acc + p.kills, 0);
-  const teamInfo = teamInfoByIdx[team.index];
+  const teamInfo = teamInfoByIdx(team.index);
 
   return (
     <div className={c.scoreboardGrid}>

@@ -173,7 +173,7 @@ export const PlayerOverlayItemContent: FC<PlayerOverlayItemContentProps> = ({
   useGlobalStyles();
   const isAlive = hp > 0;
   const [blurAvatar, setBlurAvatar] = useState(false);
-  const teamInfo = teamInfoByIdx[teamIdx] ?? teamInfoByIdx[0];
+  const teamInfo = teamInfoByIdx(teamIdx) ?? teamInfoByIdx(0);
 
   return (
     <div

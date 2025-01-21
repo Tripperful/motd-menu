@@ -71,8 +71,8 @@ const KillFeedItem: FC<{
     .toString()
     .padStart(2, '0');
 
-  const attackerTeamColor = teamInfoByIdx[attackerTeam]?.color;
-  const victimTeamColor = teamInfoByIdx[victimTeam]?.color;
+  const attackerTeamColor = teamInfoByIdx(attackerTeam).color;
+  const victimTeamColor = teamInfoByIdx(victimTeam).color;
 
   const isFrag = attackerScoreChange > 0;
   const isTeamKill =

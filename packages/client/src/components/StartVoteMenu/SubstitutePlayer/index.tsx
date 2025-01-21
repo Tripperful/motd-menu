@@ -199,7 +199,7 @@ const SubstitutePlayerContent: FC = () => {
                 }
                 const player = players.find((p) => p.steamId === steamId);
                 const teamColor = player
-                  ? teamInfoByIdx[player.teamIdx].color
+                  ? teamInfoByIdx(player.teamIdx).color
                   : theme.fg3;
 
                 return (
