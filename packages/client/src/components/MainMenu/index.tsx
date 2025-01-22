@@ -50,7 +50,7 @@ export const MainMenu: FC = () => {
             },
             {
               title: 'Start a vote',
-              link: 'startVote',
+              link: 'vote',
               Icon: <VoteIcon />,
               shouldShow: () => votes.length > 0,
             },

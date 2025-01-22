@@ -8,10 +8,11 @@ import {
 } from 'src/hooks/state/players';
 import { useMySteamId } from 'src/hooks/useMySteamId';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
+import { ConfirmDialog } from '~components/common/ConfirmDialog';
 import { Page } from '~components/common/Page';
 import { PlayerItem } from '~components/common/PlayerItem';
 import { SidePanel } from '~components/common/SidePanel';
-import { activeItem, outlineButton } from '~styles/elements';
+import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
@@ -43,18 +44,6 @@ const useStyles = createUseStyles({
   playerItem: {
     width: '20em',
   },
-  options: {
-    display: 'flex',
-    alignSelf: 'stretch',
-    justifyContent: 'space-between',
-    gap: '1em',
-    alignItems: 'center',
-    fontSize: '1.5em',
-  },
-  option: {
-    ...outlineButton(),
-    padding: '0.25em 1.5em',
-  },
   active: {
     ...activeItem(),
   },
@@ -71,22 +60,20 @@ const VoteSpecConfirm: FC = () => {
   };
 
   return (
-    <div className={c.root}>
-      <div className={c.title}>
-        Do you want to move{' '}
-        <Link to="playerDetails" className={c.active}>
-          {player.name}
-        </Link>{' '}
-        to spectators?
-      </div>
-      <div className={c.options}>
-        <div className={c.option} onClick={() => onVote(true)}>
-          Yes
-        </div>
-        <div className={c.option} onClick={() => onVote(false)}>
-          No
-        </div>
-      </div>
+    <>
+      <ConfirmDialog
+        title={
+          <span>
+            Do you want to move{' '}
+            <Link to="playerDetails" className={c.active}>
+              {player.name}
+            </Link>{' '}
+            to spectators?
+          </span>
+        }
+        onConfirm={() => onVote(true)}
+        onCancel={() => onVote(false)}
+      />
       <Routes>
         <Route
           path="playerDetails"
@@ -97,11 +84,11 @@ const VoteSpecConfirm: FC = () => {
           }
         />
       </Routes>
-    </div>
+    </>
   );
 };
 
-const VoteSpec: FC = () => {
+const VoteSpecList: FC = () => {
   const c = useStyles();
   const players = useOnlinePlayers();
   const mySteamId = useMySteamId();
@@ -143,11 +130,11 @@ const VoteSpec: FC = () => {
   );
 };
 
-export const Vote: FC = () => {
+export const VoteSpec: FC = () => {
   return (
     <Routes>
-      <Route path="spec" element={<VoteSpec />} />
-      <Route path="spec/:steamId/*" element={<VoteSpecConfirm />} />
+      <Route path="/" element={<VoteSpecList />} />
+      <Route path="/:steamId/*" element={<VoteSpecConfirm />} />
     </Routes>
   );
 };

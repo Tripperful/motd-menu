@@ -4,6 +4,7 @@ import { useAvailableVotes } from 'src/hooks/useAvailableVotes';
 import { Menu } from '~components/common/Menu';
 import { CancelMatch } from './CancelMatch';
 import { ForfeitMatch } from './ForfeitMatch';
+import { VoteSpec } from './Spec';
 import { SubstitutePlayer } from './SubstitutePlayer';
 
 const StartVoteMenu: FC = () => {
@@ -13,12 +14,13 @@ const StartVoteMenu: FC = () => {
     <>
       <Routes>
         <Route
-          path="/*"
+          path="/"
           element={<Menu items={votes} title="Select vote type" />}
         />
-        <Route path="substitute" element={<SubstitutePlayer />} />
-        <Route path="cancelMatch" element={<CancelMatch />} />
-        <Route path="forfeitMatch" element={<ForfeitMatch />} />
+        <Route path="spec/*" element={<VoteSpec />} />
+        <Route path="substitute/*" element={<SubstitutePlayer />} />
+        <Route path="cancelMatch/*" element={<CancelMatch />} />
+        <Route path="forfeitMatch/*" element={<ForfeitMatch />} />
       </Routes>
     </>
   );

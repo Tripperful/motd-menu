@@ -4,7 +4,6 @@ import { ReplaceConfirm } from '~components/common/ReplaceConfirm';
 import { Exit } from '~components/Exit';
 import { MainMenu } from '~components/MainMenu';
 import { TeamMenu } from '~components/TeamMenu';
-import { Vote } from '~components/Vote';
 
 const MapList = React.lazy(
   () => import(/* webpackChunkName: "lazy-main" */ '~components/MapList'),
@@ -110,14 +109,6 @@ export const Router: FC = () => {
         />
         <Route
           path="vote/*"
-          element={
-            <Suspense>
-              <Vote />
-            </Suspense>
-          }
-        />
-        <Route
-          path="startVote/*"
           element={
             <Suspense>
               <StartVote />

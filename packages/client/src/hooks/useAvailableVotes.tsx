@@ -1,6 +1,7 @@
 import React from 'react';
 import { MenuItemInfo } from '~components/common/Menu';
 import CancelIcon from '~icons/cancel.svg';
+import EyeIcon from '~icons/eye.svg';
 import FlagIcon from '~icons/flag.svg';
 import SubstituteIcon from '~icons/substitute.svg';
 import { useOnlinePlayers } from './state/players';
@@ -17,22 +18,34 @@ export const useAvailableVotes = (): MenuItemInfo[] => {
 
   const votes = [] as MenuItemInfo[];
 
-  if (isMatch && isPlaying) {
-    votes.push({
-      title: 'Substitute a player',
-      link: 'substitute',
-      Icon: <SubstituteIcon />,
-    });
-    votes.push({
-      title: 'Cancel this match',
-      link: 'cancelMatch',
-      Icon: <CancelIcon />,
-    });
-    votes.push({
-      title: 'Forfeit this match',
-      link: 'forfeitMatch',
-      Icon: <FlagIcon />,
-    });
+  if (mmMatchValue == null) {
+    return votes;
+  }
+
+  if (isPlaying) {
+    if (isMatch) {
+      votes.push({
+        title: 'Substitute a player',
+        link: 'substitute',
+        Icon: <SubstituteIcon />,
+      });
+      votes.push({
+        title: 'Cancel this match',
+        link: 'cancelMatch',
+        Icon: <CancelIcon />,
+      });
+      votes.push({
+        title: 'Forfeit this match',
+        link: 'forfeitMatch',
+        Icon: <FlagIcon />,
+      });
+    } else {
+      votes.push({
+        title: 'Move to spectators',
+        link: 'spec',
+        Icon: <EyeIcon />,
+      });
+    }
   }
 
   return votes;
