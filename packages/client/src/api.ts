@@ -95,7 +95,7 @@ class MotdApi {
   }
 
   public async sendLog(severity: Severity, log: string) {
-    await this.post('log/' + severity, log);
+    await this.post('log', JSON.stringify({ severity, log }));
   }
 
   public async closeMenu() {

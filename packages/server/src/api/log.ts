@@ -10,14 +10,12 @@ const logFuncMap: Record<Severity, (...args: string[]) => void> = {
   error: dbgErr,
 };
 
-logRouter.post('/:severity', async (req, res) => {
+logRouter.post('/', async (req, res) => {
   try {
     const { sessionData } = res.locals;
 
     const { token, steamId } = sessionData ?? {};
-
-    const severity = req.params.severity as Severity;
-    const log = req.body;
+    const { severity, log } = req.body as { severity: Severity; log: string };
 
     const logFunc = logFuncMap[severity];
 
