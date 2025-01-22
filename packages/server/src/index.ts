@@ -1,7 +1,7 @@
 import './config';
 import './ws/servers';
 
-import express from 'express';
+import express, { type ErrorRequestHandler } from 'express';
 import expressStaticGzip from 'express-static-gzip';
 import http from 'http';
 import https from 'https';
@@ -10,6 +10,7 @@ import path from 'path';
 import { BaseWsApiServer } from '@motd-menu/common';
 import { WebSocketServer } from 'ws';
 import { api } from './api';
+import { authMiddleware } from './auth';
 import { db } from './db';
 import { EfpsWatchdog } from './util/ranks';
 
@@ -31,11 +32,16 @@ const storybookStaticServer = expressStaticGzip(storybookStaticDir, {
 app.use('/healthcheck', (_req, res) => res.send('healthy'));
 app.set('x-powered-by', false);
 app.use('/storybook', storybookStaticServer);
+app.use(authMiddleware);
 app.use('/api', api);
 app.use(staticServer);
 app.use((_req, res) =>
   res.sendFile(path.resolve(__dirname, staticDir + '/index.html')),
 );
+app.use(((err, _req, res, _next) => {
+  console.error(err);
+  res.status(500).send('Internal server error');
+}) as ErrorRequestHandler);
 
 export interface HttpServerInfo {
   server: http.Server;

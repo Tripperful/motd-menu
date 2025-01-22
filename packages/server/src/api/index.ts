@@ -1,8 +1,6 @@
 import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
 import { Router } from 'express';
 
-import { authMiddleware } from 'src/auth';
 import { cvarsRouter } from './cvars';
 import { debugRouter } from './debug';
 import { logRouter } from './log';
@@ -16,9 +14,7 @@ import { teamsRouter } from './teams';
 
 export const api = Router();
 
-api.use(cookieParser());
 api.use(bodyParser.json());
-api.use(authMiddleware);
 api.use('/log', logRouter);
 api.use('/menu', menuRouter);
 api.use('/maps', mapsRouter);

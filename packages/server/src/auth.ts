@@ -1,4 +1,5 @@
 import { OnlinePlayerInfo, Permission } from '@motd-menu/common';
+import cookieParser from 'cookie-parser';
 import type { Request } from 'express';
 import { RequestHandler } from 'express';
 import { db } from './db';
@@ -69,14 +70,23 @@ export const dropAuthCache = (token: string) => {
 };
 
 const getReqQueryParams = (req: Request) => {
-  const reqQuery = new URL(req.url, `http://${req.headers.host}`).searchParams;
-  const refererQuery = new URL(req.headers.referer).searchParams;
-  const query = reqQuery.get('token') ? reqQuery : refererQuery;
+  if (req.query.token && req.query.guid) {
+    return {
+      token: req.query.token,
+      remoteId: req.query.guid,
+    };
+  }
 
-  return {
-    token: query.get('token'),
-    remoteId: query.get('guid'),
-  };
+  if (req.headers.referer) {
+    const url = new URL(req.headers.referer);
+
+    return {
+      token: url.searchParams.get('token'),
+      remoteId: url.searchParams.get('guid'),
+    };
+  }
+
+  return {};
 };
 
 const getMotdReqAuthParams = (req: Request) => {
@@ -96,7 +106,7 @@ const getMotdReqAuthParams = (req: Request) => {
   };
 };
 
-export const authMiddleware: RequestHandler = async (req, res, next) => {
+const authHandler: RequestHandler = async (req, res, next) => {
   try {
     const { reqAuthVersion, cookie, token, remoteId, isQueryAuth } =
       getMotdReqAuthParams(req);
@@ -175,3 +185,5 @@ export const authMiddleware: RequestHandler = async (req, res, next) => {
     res.end('Unauthorized');
   }
 };
+
+export const authMiddleware = [cookieParser(), authHandler];
