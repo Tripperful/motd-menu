@@ -35,7 +35,7 @@ const flushFetchCvarsDebounced = debounce(async () => {
 
     cvarFetchQueue.length = 0;
   }
-}, 200);
+}, 100);
 
 const fetchCvarDebounced = (cvar: Cvar) =>
   new Promise<string>((res) => {

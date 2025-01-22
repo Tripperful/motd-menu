@@ -1,8 +1,6 @@
-import React, { FC, Suspense } from 'react';
-import { useAvailableVotes } from 'src/hooks/useAvailableVotes';
+import React, { FC, useMemo, useState } from 'react';
 import { useSessionData } from 'src/hooks/useSessionData';
 import { Menu, MenuItemInfo } from '~components/common/Menu';
-import { Spinner } from '~components/common/Spinner';
 import TeamsIcon from '~icons/flag.svg';
 import KnobsIcon from '~icons/knobs.svg';
 import PlayersIcon from '~icons/players.svg';
@@ -10,13 +8,21 @@ import MatchesIcon from '~icons/playlist.svg';
 import SettingsIcon from '~icons/settings.svg';
 import TerrainIcon from '~icons/terrain.svg';
 import VoteIcon from '~icons/vote.svg';
+import { AvailableVotesFetcher } from './AvailableVotesFetcher';
+import { MainMenuContext } from './MainMenuContext';
 
 export const MainMenu: FC = () => {
   const userId = useSessionData().userId;
-  const votes = useAvailableVotes();
+
+  const [availableVotes, setAvailableVotes] = useState<MenuItemInfo[]>([]);
+
+  const contextValue = useMemo(
+    () => ({ availableVotes, setAvailableVotes }),
+    [availableVotes, setAvailableVotes],
+  );
 
   return (
-    <Suspense fallback={<Spinner />}>
+    <MainMenuContext.Provider value={contextValue}>
       <Menu
         items={
           [
@@ -52,12 +58,13 @@ export const MainMenu: FC = () => {
               title: 'Start a vote',
               link: 'vote',
               Icon: <VoteIcon />,
-              shouldShow: () => votes.length > 0,
+              shouldShow: () => availableVotes.length > 0,
             },
           ] as MenuItemInfo[]
         }
         title="Main menu"
       />
-    </Suspense>
+      <AvailableVotesFetcher />
+    </MainMenuContext.Provider>
   );
 };
