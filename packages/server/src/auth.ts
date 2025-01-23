@@ -70,23 +70,11 @@ export const dropAuthCache = (token: string) => {
 };
 
 const getReqQueryParams = (req: Request) => {
-  if (req.query.token && req.query.guid) {
-    return {
-      token: req.query.token,
-      remoteId: req.query.guid,
-    };
-  }
+  const referer = req.headers.referer && new URL(req.headers.referer);
+  const token = req.query.token ?? referer?.searchParams.get('token');
+  const remoteId = req.query.guid ?? referer?.searchParams.get('guid');
 
-  if (req.headers.referer) {
-    const url = new URL(req.headers.referer);
-
-    return {
-      token: url.searchParams.get('token'),
-      remoteId: url.searchParams.get('guid'),
-    };
-  }
-
-  return {};
+  return { token, remoteId };
 };
 
 const getMotdReqAuthParams = (req: Request) => {
