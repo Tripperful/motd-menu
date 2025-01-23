@@ -1,4 +1,3 @@
-import bodyParser from 'body-parser';
 import { Router } from 'express';
 
 import { cvarsRouter } from './cvars';
@@ -14,7 +13,6 @@ import { teamsRouter } from './teams';
 
 export const api = Router();
 
-api.use(bodyParser.json());
 api.use('/log', logRouter);
 api.use('/menu', menuRouter);
 api.use('/maps', mapsRouter);

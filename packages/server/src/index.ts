@@ -1,6 +1,7 @@
 import './config';
 import './ws/servers';
 
+import bodyParser from 'body-parser';
 import express, { type ErrorRequestHandler } from 'express';
 import expressStaticGzip from 'express-static-gzip';
 import http from 'http';
@@ -32,6 +33,7 @@ const storybookStaticServer = expressStaticGzip(storybookStaticDir, {
 app.use('/healthcheck', (_req, res) => res.send('healthy'));
 app.set('x-powered-by', false);
 app.use('/storybook', storybookStaticServer);
+app.use(bodyParser.json());
 app.use(authMiddleware);
 app.use('/api', api);
 app.use(staticServer);
