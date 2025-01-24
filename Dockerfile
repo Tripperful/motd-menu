@@ -1,5 +1,9 @@
 FROM node:22.8.0 as server
 
-ADD ./start.sh /start.sh
+COPY ./packages/server/dist /motd-menu/packages/server/dist
+COPY ./packages/client/dist /motd-menu/packages/client/dist
+COPY ./node_modules/geoip-lite/data /motd-menu/packages/server/data
 
-ENTRYPOINT [ "bash", "/start.sh" ]
+WORKDIR /motd-menu
+
+ENTRYPOINT [ "node", "./packages/server/dist/index.js" ]

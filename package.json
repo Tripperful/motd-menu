@@ -12,12 +12,14 @@
     "watch:server": "npm run watch -w packages/server",
     "watch:client": "npm run watch -w packages/client",
     "storybook": "npm run storybook -w packages/client",
-    "build": "npm run build --workspaces --if-present",
+    "build": "concurrently -n sv,cl \"npm run build:server\" \"npm run build:client\"",
+    "docker:build": "docker compose build",
+    "docker:save": "docker compose save",
+    "geoip:update": "npx tsx ./scripts/geoip-update.ts",
     "start": "concurrently -n sv,cl \"npm run start:server\" \"npm run build:client\"",
     "watch": "concurrently -n sv,cl \"npm run watch:server\" \"npm run watch:client\"",
     "launch": "npm run launch -w packages/server",
-    "build-storybook": "storybook build",
-    "postinstall": "npm run postinstall --workspaces --if-present"
+    "build-storybook": "storybook build"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.25.4",

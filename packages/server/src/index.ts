@@ -53,35 +53,26 @@ export interface HttpServerInfo {
 
 export let httpServerInfo: HttpServerInfo = null;
 
-if (process.env.MOTD_WEB_PORT_HTTPS) {
-  const cert = process.env.MOTD_SSL_CERT;
-  const key = process.env.MOTD_SSL_PRIVATE_KEY;
+const cert = process.env.MOTD_SSL_CERT;
+const key = process.env.MOTD_SSL_PRIVATE_KEY;
 
-  if (!cert) {
-    throw new Error(
-      'Trying to start HTTPS server without supplying a certificate',
-    );
-  }
-
-  if (!key) {
-    throw new Error(
-      'Trying to start HTTPS server without supplying a private key',
-    );
-  }
-
-  httpServerInfo = {
-    server: https.createServer({ cert, key }, app),
-    port: Number(process.env.MOTD_WEB_PORT_HTTPS),
-    protocol: 'https',
-  };
-} else if (process.env.MOTD_WEB_PORT) {
-  httpServerInfo = {
-    server: http.createServer(app),
-    port: Number(process.env.MOTD_WEB_PORT),
-    protocol: 'http',
-  };
+if (!cert) {
+  throw new Error(
+    'Trying to start HTTPS server without supplying a certificate',
+  );
 }
 
+if (!key) {
+  throw new Error(
+    'Trying to start HTTPS server without supplying a private key',
+  );
+}
+
+httpServerInfo = {
+  server: https.createServer({ cert, key }, app),
+  port: Number(process.env.MOTD_WEB_PORT),
+  protocol: 'https',
+};
 console.log('Connecting to database...');
 
 db.init().then(() => {

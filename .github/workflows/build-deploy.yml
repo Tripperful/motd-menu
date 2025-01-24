@@ -1,0 +1,119 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: ['master']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: prod
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Calculate geoip cache key
+        id: cache-key
+        run: |
+          YEAR=$(date +'%Y')
+          WEEK=$(date +'%V')
+          echo "key=cache-${YEAR}-week-${WEEK}" >> $GITHUB_ENV
+          echo "::set-output name=key::cache-${YEAR}-week-${WEEK}"
+        shell: bash
+
+      - name: Try restoring geoip cache
+        id: cache-restore
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules/geoip-lite/data
+          key: ${{ steps.cache-key.outputs.key }}
+
+      - name: Update geoip if not cached
+        env:
+          MOTD_MAXMIND_LICENSE_KEY: ${{ secrets.MOTD_MAXMIND_LICENSE_KEY }}
+        run: |
+          if [[ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]]; then
+            echo "Cache hit! Using cached files."
+          else
+            echo "Cache miss! Generating files..."
+            npm run geoip:update
+          fi
+        shell: bash
+
+      - name: Save files to cache
+        if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules/geoip-lite/data
+          key: ${{ steps.cache-key.outputs.key }}
+
+      - name: Create a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            ./Dockerfile
+            ./docker-compose.yaml
+            ./packages/*/dist
+            ./node_modules/geoip-lite/data
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: prod
+
+    steps:
+      - name: Download the build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ~/build
+
+      - name: Copy the build & geoip to the server
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.INSTANCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ vars.INSTANCE_HOST }} >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_rsa
+          ssh -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} "rm -d -r -f ~/build"
+          scp -i ~/.ssh/id_rsa -r ~/build ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }}:~/
+
+      - name: Write .env file to the server
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} "bash -c 'cat > ~/build/.env <<EOF
+          MOTD_ROOT_ADMINS=\"${{ vars.MOTD_ROOT_ADMINS }}\"
+          MOTD_STEAM_API_KEY=\"${{ secrets.MOTD_STEAM_API_KEY }}\"
+          MOTD_WEB_PORT=\"${{ vars.MOTD_WEB_PORT }}\"
+          MOTD_DEBUG_LOG=\"${{ vars.MOTD_DEBUG_LOG }}\"
+          MOTD_SSL_CERT=\"${{ secrets.MOTD_SSL_CERT }}\"
+          MOTD_SSL_PRIVATE_KEY=\"${{ secrets.MOTD_SSL_PRIVATE_KEY }}\"
+          MOTD_EFPS_KEY=\"${{ secrets.MOTD_EFPS_KEY }}\"
+          MOTD_TELEGRAM_BOT_TOKEN=\"${{ secrets.MOTD_TELEGRAM_BOT_TOKEN }}\"
+          MOTD_MAXMIND_LICENSE_KEY=\"${{ secrets.MOTD_MAXMIND_LICENSE_KEY }}\"
+          POSTGRES_HOST=\"${{ vars.POSTGRES_HOST }}\"
+          POSTGRES_PORT=\"${{ vars.POSTGRES_PORT }}\"
+          POSTGRES_USER=\"${{ secrets.POSTGRES_USER }}\"
+          POSTGRES_PASSWORD=\"${{ secrets.POSTGRES_PASSWORD }}\"
+          EOF'"
+
+      - name: Deploy the build
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} "
+          cd ~/build && docker compose -p motd-menu up --build -d"

@@ -20,9 +20,10 @@ export class BasePgDatabase {
 
   constructor() {
     const pg = new Client({
-      host: '0.0.0.0',
-      user: 'motd-menu',
-      password: '123123',
+      host: process.env.POSTGRES_HOST,
+      port: Number(process.env.POSTGRES_PORT),
+      user: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
     });
 
     this.pg = pg;

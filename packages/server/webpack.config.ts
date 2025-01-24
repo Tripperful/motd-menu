@@ -49,15 +49,8 @@ const config: () => Configuration = () => {
         },
       ],
     },
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
     target: ['node'],
-    externalsPresets: { node: true },
-    externals: [
-      webpackNodeExternals({
-        allowlist: [/@motd-menu/],
-        additionalModuleDirs: ['../../node_modules'],
-      }),
-    ],
   };
 };
 

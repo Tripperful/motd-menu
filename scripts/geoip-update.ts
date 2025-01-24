@@ -1,5 +1,4 @@
-import '../src/config';
-
+import '../packages/server/src/config';
 import { execSync } from 'child_process';
 
 try {
@@ -8,7 +7,7 @@ try {
   const maxmindLicenseKey = process.env.MOTD_MAXMIND_LICENSE_KEY;
 
   execSync(
-    `cd ../../node_modules/geoip-lite && npm run-script updatedb license_key=${maxmindLicenseKey}`,
+    `npm run --prefix ./node_modules/geoip-lite updatedb license_key=${maxmindLicenseKey}`,
   );
 
   console.info('Geoip data updated successfully.');
