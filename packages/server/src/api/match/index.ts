@@ -207,13 +207,6 @@ matchRouter.post('/rc/:whomSteamId', async (req, res) => {
       profiles[steamId]?.name ?? steamId,
     );
 
-    const onlinePlayers = await srcds.request('get_players_request');
-    const reqPlayer = onlinePlayers?.find((p) => p.steamId === steamId);
-
-    if ((reqPlayer?.teamIdx ?? 1) === 1) {
-      return res.status(400).end('You are not playing in the match');
-    }
-
     srcds.send('run_command', {
       commands: `mm_substitute ${whomSteamId} ${steamId} "${whomNameEncoded}" "${withWhomNameEncoded}"`,
     });
