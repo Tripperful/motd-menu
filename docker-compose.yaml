@@ -1,9 +1,11 @@
 name: motd-menu
+volumes:
+  postgres_data:
 services:
   db:
     image: 'postgres:latest'
     volumes:
-      - /var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=motd-menu
       - POSTGRES_PASSWORD=123123
