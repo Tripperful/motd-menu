@@ -1,6 +1,7 @@
 # Directories
 **/node_modules
 packages/*/dist
+packages/*/data
 packages/*/storybook-static
 .env
 *storybook.log
