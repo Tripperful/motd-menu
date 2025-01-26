@@ -19,6 +19,8 @@ services:
       timeout: 60s
       retries: 5
     restart: unless-stopped
+    ports:
+      - 5432:5432
   server:
     build:
       context: .
