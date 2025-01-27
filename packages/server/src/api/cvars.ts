@@ -47,7 +47,7 @@ cvarsRouter.post('/set/:cvar', async (req, res) => {
     } = res.locals;
 
     const cvar = req.params.cvar as Cvar;
-    const value = req.body;
+    const { value } = req.body;
     const editableCvars = getEditableCvars(permissions);
 
     if (!editableCvars.includes(cvar as Cvar)) return res.status(403).end();

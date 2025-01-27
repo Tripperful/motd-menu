@@ -214,7 +214,7 @@ class MotdApi {
   }
 
   public async setCvar(cvar: Cvar, value: string) {
-    return this.query('POST', 'cvars/set/' + cvar, JSON.stringify(value));
+    return this.query('POST', 'cvars/set/' + cvar, JSON.stringify({ value }));
   }
 
   public async getMapsPreviews() {
