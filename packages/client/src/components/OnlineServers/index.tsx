@@ -227,8 +227,7 @@ export const OnlineServers: FC = () => {
             ).get('token')}`}
             target="_blank"
           >
-            {serverInfo.name} ({serverInfo.ip}:{serverInfo.port}, version
-            hash:&nbsp;
+            {serverInfo.name} ({serverInfo.ip}:{serverInfo.port}, version:&nbsp;
             {serverInfo.versionHash?.substring(0, 8) ?? 'unknown'})
           </Link>
         </span>
