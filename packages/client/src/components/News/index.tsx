@@ -177,6 +177,9 @@ const useStyles = createUseStyles({
       opacity: 1,
     },
   },
+  time: {
+    color: theme.fgInfo,
+  },
 });
 
 const NewsPreviewItem: FC<{ newsPreview: NewsPreview }> = ({ newsPreview }) => {
@@ -210,15 +213,24 @@ const customMarkdownComponents: Partial<JsxRuntimeComponents> = {
 
     const { href, children } = props;
 
-    if (href && href.startsWith('copy://')) {
-      return (
-        <CopyOnClick className={c.activeNoTransform} copyText={href.slice(7)}>
-          <CopyIcon className={c.copyIcon} />
-          {children}
-        </CopyOnClick>
-      );
+    if (href) {
+      if (href.startsWith('copy://')) {
+        return (
+          <CopyOnClick className={c.activeNoTransform} copyText={href.slice(7)}>
+            <CopyIcon className={c.copyIcon} />
+            {children}
+          </CopyOnClick>
+        );
+      } else if (href.startsWith('time://')) {
+        let time = new Date(children as string);
+        if (isNaN(time.getTime())) time = new Date();
+        return (
+          <time className={c.time} dateTime={time.toString()}>
+            {dateFormat(time)}
+          </time>
+        );
+      }
     }
-
     return <a {...props} />;
   },
 };
