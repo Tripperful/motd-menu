@@ -21,10 +21,10 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
 
     const auth = searchParams?.get('auth')?.toLowerCase();
     const sessionId = searchParams?.get('guid');
-    const versionHash = searchParams?.get('ver');
+    const version = searchParams?.get('ver');
 
     if (auth && sessionId) {
-      return { auth, sessionId, versionHash };
+      return { auth, sessionId, version };
     }
 
     return null;
@@ -35,7 +35,7 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
   }
 
   public async authenticate(req: IncomingMessage) {
-    const { auth, sessionId, versionHash } = this.getAuthParams(req);
+    const { auth, sessionId, version } = this.getAuthParams(req);
     const ip = req.socket.remoteAddress.split(':').pop();
     const port = req.socket.remotePort;
 
@@ -45,7 +45,7 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
     serverInfo.ip = ip;
     serverInfo.port = port;
     serverInfo.sessionId = sessionId;
-    serverInfo.versionHash = versionHash;
+    serverInfo.version = version;
 
     return {
       clientId: `SRCDS (${serverInfo.id}) ${serverInfo.name}`,

@@ -228,7 +228,7 @@ export const OnlineServers: FC = () => {
             target="_blank"
           >
             {serverInfo.name} ({serverInfo.ip}:{serverInfo.port}, version:&nbsp;
-            {serverInfo.versionHash?.substring(0, 8) ?? 'unknown'})
+            {serverInfo.version?.substring(0, 8) ?? 'unknown'})
           </Link>
         </span>
       ))}
