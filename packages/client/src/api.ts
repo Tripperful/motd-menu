@@ -183,11 +183,11 @@ class MotdApi {
 
   public async setPlayerCustomRank(
     steamId: string,
-    customRankData: CustomRankData,
+    customRank: CustomRankData,
   ) {
     await this.post(
       `players/customRank/${steamId}`,
-      JSON.stringify(customRankData),
+      JSON.stringify({ customRank }),
     );
   }
 

@@ -76,7 +76,7 @@ playersRouter.get('/stats/:steamId', async (req, res) => {
 playersRouter.post('/customRank/:steamId', async (req, res) => {
   try {
     const { steamId } = req.params;
-    const customRankData = req.body as CustomRankData;
+    const customRank = req.body.customRank as CustomRankData;
 
     const {
       sessionData: { permissions, steamId: mySteamId },
@@ -91,18 +91,18 @@ playersRouter.post('/customRank/:steamId', async (req, res) => {
       return res.status(403).end();
     }
 
-    if (customRankData?.title) {
+    if (customRank?.title) {
       const maxRankLength =
-        customRankData.colorStops.length > 1
+        customRank.colorStops.length > 1
           ? maxGradientRankLength
           : maxColorRankLength;
 
-      if (customRankData.title.length > maxRankLength) {
+      if (customRank.title.length > maxRankLength) {
         return res.status(400).end();
       }
     }
 
-    await db.client.setCustomRank(steamId, customRankData);
+    await db.client.setCustomRank(steamId, customRank);
 
     for (const srcds of SrcdsWsApiServer.getInstace().getConnectedClients()) {
       const rankUpdateData = toSrcdsRankData(await getRankData(steamId));
