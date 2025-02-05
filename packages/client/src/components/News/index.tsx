@@ -57,7 +57,7 @@ const useStyles = createUseStyles({
   },
   newsPopup: {
     width: '50vw',
-    height: '80vh',
+    maxHeight: 'calc(100vh - 4em)',
     '& a': {
       ...activeItemNoTransform(),
     },
@@ -76,9 +76,6 @@ const useStyles = createUseStyles({
     fontSize: '0.8em',
   },
   newsContent: {
-    overflow: 'hidden scroll',
-    marginRight: '-1em',
-    paddingRight: '0.5em',
     '& img': {
       maxWidth: '100%',
     },
@@ -94,6 +91,9 @@ const useStyles = createUseStyles({
   newsRenderer: {
     display: 'flex',
     flexDirection: 'column',
+    overflow: 'hidden auto',
+    marginRight: '-0.5em',
+    paddingRight: '0.5em',
   },
   publishDate: {
     fontSize: '0.8em',
