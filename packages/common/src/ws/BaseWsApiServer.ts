@@ -82,6 +82,11 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
 
           this.clients[clientId] = client;
 
+          clientWs.on('error', (e) => {
+            console.error(`WS client ${clientId} errored, disconnecting:`, e);
+            clientWs.close();
+          });
+
           clientWs.on('close', () => {
             delete this.clients[clientId];
           });

@@ -15,6 +15,14 @@ import { authMiddleware } from './auth';
 import { db } from './db';
 import { EfpsWatchdog } from './util/ranks';
 
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
 const app = express();
 
 const staticDir = path.resolve(__dirname, '../../client/dist');
