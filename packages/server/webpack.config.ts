@@ -3,7 +3,6 @@ import path from 'path';
 import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { Configuration } from 'webpack';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import webpackNodeExternals from 'webpack-node-externals';
 
 const cd = (...args: string[]) => path.resolve(__dirname, ...args);
 const buildDir = cd('./dist');
