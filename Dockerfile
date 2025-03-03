@@ -6,4 +6,4 @@ COPY ./node_modules/geoip-lite/data /motd-menu/packages/server/data
 
 WORKDIR /motd-menu
 
-ENTRYPOINT [ "node", "./packages/server/dist/index.js" ]
+ENTRYPOINT [ "node", "--enable-source-maps", "./packages/server/dist/index.js" ]
