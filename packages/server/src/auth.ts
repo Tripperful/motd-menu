@@ -121,6 +121,23 @@ const authHandler: RequestHandler = async (req, res, next) => {
       remoteId &&
       connectedServers?.find((s) => s.getInfo()?.sessionId === remoteId);
 
+    if (!srcds && remoteId) {
+      dbgWarn(
+        `Auth token for non-existent remoteId: ${remoteId}, request info: ${JSON.stringify(
+          {
+            reqAuthVersion,
+            cookie,
+            token,
+            remoteId,
+            query: req.query,
+            url: req.url,
+          },
+        )}`,
+      );
+
+      throw 'Unauthorized';
+    }
+
     if (srcds) {
       res.locals.srcds = srcds;
     }
