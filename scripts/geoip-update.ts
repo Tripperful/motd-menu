@@ -1,5 +1,7 @@
 import '../packages/server/src/config';
+
 import { execSync } from 'child_process';
+import fs from 'fs';
 
 try {
   console.info('Updating geoip data from maxmind.com...');
@@ -9,6 +11,11 @@ try {
   execSync(
     `npm run --prefix ./node_modules/geoip-lite updatedb license_key=${maxmindLicenseKey}`,
   );
+
+  fs.cpSync('node_modules/geoip-lite/data/', 'packages/server/data/', {
+    recursive: true,
+    force: true,
+  });
 
   console.info('Geoip data updated successfully.');
 } catch (e) {
