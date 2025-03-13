@@ -1,4 +1,4 @@
-import { PlayerClientSettings } from '@motd-menu/common';
+import { chatColor, PlayerClientSettings } from '@motd-menu/common';
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { getPlayerProfile } from 'src/steam';
@@ -57,7 +57,25 @@ srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
 
 srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
   const { steamId } = data;
-  const cmd = data.msg.toLowerCase();
+  let msg = data.msg.trim();
+
+  if (msg.startsWith('@')) {
+    msg = msg.slice(1).trim();
+    const servers = SrcdsWsApiServer.getInstace().getConnectedClients();
+    const playerData = await getPlayerProfile(steamId);
+
+    await Promise.allSettled(
+      servers.map(async (server) => {
+        const serverPlayers = await server.request('get_players_request');
+        server.send('chat_print', {
+          clients: serverPlayers.map((p) => p.steamId),
+          text: `${chatColor.MOTD}[${srcds.getInfo().name}]${chatColor.Yellow} ${playerData.name}: ${msg}`,
+        });
+      }),
+    );
+  }
+
+  const cmd = msg.toLowerCase();
 
   if (cmd === '!votespec') {
     const players = await srcds.request('get_players_request');
