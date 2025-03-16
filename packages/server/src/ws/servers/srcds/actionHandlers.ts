@@ -59,7 +59,7 @@ srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
   const { steamId } = data;
   let msg = data.msg.trim();
 
-  if (msg.startsWith('@')) {
+  if (msg.startsWith('@') && msg.length > 1) {
     msg = msg.slice(1).trim();
     const servers = SrcdsWsApiServer.getInstace().getConnectedClients();
     const playerData = await getPlayerProfile(steamId);
