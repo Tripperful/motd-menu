@@ -56,20 +56,32 @@ srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
 });
 
 srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
-  const { steamId } = data;
-  let msg = data.msg.trim();
+  const { steamId, msg } = data;
 
   if (msg.startsWith('@') && msg.length > 1) {
-    msg = msg.slice(1).trim();
     const servers = SrcdsWsApiServer.getInstace().getConnectedClients();
     const playerData = await getPlayerProfile(steamId);
 
     await Promise.allSettled(
       servers.map(async (server) => {
-        const serverPlayers = await server.request('get_players_request');
+        const [serverPlayers, { participants }] = await Promise.all([
+          server.request('get_players_request'),
+          server.request('get_match_state_request'),
+        ]);
+
+        let clients: string[] = serverPlayers.map((p) => p.steamId);
+
+        if (server.getId() !== srcds.getId() && participants?.length) {
+          clients = clients.filter((client) => !participants.includes(client));
+        }
+
+        let text = `${chatColor.MOTD}[${srcds.getInfo().name}]`;
+        text += `${chatColor.Yellow} ${playerData.name}: `;
+        text += msg.slice(1).trim();
+
         server.send('chat_print', {
-          clients: serverPlayers.map((p) => p.steamId),
-          text: `${chatColor.MOTD}[${srcds.getInfo().name}]${chatColor.Yellow} ${playerData.name}: ${msg}`,
+          clients,
+          text,
         });
       }),
     );
