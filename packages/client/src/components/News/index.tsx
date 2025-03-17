@@ -125,6 +125,7 @@ const useStyles = createUseStyles({
   },
   editing: {
     width: 'calc(100vw - 4em)',
+    height: 'calc(100vh - 4em)',
   },
   editorWrapper: {
     flex: '1 1 auto',
