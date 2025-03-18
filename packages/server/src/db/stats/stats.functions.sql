@@ -494,7 +494,10 @@ LOOP
         AND (
           match_team_players.steam_id = (player->>'steamId')::bigint
           OR
-          match_team_players.steam_id = find_original_player((player->>'steamId')::bigint)
+          match_team_players.steam_id = find_original_player(
+            (match_data->>'id')::uuid,
+            (player->>'steamId')::bigint
+          )
         );
   END LOOP;
 END LOOP;
