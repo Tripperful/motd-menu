@@ -491,8 +491,11 @@ LOOP
         deaths = (player->>'deaths')::int
       WHERE
         match_team_players.match_team_id = _match_team_id
-        AND
-        match_team_players.steam_id = (player->>'steamId')::bigint;
+        AND (
+          match_team_players.steam_id = (player->>'steamId')::bigint
+          OR
+          match_team_players.steam_id = find_original_player((player->>'steamId')::bigint)
+        );
   END LOOP;
 END LOOP;
 END;
@@ -1466,9 +1469,29 @@ BEGIN
       AND EXISTS (
         SELECT *
         FROM match_team_players
-        WHERE match_team_players.steam_id = get_match_player_accuracy.steam_id::bigint
-        AND match_team_players.match_team_id = match_teams.id
+        WHERE match_team_players.match_team_id = match_teams.id AND (
+          match_team_players.steam_id = get_match_player_accuracy.steam_id::bigint
+          OR
+          match_team_players.steam_id = find_original_player(
+            get_match_player_accuracy.match_id::uuid,
+            get_match_player_accuracy.steam_id::bigint
+          )
+        )
       )
+    ),
+    'originalPlayer',
+    (
+      WITH _original_player AS (
+        SELECT find_original_player(
+          get_match_player_accuracy.match_id::uuid,
+          get_match_player_accuracy.steam_id::bigint
+        ) AS original_id
+      )
+      SELECT CASE
+        WHEN op.original_id = get_match_player_accuracy.steam_id::bigint THEN NULL
+        ELSE op.original_id::text
+      END
+      FROM _original_player op
     ),
     'weaponStats',
     (
@@ -1662,8 +1685,14 @@ OR REPLACE FUNCTION get_efps_stats (match_id text) RETURNS json AS $$ BEGIN RETU
             AND EXISTS (
               SELECT *
               FROM match_team_players
-              WHERE match_team_players.steam_id = player_deaths.attacker_steam_id
-              AND match_team_players.match_team_id = match_teams.id
+              WHERE match_team_players.match_team_id = match_teams.id AND (
+                match_team_players.steam_id = player_deaths.attacker_steam_id
+                OR
+                match_team_players.steam_id = find_original_player(
+                  get_efps_stats.match_id::uuid,
+                  player_deaths.attacker_steam_id
+                )
+              )
             )
           )
         ),
@@ -1679,8 +1708,14 @@ OR REPLACE FUNCTION get_efps_stats (match_id text) RETURNS json AS $$ BEGIN RETU
             AND EXISTS (
               SELECT *
               FROM match_team_players
-              WHERE match_team_players.steam_id = player_deaths.victim_steam_id
-              AND match_team_players.match_team_id = match_teams.id
+              WHERE match_team_players.match_team_id = match_teams.id AND (
+                match_team_players.steam_id = player_deaths.victim_steam_id
+                OR
+                match_team_players.steam_id = find_original_player(
+                  get_efps_stats.match_id::uuid,
+                  player_deaths.victim_steam_id
+                )
+              )
             )
           )
         ),
@@ -1694,14 +1729,24 @@ OR REPLACE FUNCTION get_efps_stats (match_id text) RETURNS json AS $$ BEGIN RETU
   'stats',
   (
     SELECT json_agg(
-      get_match_player_accuracy(get_efps_stats.match_id, match_team_players.steam_id::text)
-    )
-    FROM match_team_players
-    WHERE match_team_players.match_team_id IN (
-      SELECT id
-      FROM match_teams
-      WHERE match_teams.match_id = get_efps_stats.match_id::uuid
-    )
+      get_match_player_accuracy(get_efps_stats.match_id, p.steam_id::text)
+    ) FROM (
+      SELECT DISTINCT steam_id FROM (
+        SELECT steam_id
+        FROM match_team_players 
+        WHERE match_team_players.match_team_id IN (
+          SELECT id
+          FROM match_teams
+          WHERE match_teams.match_id = get_efps_stats.match_id::uuid
+        )
+
+        UNION ALL
+
+        SELECT to_steam_id AS steam_id
+        FROM player_substitutions
+        WHERE player_substitutions.match_id = get_efps_stats.match_id::uuid
+      )
+    ) p
   )
 )
 FROM matches
@@ -1737,5 +1782,33 @@ OR REPLACE FUNCTION get_last_client_ip (steam_id text) RETURNS text AS $$ BEGIN
     ORDER BY connected DESC
     LIMIT 1
   );
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION find_original_player(match_uuid UUID, current_steam BIGINT) 
+RETURNS BIGINT AS $$
+DECLARE
+    player BIGINT := current_steam;
+    prev_player BIGINT;
+BEGIN
+    WHILE player NOT IN (
+        SELECT steam_id
+        FROM match_team_players
+        WHERE match_team_players.match_team_id IN (
+            SELECT id FROM match_teams WHERE match_teams.match_id = match_uuid
+        )
+    ) LOOP
+        SELECT from_steam_id INTO prev_player
+        FROM player_substitutions
+        WHERE match_id = match_uuid AND to_steam_id = player;
+
+        IF NOT FOUND OR prev_player = current_steam THEN
+            EXIT;
+        END IF;
+
+        player := prev_player;
+    END LOOP;
+
+    RETURN player;
 END;
 $$ LANGUAGE plpgsql;
