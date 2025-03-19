@@ -39,6 +39,8 @@ export interface PlayerClientSettings {
   crossbowZoomFov: number;
   esp: boolean;
   dsp: boolean;
+  amb: boolean;
+  bob: boolean;
   drawViewmodel: boolean;
   hitSoundPaths?: HitSoundPathsData;
 }

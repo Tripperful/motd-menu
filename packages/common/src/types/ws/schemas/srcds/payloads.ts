@@ -24,6 +24,8 @@ export interface ClientSettingsData {
   drawviewmodel: 1 | 0;
   esp: 1 | 0;
   dsp: 1 | 0;
+  amb: 1 | 0;
+  bob: 1 | 0;
   hitsound: 1 | 0;
   killsound: 1 | 0;
   kevlarsound: 1 | 0;

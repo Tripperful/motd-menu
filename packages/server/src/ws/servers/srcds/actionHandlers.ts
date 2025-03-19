@@ -123,6 +123,8 @@ srcdsWsServer.onMessage('set_settings', async (srcds, data) => {
     drawViewmodel: s.drawviewmodel == null ? null : Boolean(s.drawviewmodel),
     esp: s.esp == null ? null : Boolean(s.esp),
     dsp: s.dsp == null ? null : Boolean(s.dsp),
+    amb: s.amb == null ? null : Boolean(s.amb),
+    bob: s.bob == null ? null : Boolean(s.bob),
     hitSound: s.hitsound == null ? null : Boolean(s.hitsound),
     killSound: s.killsound == null ? null : Boolean(s.killsound),
     kevlarSound: s.kevlarsound == null ? null : Boolean(s.kevlarsound),

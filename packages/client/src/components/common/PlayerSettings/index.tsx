@@ -67,6 +67,8 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   const [kevlarSound, setKevlarSound] = useState(settings.kevlarSound);
   const [esp, setEsp] = useState(settings.esp);
   const [dsp, setDsp] = useState(settings.dsp);
+  const [amb, setAmb] = useState(settings.amb);
+  const [bob, setBob] = useState(settings.bob);
   const [drawViewmodel, setDrawViewmodel] = useState(settings.drawViewmodel);
 
   const [fov, setFov] = useState(settings.fov);
@@ -162,6 +164,8 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
       kevlarSound,
       esp,
       dsp,
+      amb,
+      bob,
       drawViewmodel,
       fov,
       magnumZoomFov: magZoomEnabled ? magnumZoomFov : 0,
@@ -202,6 +206,8 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     drawViewmodel,
     esp,
     dsp,
+    amb,
+    bob,
     fov,
     magZoomEnabled,
     magnumZoomFov,
@@ -232,6 +238,18 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
           active={dsp}
           setActive={setDsp}
           label="Ringing sound from explosions"
+          disabled={disabled}
+        />
+        <LabeledSwitch
+          active={amb}
+          setActive={setAmb}
+          label="Ambient sounds"
+          disabled={disabled}
+        />
+        <LabeledSwitch
+          active={bob}
+          setActive={setBob}
+          label="Viewmodel bobbing"
           disabled={disabled}
         />
         <LabeledSwitch
