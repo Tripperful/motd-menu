@@ -48,6 +48,8 @@ export type Cvar =
   | 'mp_flashlight'
   | 'mp_footsteps'
   | 'mp_forcerespawn'
+  | 'sv_physcannon_fast_gather'
+  | 'sv_physcannon_ez_yoyo'
   | 'mp_timelimit'
   | 'mp_fraglimit'
   | 'mp_match'
@@ -191,6 +193,18 @@ const registeredCvarsInfo: Record<Cvar, CvarInfo> = {
     type: 'bool',
     permissions: adminEditPermissions,
     mockValue: '1',
+  },
+  sv_physcannon_fast_gather: {
+    description: 'Gravity gun fast gather',
+    type: 'bool',
+    permissions: matchmakingPermissions,
+    mockValue: '0',
+  },
+  sv_physcannon_ez_yoyo: {
+    description: 'Gravity gun easy yo-yo',
+    type: 'bool',
+    permissions: matchmakingPermissions,
+    mockValue: '0',
   },
   mm_hotbolt_fix: {
     description: 'Crossbow bolt boosting',
