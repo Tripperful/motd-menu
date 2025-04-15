@@ -41,6 +41,7 @@ export interface PlayerClientSettings {
   dsp: boolean;
   amb: boolean;
   bob: boolean;
+  fg: boolean;
   drawViewmodel: boolean;
   hitSoundPaths?: HitSoundPathsData;
 }

@@ -69,6 +69,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   const [dsp, setDsp] = useState(settings.dsp);
   const [amb, setAmb] = useState(settings.amb);
   const [bob, setBob] = useState(settings.bob);
+  const [fg, setFg] = useState(settings.fg);
   const [drawViewmodel, setDrawViewmodel] = useState(settings.drawViewmodel);
 
   const [fov, setFov] = useState(settings.fov);
@@ -166,6 +167,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
       dsp,
       amb,
       bob,
+      fg,
       drawViewmodel,
       fov,
       magnumZoomFov: magZoomEnabled ? magnumZoomFov : 0,
@@ -208,6 +210,7 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
     dsp,
     amb,
     bob,
+    fg,
     fov,
     magZoomEnabled,
     magnumZoomFov,
@@ -244,6 +247,12 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
           active={amb}
           setActive={setAmb}
           label="Ambient sounds"
+          disabled={disabled}
+        />
+        <LabeledSwitch
+          active={fg}
+          setActive={setFg}
+          label="Fast gathering"
           disabled={disabled}
         />
         <LabeledSwitch

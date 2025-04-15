@@ -30,6 +30,7 @@ playerSettingsRouter.post('/', async (req, res) => {
         dsp: settings.dsp ? 1 : 0,
         amb: settings.amb ? 1 : 0,
         bob: settings.bob ? 1 : 0,
+        fg: settings.fg ? 1 : 0,
         fov: settings.fov,
         magnumZoomFov: settings.magnumZoomFov,
         crossbowZoomFov: settings.crossbowZoomFov,

@@ -7,6 +7,7 @@ ALTER TABLE IF EXISTS client_settings
 ADD COLUMN IF NOT EXISTS dsp boolean DEFAULT true,
 ADD COLUMN IF NOT EXISTS amb boolean DEFAULT true,
 ADD COLUMN IF NOT EXISTS bob boolean DEFAULT false,
+ADD COLUMN IF NOT EXISTS fg boolean DEFAULT true,
 ADD COLUMN IF NOT EXISTS kevlar_sound boolean DEFAULT true,
 ADD COLUMN IF NOT EXISTS magnum_zoom_fov int DEFAULT 0,
 ADD COLUMN IF NOT EXISTS crossbow_zoom_fov int DEFAULT 20,

@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS
     dsp boolean,
     amb boolean,
     bob boolean,
+    fg boolean,
     draw_viewmodel boolean,
     hitsound_body_path text,
     hitsound_head_path text,
