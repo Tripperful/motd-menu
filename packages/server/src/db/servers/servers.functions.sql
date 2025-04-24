@@ -36,7 +36,10 @@ OR REPLACE FUNCTION server_by_key (api_key text) RETURNS json AS $$
 DECLARE
   server servers;
 BEGIN 
-SELECT * INTO server FROM servers WHERE servers.api_key = server_by_key.api_key LIMIT 1;
+SELECT * INTO server
+FROM servers
+WHERE servers.api_key = MD5(server_by_key.api_key)
+LIMIT 1;
 RETURN server_json(server);
 END;
 $$ LANGUAGE plpgsql;
