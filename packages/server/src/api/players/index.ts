@@ -27,14 +27,21 @@ playersRouter.get('/', async (_req, res) => {
 
     const onlinePlayers = (await srcds.request('get_players_request')) ?? [];
 
-    const playerProfiles = await getPlayersProfiles(
-      onlinePlayers.map((p) => p.steamId),
-      permissions.includes('view_city'),
-    );
+    await Promise.all([
+      (async () => {
+        const playerProfiles = await getPlayersProfiles(
+          onlinePlayers.map((p) => p.steamId),
+          permissions.includes('view_city'),
+        );
 
-    for (const player of onlinePlayers) {
-      player.steamProfile = playerProfiles[player.steamId];
-    }
+        for (const player of onlinePlayers) {
+          player.steamProfile = playerProfiles[player.steamId];
+        }
+      })(),
+      ...onlinePlayers.map(async (p) => {
+        p.aka = await db.client.getAka(p.steamId);
+      }),
+    ]);
 
     res.status(200).json(Object.values(onlinePlayers));
   } catch (e) {

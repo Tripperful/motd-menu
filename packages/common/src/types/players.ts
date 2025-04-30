@@ -4,6 +4,8 @@ import type { SteamPlayerData } from './steam';
 export interface OnlinePlayerInfo {
   steamId: string;
   userId?: number;
+  ping?: number;
+  aka?: string;
   teamIdx?: number;
   kills?: number;
   deaths?: number;

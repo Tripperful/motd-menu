@@ -14,6 +14,7 @@ export const useStyles = createUseStyles({
     display: 'flex',
     backgroundColor: theme.bg1,
     borderRadius: '0.5em',
+    position: 'relative',
   },
   active: {
     ...activeItem(),
@@ -31,8 +32,9 @@ export const useStyles = createUseStyles({
     flex: '1 1 100%',
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.5em',
+    gap: '0.25em',
     overflow: 'hidden',
+    justifyContent: 'center',
   },
   nameWrapper: {
     display: 'flex',
@@ -45,8 +47,22 @@ export const useStyles = createUseStyles({
     textOverflow: 'ellipsis',
     minWidth: 0,
   },
-  steamId: {
+  aka: {
     fontSize: '0.8em',
+    color: theme.fg3,
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  },
+  ping: {
+    position: 'absolute',
+    right: '0',
+    top: '0.25em',
+    transform: 'translateY(-50%)',
+    backgroundColor: '#000f',
+    borderRadius: '0.5em',
+    padding: '0.1em 0.5em',
+    fontSize: '0.7em',
   },
 });
 
@@ -55,10 +71,12 @@ export const PlayerItem = forwardRef<
   {
     profile: SteamPlayerData;
     link?: string;
+    aka?: string;
+    ping?: number;
     onClick?: (steamId: string) => void;
   } & HTMLAttributes<HTMLDivElement> &
     ClassNameProps
->(({ profile, className, link, onClick, ...attrs }, ref) => {
+>(({ profile, className, link, aka, ping, onClick, ...attrs }, ref) => {
   const c = useStyles();
   const countryCode = profile.geo?.countryCode;
 
@@ -70,8 +88,11 @@ export const PlayerItem = forwardRef<
           {countryCode && <Flag code={countryCode} />}
           <span className={c.name}>{profile.name}</span>
         </div>
-        <div className={c.steamId}>{profile.steamId}</div>
+        {aka && aka !== profile.name ? (
+          <div className={c.aka}>({aka})</div>
+        ) : null}
       </div>
+      {ping != null ? <div className={c.ping}>{ping} ms</div> : null}
     </>
   );
 

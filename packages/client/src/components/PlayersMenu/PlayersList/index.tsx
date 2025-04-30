@@ -67,7 +67,12 @@ const PlayersListItems: FC = () => {
     <>
       {(players?.length ?? 0) ? (
         players.map((data) => (
-          <PlayersListItem key={data.steamId} steamId={data.steamId} />
+          <PlayersListItem
+            key={data.steamId}
+            steamId={data.steamId}
+            aka={data.aka}
+            ping={data.ping}
+          />
         ))
       ) : (
         <div>No players online</div>
