@@ -3,7 +3,8 @@ import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { getPlayerProfile } from 'src/steam';
 import { dbgErr } from 'src/util';
-import { getRankData, sendMatchToEfps, toSrcdsRankData } from 'src/util/ranks';
+import { EfpsClient } from 'src/util/efps';
+import { getRankData, toSrcdsRankData } from 'src/util/ranks';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
 import { chargerUseHandler } from './chargerUseHandler';
 
@@ -134,44 +135,61 @@ srcdsWsServer.onMessage('set_settings', async (srcds, data) => {
   await db.client.settings.set(steamId, settings);
 });
 
-srcdsWsServer.onMessage('match_started', (srcds, data) =>
-  db.matchStats.matchStarted(srcds.getInfo().id, data),
-);
+srcdsWsServer.onMessage('match_started', (srcds, data) => {
+  db.matchStats.matchStarted(srcds.getInfo().id, data);
+
+  EfpsClient.getInstance()?.notifyMatchStarted({
+    id: data.id,
+    map: data.mapName,
+    players: data.teams.flatMap((team) =>
+      team.players.map((p) => ({
+        steamid: p.steamId,
+        teamid: team.index,
+      })),
+    ),
+    server: srcds.getInfo().name,
+    teamplay: data.teams.length > 1,
+  });
+});
 
 srcdsWsServer.onMessage('match_ended', async (srcds, data) => {
   await db.matchStats.matchEnded(data);
 
-  if (process.env.MOTD_EFPS_KEY && data.status === 'completed') {
+  if (process.env.MOTD_EFPS_KEY) {
     const { isDev } = await db.server.getById(srcds.getInfo().id);
 
-    if (!isDev) {
-      await sendMatchToEfps(data.id);
+    if (data.status === 'completed') {
+      if (!isDev) {
+        await EfpsClient.getInstance()?.sendMatch(data.id);
+      }
+
+      const servers = SrcdsWsApiServer.getInstace().getConnectedClients();
+
+      await Promise.allSettled(
+        servers.map(async (connectedSrcds) => {
+          const players = await connectedSrcds.request('get_players_request');
+
+          const playersRanks = (
+            await Promise.all(
+              players.map((player) => getRankData(player.steamId)),
+            )
+          ).filter(Boolean);
+
+          await db.matchStats.updateAfterMatchRanks(data.id, playersRanks);
+          connectedSrcds.send(
+            'rank_update',
+            playersRanks.map((rank) => {
+              const rankUpdateData = toSrcdsRankData(rank);
+              rankUpdateData.show = true;
+
+              return rankUpdateData;
+            }),
+          );
+        }),
+      );
     }
-
-    const servers = SrcdsWsApiServer.getInstace().getConnectedClients();
-
-    await Promise.allSettled(
-      servers.map(async (connectedSrcds) => {
-        const players = await connectedSrcds.request('get_players_request');
-
-        const playersRanks = (
-          await Promise.all(
-            players.map((player) => getRankData(player.steamId)),
-          )
-        ).filter(Boolean);
-
-        await db.matchStats.updateAfterMatchRanks(data.id, playersRanks);
-        connectedSrcds.send(
-          'rank_update',
-          playersRanks.map((rank) => {
-            const rankUpdateData = toSrcdsRankData(rank);
-            rankUpdateData.show = true;
-
-            return rankUpdateData;
-          }),
-        );
-      }),
-    );
+  } else {
+    EfpsClient.getInstance()?.notifyMatchCanceled(data.id);
   }
 });
 

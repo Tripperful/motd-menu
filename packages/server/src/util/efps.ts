@@ -1,0 +1,184 @@
+import { db } from 'src/db';
+import { dbgErr } from '.';
+import { EfpsRankData, steamId64ToLegacy } from '@motd-menu/common';
+
+type EfpsCron = 'data_new' | 'player_stats' | 'match_start' | 'match_cancel';
+
+interface EfpsMatchStartData {
+  id: string;
+  server: string;
+  map: string;
+  teamplay: boolean;
+  players: {
+    steamid: string;
+    teamid: number;
+  }[];
+}
+
+export class EfpsClient {
+  private static instance: EfpsClient;
+
+  private constructor(private key: string) {}
+
+  public static getInstance(): EfpsClient {
+    const key = process.env.MOTD_EFPS_KEY;
+
+    if (!key) {
+      return null;
+    }
+
+    if (!EfpsClient.instance) {
+      EfpsClient.instance = new EfpsClient(key);
+    }
+
+    return EfpsClient.instance;
+  }
+
+  private async cronRequest(
+    method: 'GET' | 'POST',
+    cron: EfpsCron,
+    params?: Record<string, string>,
+    body?: string,
+  ) {
+    const url = new URL(`https://hl2dm.everythingfps.com/crons/${cron}.php`);
+    url.searchParams.append('key', this.key);
+
+    if (params) {
+      for (const [key, value] of Object.entries(params)) {
+        url.searchParams.append(key, value);
+      }
+    }
+
+    const res = await fetch(url.toString(), {
+      method,
+      body,
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        'Request to eFPS failed: ' +
+          {
+            method,
+            url,
+            status: res.status,
+            body,
+          },
+      );
+    }
+
+    return res;
+  }
+
+  public async sendMatch(matchId: string) {
+    try {
+      const efpsStats = await db.matches.getEfpsStats(matchId);
+
+      await this.cronRequest(
+        'POST',
+        'data_new',
+        null,
+        JSON.stringify(efpsStats),
+      );
+
+      await db.matches.markSentToEfps(matchId);
+
+      return true;
+    } catch {
+      dbgErr('Failed to send eFPS stats (match id: ' + matchId + ')');
+    }
+
+    return false;
+  }
+
+  public async getRankData(steamId: string) {
+    try {
+      const res = await this.cronRequest('GET', 'player_stats', {
+        steamId: steamId64ToLegacy(steamId),
+      });
+
+      const efpsData = (await res.json()) as Record<string, string>;
+
+      if (efpsData.rank) {
+        const [pos, max] = efpsData.place.split(' of ').map(Number);
+        const title = efpsData.rank;
+
+        return {
+          title,
+          points: Number(efpsData.points),
+          pos,
+          max,
+        } as EfpsRankData;
+      }
+    } catch {}
+
+    return null;
+  }
+
+  public async notifyMatchStarted(data: EfpsMatchStartData) {
+    try {
+      await this.cronRequest('POST', 'match_start', null, JSON.stringify(data));
+    } catch (e) {
+      dbgErr(e);
+    }
+  }
+
+  public async notifyMatchCanceled(matchId: string) {
+    try {
+      await this.cronRequest(
+        'POST',
+        'match_cancel',
+        null,
+        JSON.stringify({ id: matchId }),
+      );
+    } catch (e) {
+      dbgErr(e);
+    }
+  }
+}
+
+const checkInterval = 60_000;
+const sendAttempts = 10;
+
+export class EfpsWatchdog {
+  private interval: NodeJS.Timeout;
+  private attempts: Record<string, number> = {};
+
+  constructor() {
+    this.interval = setInterval(() => {
+      this.sendUnsentMatches();
+    }, checkInterval);
+  }
+
+  private async sendUnsentMatches() {
+    const lostMatchesIds = await db.matches.getNotSentToEfps();
+
+    if (!lostMatchesIds?.length) {
+      return;
+    }
+
+    await Promise.allSettled(
+      lostMatchesIds.map(async (matchId) => {
+        if (this.attempts[matchId] >= sendAttempts) {
+          return;
+        }
+
+        this.attempts[matchId] = (this.attempts[matchId] ?? 0) + 1;
+
+        console.warn(
+          `Sending a missing match ${matchId} to eFPS, attempt #${this.attempts[matchId]}`,
+        );
+
+        const success = await EfpsClient.getInstance()?.sendMatch(matchId);
+
+        if (success) {
+          delete this.attempts[matchId];
+          console.warn(`Successfully sent a missing match ${matchId} to eFPS`);
+        }
+      }),
+    );
+  }
+
+  public destroy() {
+    clearInterval(this.interval);
+  }
+}

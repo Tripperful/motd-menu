@@ -13,7 +13,7 @@ import { WebSocketServer } from 'ws';
 import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
-import { EfpsWatchdog } from './util/ranks';
+import { EfpsWatchdog } from './util/efps';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
