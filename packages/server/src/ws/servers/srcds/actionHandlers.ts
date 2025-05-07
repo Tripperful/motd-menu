@@ -135,29 +135,32 @@ srcdsWsServer.onMessage('set_settings', async (srcds, data) => {
   await db.client.settings.set(steamId, settings);
 });
 
-srcdsWsServer.onMessage('match_started', (srcds, data) => {
+srcdsWsServer.onMessage('match_started', async (srcds, data) => {
   db.matchStats.matchStarted(srcds.getInfo().id, data);
 
-  EfpsClient.getInstance()?.notifyMatchStarted({
-    id: data.id,
-    map: data.mapName,
-    players: data.teams.flatMap((team) =>
-      team.players.map((p) => ({
-        steamid: p.steamId,
-        teamid: team.index,
-      })),
-    ),
-    server: srcds.getInfo().name,
-    teamplay: data.teams.length > 1,
-  });
+  const { isDev } = await db.server.getById(srcds.getInfo().id);
+
+  if (!isDev) {
+    EfpsClient.getInstance()?.notifyMatchStarted({
+      id: data.id,
+      map: data.mapName,
+      players: data.teams.flatMap((team) =>
+        team.players.map((steamid) => ({
+          steamid,
+          teamid: team.index,
+        })),
+      ),
+      server: srcds.getInfo().name,
+      teamplay: data.teams.length > 1,
+    });
+  }
 });
 
 srcdsWsServer.onMessage('match_ended', async (srcds, data) => {
   await db.matchStats.matchEnded(data);
+  const { isDev } = await db.server.getById(srcds.getInfo().id);
 
   if (process.env.MOTD_EFPS_KEY) {
-    const { isDev } = await db.server.getById(srcds.getInfo().id);
-
     if (data.status === 'completed') {
       if (!isDev) {
         await EfpsClient.getInstance()?.sendMatch(data.id);
@@ -189,7 +192,9 @@ srcdsWsServer.onMessage('match_ended', async (srcds, data) => {
       );
     }
   } else {
-    EfpsClient.getInstance()?.notifyMatchCanceled(data.id);
+    if (!isDev) {
+      EfpsClient.getInstance()?.notifyMatchCanceled(data.id);
+    }
   }
 });
 

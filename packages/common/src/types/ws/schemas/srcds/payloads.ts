@@ -162,10 +162,13 @@ export interface BasePointStatsData extends BaseStatsData {
   origin: Vec3;
 }
 
-export interface MatchEndedTeamData {
+export interface MatchTeamData {
   index: number;
   name: string;
-  players: MatchEndedTeamPlayerData[];
+}
+
+export interface MatchStartedTeamData extends MatchTeamData {
+  players: string[];
 }
 
 export interface MatchEndedTeamPlayerData {
@@ -174,22 +177,27 @@ export interface MatchEndedTeamPlayerData {
   steamId: string;
 }
 
+export interface MatchEndedTeamData extends MatchTeamData {
+  players: MatchEndedTeamPlayerData[];
+}
+
 export interface MatchData extends BaseStatsData {
   id: string;
   demoId: string;
   initiator: string;
   mapName: string;
-  teams: MatchEndedTeamData[];
 }
 
 export interface MatchStartedData extends MatchData {
   duration: number;
   status: string;
+  teams: MatchStartedTeamData[];
 }
 
 export interface MatchEndedData extends MatchData {
   duration: number;
   status: string;
+  teams: MatchEndedTeamData[];
 }
 
 export interface PlayerDeathData extends BasePointStatsData {
