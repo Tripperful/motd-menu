@@ -275,7 +275,7 @@ RETURN COALESCE(EXTRACT(epoch FROM SUM(COALESCE(disconnected, NOW()) - connected
     AND (
       disconnected IS NOT NULL
       OR
-      id = token::uuid
+      id::text = token
     );
 END;
 $$ LANGUAGE plpgsql;

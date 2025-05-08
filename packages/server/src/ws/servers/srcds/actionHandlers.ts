@@ -190,10 +190,10 @@ srcdsWsServer.onMessage('match_ended', async (srcds, data) => {
           );
         }),
       );
-    }
-  } else {
-    if (!isDev) {
-      EfpsClient.getInstance()?.notifyMatchCanceled(data.id);
+    } else {
+      if (!isDev) {
+        EfpsClient.getInstance()?.notifyMatchCanceled(data.id);
+      }
     }
   }
 });
