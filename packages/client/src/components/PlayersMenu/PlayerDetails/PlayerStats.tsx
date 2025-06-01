@@ -77,7 +77,7 @@ export const PlayerStats: FC<{ steamId: string }> = ({ steamId }) => {
               </span>
             </div>
             <div className={c.line}>
-              <span>Points:</span>
+              <span>ELO:</span>
               <span className={c.value}>{efpsRank.points}</span>
             </div>
           </>
