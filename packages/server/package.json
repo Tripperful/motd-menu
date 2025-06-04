@@ -7,7 +7,7 @@
     "build:dev": "webpack --mode=development",
     "launch": "node ./dist",
     "start": "npm run build && npm run launch",
-    "watch": "concurrently -n webpack,nodemon \"webpack --mode=development --watch\" \"nodemon ./dist --watch ./dist\""
+    "watch": "ts-node ./scripts/watch.ts"
   },
   "dependencies": {
     "@motd-menu/common": "1.0.0"

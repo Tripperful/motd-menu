@@ -9,6 +9,7 @@ const buildDir = cd('./dist');
 
 const config: () => Configuration = () => {
   return {
+    mode: process.env.NODE_ENV as Configuration['mode'] || 'development',
     entry: {
       index: './src/index.ts',
     },
@@ -47,6 +48,12 @@ const config: () => Configuration = () => {
           use: 'raw-loader',
         },
       ],
+      exprContextCritical: false,
+    },
+    externals: {
+      'pg-native': 'commonjs pg-native',
+      bufferutil: 'commonjs bufferutil',
+      'utf-8-validate': 'commonjs utf-8-validate',
     },
     devtool: 'source-map',
     target: ['node'],
