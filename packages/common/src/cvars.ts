@@ -50,6 +50,7 @@ export type Cvar =
   | 'mp_forcerespawn'
   | 'sv_physcannon_fast_gather'
   | 'sv_physcannon_ez_yoyo'
+  | 'sv_follow_projectiles'
   | 'mp_timelimit'
   | 'mp_fraglimit'
   | 'mp_match'
@@ -202,6 +203,12 @@ const registeredCvarsInfo: Record<Cvar, CvarInfo> = {
   },
   sv_physcannon_ez_yoyo: {
     description: 'Gravity gun easy yo-yo',
+    type: 'bool',
+    permissions: matchmakingPermissions,
+    mockValue: '0',
+  },
+  sv_follow_projectiles: {
+    description: 'Follow projectiles',
     type: 'bool',
     permissions: matchmakingPermissions,
     mockValue: '0',
