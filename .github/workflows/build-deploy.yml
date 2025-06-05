@@ -71,6 +71,7 @@ jobs:
           path: |
             ./Dockerfile
             ./docker-compose.yaml
+            ./prometheus
             ./packages/*/dist
             ./node_modules/geoip-lite/data
 
@@ -111,6 +112,13 @@ jobs:
           POSTGRES_PORT=\"${{ vars.POSTGRES_PORT }}\"
           POSTGRES_USER=\"${{ secrets.POSTGRES_USER }}\"
           POSTGRES_PASSWORD=\"${{ secrets.POSTGRES_PASSWORD }}\"
+          EOF'"
+
+      - name: Write prometheus web config to the server
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} "bash -c 'cat > ~/build/prometheus/web.yaml <<EOF
+          basic_auth_users:
+            admin: ${{ secrets.PROM_PASSWORD_BCRYPT }}
           EOF'"
 
       - name: Deploy the build

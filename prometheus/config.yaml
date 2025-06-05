@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: 'motd-server'
+    metrics_path: /metrics
+    scheme: https
+    static_configs:
+      - targets: ['server:25443']
+    tls_config:
+      insecure_skip_verify: true

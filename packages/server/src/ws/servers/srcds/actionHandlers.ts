@@ -1,6 +1,7 @@
 import { chatColor, PlayerClientSettings } from '@motd-menu/common';
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
+import { matchCounter, onlinePlayersGauge } from 'src/metrics';
 import { getPlayerProfile } from 'src/steam';
 import { dbgErr } from 'src/util';
 import { EfpsClient } from 'src/util/efps';
@@ -11,6 +12,10 @@ import { chargerUseHandler } from './chargerUseHandler';
 const srcdsWsServer = SrcdsWsApiServer.getInstace();
 
 srcdsWsServer.onMessage('player_connected', async (srcds, data) => {
+  onlinePlayersGauge.inc({
+    server: srcds.getInfo().name ?? 'unknown',
+  });
+
   const { token, steamId, ip, port } = data;
 
   const profile = await getPlayerProfile(steamId);
@@ -37,6 +42,10 @@ srcdsWsServer.onMessage('player_connected', async (srcds, data) => {
 });
 
 srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
+  onlinePlayersGauge.dec({
+    server: srcds.getInfo().name ?? 'unknown',
+  });
+
   const { token, connectionStats: s } = data;
 
   dropAuthCache(token);
@@ -160,8 +169,15 @@ srcdsWsServer.onMessage('match_ended', async (srcds, data) => {
   await db.matchStats.matchEnded(data);
   const { isDev } = await db.server.getById(srcds.getInfo().id);
 
+  const status = data.status;
+
+  matchCounter.inc({
+    map: data.mapName,
+    status,
+  });
+
   if (process.env.MOTD_EFPS_KEY) {
-    if (data.status === 'completed') {
+    if (status === 'completed') {
       if (!isDev) {
         await EfpsClient.getInstance()?.sendMatch(data.id);
       }

@@ -14,6 +14,8 @@ import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
 import { EfpsWatchdog } from './util/efps';
+import { metricsRouter } from './metrics/router';
+import { metricsMiddleware } from './metrics/middleware';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
@@ -43,6 +45,8 @@ app.set('x-powered-by', false);
 app.use('/storybook', storybookStaticServer);
 app.use(bodyParser.json());
 app.use(authMiddleware);
+app.use(metricsMiddleware);
+app.use('/metrics', metricsRouter);
 app.use('/api', api);
 app.use(staticServer);
 app.use((_req, res) =>

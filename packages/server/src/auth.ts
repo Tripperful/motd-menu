@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import type { Request } from 'express';
 import { RequestHandler } from 'express';
 import { db } from './db';
+import { isPrometheusRequest } from './metrics/util';
 import { dbgWarn, logDbgInfo } from './util';
 import {
   SrcdsWsApiClientType,
@@ -95,6 +96,11 @@ const getMotdReqAuthParams = (req: Request) => {
 };
 
 const authHandler: RequestHandler = async (req, res, next) => {
+  if (await isPrometheusRequest(req)) {
+    // Allow Prometheus to scrape metrics without authentication
+    return next();
+  }
+
   try {
     const { reqAuthVersion, cookie, token, remoteId, isQueryAuth } =
       getMotdReqAuthParams(req);

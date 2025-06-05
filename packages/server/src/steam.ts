@@ -1,5 +1,6 @@
 import { errorSteamProfile, GeoData, SteamPlayerData } from '@motd-menu/common';
 import { getPlayerGeoData } from './util/countries';
+import { SteamAPIRequestsCounter } from './metrics';
 
 interface PlayerSummary {
   steamid: string;
@@ -50,25 +51,33 @@ export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
     );
 
     await Promise.all([
-      ...batches.map((batch) =>
-        fetch(
+      ...batches.map(async (batch) => {
+        const res = await fetch(
           `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${
             process.env.MOTD_STEAM_API_KEY
           }&steamids=${batch.join(',')}`,
-        )
-          .then((r) => r.json())
-          .then((r: GetPlayerSummariesResponse) => {
-            const lastUpdate = Date.now();
+        );
 
-            for (const player of r.response.players) {
-              profilesBySteamId[player.steamid] = player;
-              playersProfilesCache[player.steamid] = {
-                lastUpdate,
-                data: player,
-              };
-            }
-          }),
-      ),
+        SteamAPIRequestsCounter.inc({
+          method: 'GET',
+          endpoint: new URL(res.url).pathname,
+          status: res.status.toString(),
+        });
+
+        const {
+          response: { players },
+        } = (await res.json()) as GetPlayerSummariesResponse;
+
+        const lastUpdate = Date.now();
+
+        for (const player of players) {
+          profilesBySteamId[player.steamid] = player;
+          playersProfilesCache[player.steamid] = {
+            lastUpdate,
+            data: player,
+          };
+        }
+      }),
       ...steamIds64.map((steamId) =>
         getPlayerGeoData(steamId).then((geo) => {
           geoBySteamId[steamId] = geo;

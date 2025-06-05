@@ -38,7 +38,14 @@ export class BaseWsApiClient<TWsSendSchema, TClientInfo>
     if (guid == null) delete msg.guid;
 
     this.socket.send(JSON.stringify(msg));
+    this.onDataSent(msg);
   }
+
+  /**
+   * Override this method to handle data sent to the client.
+   * @param data Data that was sent
+   */
+  onDataSent(data: any): void {}
 
   request(type: string, data?: unknown) {
     return new Promise<any>((resolve, reject) => {

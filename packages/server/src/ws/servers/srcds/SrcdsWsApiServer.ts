@@ -7,6 +7,13 @@ import type {
 import { BaseWsApiServer, chatColor } from '@motd-menu/common';
 import type { IncomingMessage } from 'http';
 import { db } from 'src/db';
+import { WebSocket } from 'ws';
+import { SrcdsWsApiClient } from './SrcdsWsApiClient';
+import {
+  onlinePlayersGauge,
+  onlineServersGauge,
+  wsMessagesCounter,
+} from 'src/metrics';
 
 export class SrcdsWsApiServer extends BaseWsApiServer<
   SrcdsWsRecvSchema,
@@ -53,7 +60,40 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
     };
   }
 
+  protected override clientFactory(
+    clientId: string,
+    clientWs: WebSocket,
+    clientInfo: ServerInfo,
+  ) {
+    return new SrcdsWsApiClient(clientId, clientWs, clientInfo);
+  }
+
+  override onDataReceived(client: SrcdsWsApiClient, data: any): void {
+    const type = data.type ?? 'unknown';
+
+    wsMessagesCounter.inc({
+      direction: 'incoming',
+      type,
+      server: client.getInfo().name ?? 'unknown',
+    });
+
+    if (type === 'get_players_response') {
+      const count = data.data?.length as number;
+
+      if (count != null) {
+        onlinePlayersGauge.set(
+          {
+            server: client.getInfo().name ?? 'unknown',
+          },
+          count,
+        );
+      }
+    }
+  }
+
   protected override async onClientConnected(client: SrcdsWsApiClientType) {
+    onlineServersGauge.set(this.getConnectedClients().length);
+
     try {
       const onlinePlayers = await client.request('get_players_request');
       const playersPermissions = Object.fromEntries(
@@ -79,6 +119,10 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
         });
       }
     } catch {}
+  }
+
+  protected override async onClientDisconnected(client: SrcdsWsApiClientType) {
+    onlineServersGauge.set(this.getConnectedClients().length);
   }
 
   public static getInstace() {

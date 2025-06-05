@@ -1,6 +1,7 @@
 name: motd-menu
 volumes:
   postgres_data:
+  prometheus_data:
 services:
   db:
     image: 'postgres:latest'
@@ -54,4 +55,16 @@ services:
       start_period: 300s
     ports:
       - ${MOTD_WEB_PORT}:${MOTD_WEB_PORT}
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus:/etc/prometheus:ro
+    ports:
+      - 9090:9090
+    command:
+      - '--config.file=/etc/prometheus/config.yaml'
+      - '--web.config.file=/etc/prometheus/web.yaml'
     restart: unless-stopped

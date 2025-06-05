@@ -3,7 +3,7 @@
 import type { WsApiClient, WsApiServer, WsClient } from '@motd-menu/common';
 import type http from 'http';
 import type { Duplex } from 'stream';
-import type { WebSocketServer } from 'ws';
+import type { WebSocketServer, WebSocket } from 'ws';
 import { BaseWsApiClient } from './BaseWsApiClient';
 
 export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
@@ -42,6 +42,22 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
     clientInfo: TClientInfo;
   }>;
 
+  protected clientFactory(clientId: string, clientWs: WebSocket, clientInfo: TClientInfo) {
+    return new BaseWsApiClient<TWsSendSchema, TClientInfo>(
+      clientId,
+      clientWs,
+      clientInfo,
+    );
+  }
+
+  /**
+   * Override this method to handle data received from the client.
+   * 
+   * @param client The client that sent the data
+   * @param data The data received from the client
+   */
+  public onDataReceived(client: WsApiClient<TWsSendSchema, TClientInfo>, data: any): void {}
+
   onUpgrade(
     req: http.IncomingMessage,
     socket: Duplex,
@@ -74,7 +90,7 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
 
       wsServer.handleUpgrade(req, socket, head, async (clientWs) => {
         try {
-          const client = new BaseWsApiClient<TWsSendSchema, TClientInfo>(
+          const client = this.clientFactory(
             clientId,
             clientWs,
             clientInfo,
@@ -89,11 +105,15 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
 
           clientWs.on('close', () => {
             delete this.clients[clientId];
+            this.onClientDisconnected(client);
           });
 
           clientWs.on('message', (msg) => {
             try {
               const message = JSON.parse(msg.toString());
+
+              this.onDataReceived(client, message);
+
               const { type, guid, data } = message;
 
               // If the message is a response to a request, handle it and return
@@ -131,6 +151,11 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
   }
 
   protected async onClientConnected(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    client: BaseWsApiClient<TWsSendSchema, TClientInfo>,
+  ) {}
+
+  protected async onClientDisconnected(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     client: BaseWsApiClient<TWsSendSchema, TClientInfo>,
   ) {}

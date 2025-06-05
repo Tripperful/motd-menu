@@ -5,3 +5,4 @@ packages/*/data
 packages/*/storybook-static
 .env
 *storybook.log
+prometheus/web.yaml
