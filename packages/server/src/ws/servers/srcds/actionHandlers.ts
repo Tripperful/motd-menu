@@ -12,9 +12,17 @@ import { chargerUseHandler } from './chargerUseHandler';
 const srcdsWsServer = SrcdsWsApiServer.getInstace();
 
 srcdsWsServer.onMessage('player_connected', async (srcds, data) => {
-  onlinePlayersGauge.inc({
-    server: srcds.getInfo().name ?? 'unknown',
-  });
+  srcds
+    .request('get_players_request')
+    .then((players) => {
+      onlinePlayersGauge.set(
+        {
+          server: srcds.getInfo().name ?? 'unknown',
+        },
+        players.length,
+      );
+    })
+    .catch(() => {});
 
   const { token, steamId, ip, port } = data;
 
@@ -42,9 +50,17 @@ srcdsWsServer.onMessage('player_connected', async (srcds, data) => {
 });
 
 srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
-  onlinePlayersGauge.dec({
-    server: srcds.getInfo().name ?? 'unknown',
-  });
+  srcds
+    .request('get_players_request')
+    .then((players) => {
+      onlinePlayersGauge.set(
+        {
+          server: srcds.getInfo().name ?? 'unknown',
+        },
+        players.length,
+      );
+    })
+    .catch(() => {});
 
   const { token, connectionStats: s } = data;
 
