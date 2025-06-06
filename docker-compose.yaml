@@ -31,7 +31,6 @@ services:
         condition: service_healthy
     environment:
       - MOTD_ROOT_ADMINS=${MOTD_ROOT_ADMINS}
-      - MOTD_STEAM_API_KEY=${MOTD_STEAM_API_KEY}
       - MOTD_WEB_PORT=${MOTD_WEB_PORT}
       - MOTD_DEBUG_LOG=${MOTD_DEBUG_LOG}
       - MOTD_SSL_CERT=${MOTD_SSL_CERT}

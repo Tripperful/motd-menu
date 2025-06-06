@@ -1,18 +1,6 @@
-import { errorSteamProfile, GeoData, SteamPlayerData } from '@motd-menu/common';
+import { errorSteamProfile, SteamPlayerData } from '@motd-menu/common';
+import { parseStringPromise as xmlParse } from 'xml2js';
 import { getPlayerGeoData } from './util/countries';
-import { SteamAPIRequestsCounter } from './metrics';
-
-interface PlayerSummary {
-  steamid: string;
-  personaname: string;
-  avatarfull: string;
-}
-
-interface GetPlayerSummariesResponse {
-  response: {
-    players: PlayerSummary[];
-  };
-}
 
 const profileCacheLifetime = 1000 * 60 * 10; // 10 min
 
@@ -20,180 +8,67 @@ const playersProfilesCache: Record<
   string,
   {
     lastUpdate: number;
-    data: PlayerSummary;
+    data: SteamPlayerData;
   }
 > = {};
-
-export const getPlayersProfilesNoBatch = async (steamIds64: string[]) => {
-  try {
-    const geoBySteamId: Record<string, GeoData> = {};
-    const profilesBySteamId: Record<string, PlayerSummary> = {};
-
-    const cachedSteamIds: string[] = [];
-    const uncachedSteamIds: string[] = [];
-
-    for (const steamId of steamIds64) {
-      const cache = playersProfilesCache[steamId];
-      const now = Date.now();
-
-      if (cache && cache.lastUpdate > now - profileCacheLifetime) {
-        profilesBySteamId[steamId] = cache.data;
-        cachedSteamIds.push(steamId);
-      } else {
-        uncachedSteamIds.push(steamId);
-      }
-    }
-
-    // Steam API only allows requesting up to 100 profiles at once
-    const batches = Array.from(
-      { length: Math.ceil(uncachedSteamIds.length / 100) },
-      (_, i) => uncachedSteamIds.slice(i * 100, i * 100 + 100),
-    );
-
-    await Promise.all([
-      ...batches.map(async (batch) => {
-        const res = await fetch(
-          `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${
-            process.env.MOTD_STEAM_API_KEY
-          }&steamids=${batch.join(',')}`,
-        );
-
-        SteamAPIRequestsCounter.inc({
-          method: 'GET',
-          endpoint: new URL(res.url).pathname,
-          status: res.status.toString(),
-        });
-
-        const {
-          response: { players },
-        } = (await res.json()) as GetPlayerSummariesResponse;
-
-        const lastUpdate = Date.now();
-
-        for (const player of players) {
-          profilesBySteamId[player.steamid] = player;
-          playersProfilesCache[player.steamid] = {
-            lastUpdate,
-            data: player,
-          };
-        }
-      }),
-      ...steamIds64.map((steamId) =>
-        getPlayerGeoData(steamId).then((geo) => {
-          geoBySteamId[steamId] = geo;
-        }),
-      ),
-    ]);
-
-    return Object.fromEntries(
-      steamIds64.map((steamId) => {
-        const profile = profilesBySteamId[steamId];
-
-        return [
-          steamId,
-          profile
-            ? {
-                steamId,
-                name: profile.personaname,
-                avatar: profile.avatarfull,
-                geo: geoBySteamId[steamId],
-              }
-            : errorSteamProfile(steamId),
-        ];
-      }),
-    );
-  } catch {
-    return Object.fromEntries(
-      steamIds64.map((steamId) => [steamId, errorSteamProfile(steamId)]),
-    );
-  }
-};
-
-const profilesToFetch = new Set<string>();
-let fetchTimeout: NodeJS.Timeout = null;
-const profilesCallbacks: ((
-  profiles: Record<string, SteamPlayerData>,
-) => void)[] = [];
-
-const flushProfiles = async () => {
-  let profiles: Record<string, SteamPlayerData>;
-  try {
-    profiles = await getPlayersProfilesNoBatch(Array.from(profilesToFetch));
-  } catch {
-    profiles = Object.fromEntries(
-      Array.from(profilesToFetch).map((id) => [id, errorSteamProfile(id)]),
-    );
-  }
-
-  fetchTimeout = null;
-
-  for (const cb of profilesCallbacks) {
-    cb(profiles);
-  }
-
-  profilesToFetch.clear();
-  profilesCallbacks.length = 0;
-};
-
-const debounceProfilesFetch = () => {
-  if (fetchTimeout) {
-    clearTimeout(fetchTimeout);
-  }
-
-  fetchTimeout = setTimeout(flushProfiles, 100);
-};
 
 export const getPlayersProfiles = async (
   steamIds64: string[],
   includeCity = false,
 ) =>
-  new Promise<Record<string, SteamPlayerData>>((resolve) => {
-    for (const id of steamIds64) {
-      profilesToFetch.add(id);
-    }
-
-    profilesCallbacks.push((profiles) => {
-      const requestedProfiles = Object.fromEntries(
-        steamIds64.map((id) => [id, profiles[id]]),
-      );
-
-      if (!includeCity) {
-        for (const profile of Object.values(requestedProfiles)) {
-          if (profile?.geo?.city) {
-            profile.geo = {
-              country: profile.geo.country,
-              countryCode: profile.geo.countryCode,
-              full: profile.geo.country,
-            };
-          }
-        }
-      }
-
-      resolve(requestedProfiles);
-    });
-
-    debounceProfilesFetch();
-  });
+  Object.fromEntries(
+    await Promise.all(
+      steamIds64.map(async (steamId64) => [
+        steamId64,
+        await getPlayerProfile(steamId64, includeCity),
+      ]),
+    ),
+  ) as Record<string, SteamPlayerData>;
 
 export const getPlayerProfile = async (
   steamId64: string,
   includeCity = false,
-) =>
-  new Promise<SteamPlayerData>((resolve) => {
-    profilesCallbacks.push((profiles) => {
-      const profile = profiles[steamId64] ?? errorSteamProfile(steamId64);
+): Promise<SteamPlayerData> => {
+  const cached = playersProfilesCache[steamId64];
 
-      if (!includeCity && profile.geo?.city) {
-        profile.geo = {
-          country: profile.geo.country,
-          countryCode: profile.geo.countryCode,
-          full: profile.geo.country,
-        };
-      }
+  let profile: SteamPlayerData = null;
 
-      resolve(profile);
+  if (cached && cached.lastUpdate > Date.now() - profileCacheLifetime) {
+    profile = cached.data;
+  } else {
+    const res = await fetch(
+      `https://steamcommunity.com/profiles/${steamId64}/?xml=1`,
+    );
+    const xml = await res.text();
+    const json = await xmlParse(xml, {
+      explicitArray: false,
+      mergeAttrs: true,
     });
-    profilesToFetch.add(steamId64);
 
-    debounceProfilesFetch();
-  });
+    const errorProfile = errorSteamProfile(steamId64);
+
+    profile = {
+      avatar: json.profile.avatarFull ?? errorProfile.avatar,
+      name: json.profile.steamID ?? errorProfile.name,
+      steamId: json.profile.steamID64 ?? errorProfile.steamId,
+    };
+
+    playersProfilesCache[steamId64] = {
+      lastUpdate: Date.now(),
+      data: profile,
+    };
+  }
+
+  const geo = await getPlayerGeoData(steamId64);
+
+  return {
+    ...profile,
+    geo: includeCity
+      ? geo
+      : {
+          country: geo.country,
+          countryCode: geo.countryCode,
+          full: geo.country,
+        },
+  };
+};

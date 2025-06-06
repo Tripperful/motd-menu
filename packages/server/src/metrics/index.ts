@@ -28,9 +28,3 @@ export const wsMessagesCounter = new client.Counter({
   help: 'Total number of WebSocket messages sent and received',
   labelNames: ['direction', 'type', 'server'],
 });
-
-export const SteamAPIRequestsCounter = new client.Counter({
-  name: 'steam_api_requests_total',
-  help: 'Total number of requests made to the Steam API',
-  labelNames: ['method', 'endpoint', 'status'],
-});
