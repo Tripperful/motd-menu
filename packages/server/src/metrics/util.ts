@@ -4,13 +4,13 @@ import { Request } from 'express';
 let prometheusIp: string = null;
 
 export const isPrometheusRequest = async (req: Request) => {
-  try {
-    if (!prometheusIp) {
-      prometheusIp = (await dns.lookup('prometheus')).address;
+  if (!prometheusIp) {
+    try {
+      prometheusIp = (await dns.lookup('prometheus'))?.address ?? 'unknown';
+    } catch {
+      prometheusIp = 'unknown';
     }
-
-    return req.ip.replace('::ffff:', '') === prometheusIp;
-  } catch {
-    return false;
   }
+
+  return req.ip.replace('::ffff:', '') === prometheusIp;
 };
