@@ -7,10 +7,14 @@ export const metricsMiddleware: RequestHandler = async (req, res, next) => {
     return next();
   }
 
-  httpRequestCounter.inc({
-    method: req.method,
-    path: req.path,
-    authenticated: res.locals.sessionData?.steamId ? 'true' : 'false',
+  res.on('finish', () => {
+    if (req.route && req.baseUrl !== undefined) {
+      httpRequestCounter.inc({
+        method: req.method,
+        path: `${req.baseUrl}${req.route.path}`,
+        authenticated: res.locals.sessionData?.steamId ? 'true' : 'false',
+      });
+    }
   });
 
   next();
