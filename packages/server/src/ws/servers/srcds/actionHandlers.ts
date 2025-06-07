@@ -157,6 +157,10 @@ srcdsWsServer.onMessage('set_settings', async (srcds, data) => {
     kevlarSound: s.kevlarsound == null ? null : Boolean(s.kevlarsound),
   };
 
+  if (s.hitSoundPaths) {
+    settings.hitSoundPaths = s.hitSoundPaths;
+  }
+
   await db.client.settings.set(steamId, settings);
 });
 
