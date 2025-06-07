@@ -12,5 +12,8 @@ export const isPrometheusRequest = async (req: Request) => {
     }
   }
 
-  return req.ip.replace('::ffff:', '') === prometheusIp;
+  return (
+    req.ip.replace('::ffff:', '') === prometheusIp &&
+    req.headers['user-agent'].toLowerCase().includes('prometheus')
+  );
 };
