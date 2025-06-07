@@ -79,6 +79,9 @@ export const hitSounds = {
   active: assetPathToSrcdsSoundPath(srcdsAssets.sounds.active),
   click1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.click1),
   ping: assetPathToSrcdsSoundPath(srcdsAssets.sounds.ping),
+  flesh_bloody_break: assetPathToSrcdsSoundPath(
+    srcdsAssets.sounds.flesh_body_break,
+  ),
 };
 
 export type HitSoundType = keyof typeof hitSounds;
@@ -144,6 +147,7 @@ export const hitSoundNames: Record<HitSoundType, string> = {
   active: 'active',
   click1: 'click1',
   ping: 'ping',
+  flesh_bloody_break: 'flesh_bloody_break',
 };
 
 export const defaultHitSounds: HitSoundPathsData = {

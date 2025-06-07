@@ -48,6 +48,7 @@ import scanner_scan4 from '~assets/game/sound/npc/scanner/scanner_scan4.wav';
 import active from '~assets/game/sound/npc/turret_floor/active.wav';
 import click1 from '~assets/game/sound/npc/turret_floor/click1.wav';
 import ping from '~assets/game/sound/npc/turret_floor/ping.wav';
+import flesh_body_break from '~assets/game/sound/physics/flesh/flesh_bloody_break.wav';
 import sfBodyKillSound from '~assets/game/sound/sf_vox/frag_snd.wav';
 import sfHeadKillSound from '~assets/game/sound/sf_vox/headshot_kill_snd.wav';
 import sfBodyHitSound from '~assets/game/sound/sf_vox/hitbody.wav';
@@ -111,5 +112,6 @@ export const srcdsAssets = {
     active,
     click1,
     ping,
+    flesh_body_break,
   },
 };
