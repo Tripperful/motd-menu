@@ -57,6 +57,8 @@ services:
     restart: unless-stopped
 
   prometheus:
+    depends_on: 
+      - server
     image: prom/prometheus:latest
     volumes:
       - prometheus_data:/prometheus
