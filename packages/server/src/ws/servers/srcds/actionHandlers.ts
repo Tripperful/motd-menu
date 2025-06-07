@@ -19,7 +19,7 @@ srcdsWsServer.onMessage('player_connected', async (srcds, data) => {
         {
           server: srcds.getInfo().name ?? 'unknown',
         },
-        players.length,
+        players?.length ?? 0,
       );
     })
     .catch(() => {});
@@ -57,7 +57,7 @@ srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
         {
           server: srcds.getInfo().name ?? 'unknown',
         },
-        players.length,
+        players?.length ?? 0,
       );
     })
     .catch(() => {});

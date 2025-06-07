@@ -106,17 +106,6 @@ const authHandler: RequestHandler = async (req, res, next) => {
       getMotdReqAuthParams(req);
 
     if (!token) {
-      dbgWarn(
-        `Missing auth token, request info: ${JSON.stringify({
-          reqAuthVersion,
-          cookie,
-          token,
-          remoteId,
-          query: req.query,
-          url: req.url,
-        })}`,
-      );
-
       throw 'Unauthorized';
     }
 

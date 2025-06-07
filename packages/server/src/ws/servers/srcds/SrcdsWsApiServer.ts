@@ -78,7 +78,7 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
     });
 
     if (type === 'get_players_response') {
-      const count = data.data?.length as number;
+      const count = data.data?.length as number ?? 0;
 
       if (count != null) {
         onlinePlayersGauge.set(
