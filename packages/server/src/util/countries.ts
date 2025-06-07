@@ -11,17 +11,16 @@ const unknownGeo: GeoData = {
 
 export const getPlayerGeoData = async (steamId: string): Promise<GeoData> => {
   try {
-    if (!steamId) return unknownGeo;
-
     const lastIp = await db.client.getLastIp(steamId);
-
     const geoData = geoip.lookup(lastIp);
-    const city = geoData.city ?? 'Unknown City';
-    const countryCode = (geoData.country ?? 'XX') as CountryCode;
-    const country = countryNameByCode[countryCode] ?? 'Unknown Country';
+
+    const city = geoData?.city ?? unknownGeo.city;
+    const countryCode =
+      (geoData?.country as CountryCode) ?? unknownGeo.countryCode;
+    const country = countryNameByCode[countryCode] ?? unknownGeo.country;
     const full = [city, country].filter(Boolean).join(', ');
 
-    return country ? { city, country, countryCode, full } : unknownGeo;
+    return { city, country, countryCode, full };
   } catch {
     return unknownGeo;
   }
