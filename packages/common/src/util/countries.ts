@@ -248,6 +248,7 @@ export const countryNameByCode = {
   YE: 'Yemen',
   ZM: 'Zambia',
   ZW: 'Zimbabwe',
+  XX: 'Unknown Country',
 };
 
 export type CountryCode = keyof typeof countryNameByCode;

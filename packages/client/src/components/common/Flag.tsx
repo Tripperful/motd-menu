@@ -10,7 +10,7 @@ const useStyles = createUseStyles({
 
 export const Flag: FC<{ code: CountryCode }> = ({ code }) => {
   const c = useStyles();
-  return code == 'XX' as CountryCode ? null : (
+  return code == 'XX' ? null : (
     <img
       className={c.root}
       src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${code}.svg`}

@@ -50,6 +50,11 @@ export type SrcdsWsRecvSchema = WsApiSchema<{
   player_connected: {
     reqData: PlayerConnectedData;
   };
+  player_connected_request: {
+    reqData: PlayerConnectedData;
+    resType: 'player_connected_response';
+    resData: { aka: string; geo: string };
+  };
   player_disconnected: {
     reqData: PlayerDisconnectedData;
   };

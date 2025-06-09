@@ -4,15 +4,14 @@ import { db } from 'src/db';
 
 const unknownGeo: GeoData = {
   country: 'Unknown Country',
-  countryCode: 'XX' as CountryCode,
+  countryCode: 'XX',
   city: 'Unknown City',
   full: 'Unknown City, Unknown Country',
 };
 
-export const getPlayerGeoData = async (steamId: string): Promise<GeoData> => {
+export const getGeoDataByIp = async (ip: string): Promise<GeoData> => {
   try {
-    const lastIp = await db.client.getLastIp(steamId);
-    const geoData = geoip.lookup(lastIp);
+    const geoData = geoip.lookup(ip);
 
     const city = geoData?.city ?? unknownGeo.city;
     const countryCode =
@@ -24,4 +23,10 @@ export const getPlayerGeoData = async (steamId: string): Promise<GeoData> => {
   } catch {
     return unknownGeo;
   }
+};
+
+export const getGeoDataBySteamId = async (steamId: string): Promise<GeoData> => {
+  const lastIp = await db.client.getLastIp(steamId);
+
+  return lastIp ? await getGeoDataByIp(lastIp) : unknownGeo;
 };
