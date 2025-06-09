@@ -48,9 +48,9 @@ export const getPlayerProfile = async (
     const errorProfile = errorSteamProfile(steamId64);
 
     profile = {
-      avatar: json.profile.avatarFull ?? errorProfile.avatar,
-      name: json.profile.steamID ?? errorProfile.name,
-      steamId: json.profile.steamID64 ?? errorProfile.steamId,
+      avatar: json.profile?.avatarFull ?? errorProfile.avatar,
+      name: json.profile?.steamID ?? errorProfile.name,
+      steamId: json.profile?.steamID64 ?? errorProfile.steamId,
     };
 
     playersProfilesCache[steamId64] = {
