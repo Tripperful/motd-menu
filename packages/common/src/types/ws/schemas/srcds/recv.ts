@@ -47,9 +47,6 @@ export type SrcdsWsRecvSchema = WsApiSchema<{
     resType: 'get_smurfs_response';
     resData: string[];
   };
-  player_connected: {
-    reqData: PlayerConnectedData;
-  };
   player_connected_request: {
     reqData: PlayerConnectedData;
     resType: 'player_connected_response';

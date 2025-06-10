@@ -11,44 +11,6 @@ import { chargerUseHandler } from './chargerUseHandler';
 
 const srcdsWsServer = SrcdsWsApiServer.getInstace();
 
-srcdsWsServer.onMessage('player_connected', async (srcds, data) => {
-  srcds
-    .request('get_players_request')
-    .then((players) => {
-      onlinePlayersGauge.set(
-        {
-          server: srcds.getInfo().name ?? 'unknown',
-        },
-        players?.length ?? 0,
-      );
-    })
-    .catch(() => {});
-
-  const { token, steamId, ip, port } = data;
-
-  const profile = await getPlayerProfile(steamId);
-
-  db.client.connected(
-    token,
-    steamId,
-    srcds.getInfo().id,
-    ip,
-    port,
-    profile?.name || null,
-  );
-
-  try {
-    const rankUpdateData = toSrcdsRankData(await getRankData(steamId));
-    rankUpdateData.show = false;
-
-    if (rankUpdateData.rank) {
-      srcds.send('rank_update', [rankUpdateData]);
-    }
-  } catch (e) {
-    dbgErr(e);
-  }
-});
-
 srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
   srcds
     .request('get_players_request')
