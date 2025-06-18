@@ -104,7 +104,6 @@ jobs:
           MOTD_SSL_CERT=\"${{ secrets.MOTD_SSL_CERT }}\"
           MOTD_SSL_PRIVATE_KEY=\"${{ secrets.MOTD_SSL_PRIVATE_KEY }}\"
           MOTD_EFPS_KEY=\"${{ secrets.MOTD_EFPS_KEY }}\"
-          MOTD_TELEGRAM_BOT_TOKEN=\"${{ secrets.MOTD_TELEGRAM_BOT_TOKEN }}\"
           MOTD_MAXMIND_LICENSE_KEY=\"${{ secrets.MOTD_MAXMIND_LICENSE_KEY }}\"
           POSTGRES_HOST=\"${{ vars.POSTGRES_HOST }}\"
           POSTGRES_PORT=\"${{ vars.POSTGRES_PORT }}\"

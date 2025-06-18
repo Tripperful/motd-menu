@@ -5,5 +5,5 @@ export interface SessionData {
   userId?: number;
   permissions: Permission[];
   volume?: number;
-  // tgConnected: boolean;
+  srcdsVersion?: number;
 }

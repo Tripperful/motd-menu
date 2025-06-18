@@ -7,7 +7,6 @@ import PlayersIcon from '~icons/players.svg';
 import MatchesIcon from '~icons/playlist.svg';
 import SettingsIcon from '~icons/settings.svg';
 import TerrainIcon from '~icons/terrain.svg';
-import VoteIcon from '~icons/vote.svg';
 import { AvailableVotesFetcher } from './AvailableVotesFetcher';
 import { MainMenuContext } from './MainMenuContext';
 
@@ -53,12 +52,6 @@ export const MainMenu: FC = () => {
               title: 'Matches',
               link: 'matches',
               Icon: <MatchesIcon />,
-            },
-            {
-              title: 'Start a vote',
-              link: 'vote',
-              Icon: <VoteIcon />,
-              shouldShow: () => availableVotes.length > 0,
             },
           ] as MenuItemInfo[]
         }

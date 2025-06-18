@@ -1,159 +1,274 @@
-import { HitSoundPathsData } from '@motd-menu/common';
-import { srcdsAssets } from './gameAssets';
+require.context('../assets/game', true);
 
-export const assetPathToSrcdsSoundPath = (path: string) => {
-  if (path == null) return null;
-  return path.substring('/game/sound/'.length);
-};
-
-export const srcdsSoundPathToAssetPath = (path: string) => {
-  if (path == null) return null;
-  return `/game/sound/${path}`;
-};
-
-export const hitSounds = {
-  sf_body: assetPathToSrcdsSoundPath(srcdsAssets.sounds.sfBodyHitSound),
-  sf_head: assetPathToSrcdsSoundPath(srcdsAssets.sounds.sfHeadHitSound),
-  sf_kill: assetPathToSrcdsSoundPath(srcdsAssets.sounds.sfBodyKillSound),
-  sf_hskill: assetPathToSrcdsSoundPath(srcdsAssets.sounds.sfHeadKillSound),
-  sf_teamkill: assetPathToSrcdsSoundPath(srcdsAssets.sounds.sfTeamKillSound),
-  slicer1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.slicer1),
-  slicer2: assetPathToSrcdsSoundPath(srcdsAssets.sounds.slicer2),
-  slicer3: assetPathToSrcdsSoundPath(srcdsAssets.sounds.slicer3),
-  slicer4: assetPathToSrcdsSoundPath(srcdsAssets.sounds.slicer4),
-  blip1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.blip1),
-  button10: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button10),
-  button14: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button14),
-  button15: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button15),
-  button16: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button16),
-  button17: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button17),
-  button18: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button18),
-  button19: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button19),
-  button24: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button24),
-  button3: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button3),
-  button9: assetPathToSrcdsSoundPath(srcdsAssets.sounds.button9),
-  friend_join: assetPathToSrcdsSoundPath(srcdsAssets.sounds.friend_join),
-  message: assetPathToSrcdsSoundPath(srcdsAssets.sounds.message),
-  squashed: assetPathToSrcdsSoundPath(srcdsAssets.sounds.squashed),
-  alert2: assetPathToSrcdsSoundPath(srcdsAssets.sounds.alert2),
-  alert3: assetPathToSrcdsSoundPath(srcdsAssets.sounds.alert3),
-  pain1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.pain1),
-  pain2: assetPathToSrcdsSoundPath(srcdsAssets.sounds.pain2),
-  dog_playfull4: assetPathToSrcdsSoundPath(srcdsAssets.sounds.dog_playfull4),
-  dog_playfull5: assetPathToSrcdsSoundPath(srcdsAssets.sounds.dog_playfull5),
-  bat_away: assetPathToSrcdsSoundPath(srcdsAssets.sounds.bat_away),
-  grind4: assetPathToSrcdsSoundPath(srcdsAssets.sounds.grind4),
-  grind5: assetPathToSrcdsSoundPath(srcdsAssets.sounds.grind5),
-  mh_blade_snick1: assetPathToSrcdsSoundPath(
-    srcdsAssets.sounds.mh_blade_snick1,
-  ),
-  blade_cut: assetPathToSrcdsSoundPath(srcdsAssets.sounds.blade_cut),
-  blade_in: assetPathToSrcdsSoundPath(srcdsAssets.sounds.blade_in),
-  blade_out: assetPathToSrcdsSoundPath(srcdsAssets.sounds.blade_out),
-  code2: assetPathToSrcdsSoundPath(srcdsAssets.sounds.code2),
-  combine_mine_deactivate1: assetPathToSrcdsSoundPath(
-    srcdsAssets.sounds.combine_mine_deactivate1,
-  ),
-  rmine_blip1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.rmine_blip1),
-  rmine_blip3: assetPathToSrcdsSoundPath(srcdsAssets.sounds.rmine_blip3),
-  rmine_chirp_answer1: assetPathToSrcdsSoundPath(
-    srcdsAssets.sounds.rmine_chirp_answer1,
-  ),
-  rmine_chirp_quest1: assetPathToSrcdsSoundPath(
-    srcdsAssets.sounds.rmine_chirp_quest1,
-  ),
-  rmine_predetonate: assetPathToSrcdsSoundPath(
-    srcdsAssets.sounds.rmine_predetonate,
-  ),
-  rmine_taunt1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.rmine_taunt1),
-  remote_yes: assetPathToSrcdsSoundPath(srcdsAssets.sounds.remote_yes),
-  cbot_servoscared: assetPathToSrcdsSoundPath(
-    srcdsAssets.sounds.cbot_servoscared,
-  ),
-  combat_scan1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.combat_scan1),
-  combat_scan2: assetPathToSrcdsSoundPath(srcdsAssets.sounds.combat_scan2),
-  combat_scan3: assetPathToSrcdsSoundPath(srcdsAssets.sounds.combat_scan3),
-  combat_scan4: assetPathToSrcdsSoundPath(srcdsAssets.sounds.combat_scan4),
-  scanner_photo1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.scanner_photo1),
-  scanner_scan4: assetPathToSrcdsSoundPath(srcdsAssets.sounds.scanner_scan4),
-  active: assetPathToSrcdsSoundPath(srcdsAssets.sounds.active),
-  click1: assetPathToSrcdsSoundPath(srcdsAssets.sounds.click1),
-  ping: assetPathToSrcdsSoundPath(srcdsAssets.sounds.ping),
-  flesh_bloody_break: assetPathToSrcdsSoundPath(
-    srcdsAssets.sounds.flesh_body_break,
-  ),
-};
-
-export type HitSoundType = keyof typeof hitSounds;
+export const enum SoundCategory {
+  Default = 0,
+}
 
 export interface SoundInfo {
-  path: string;
+  assetPath: string;
+  srcdsPath: string;
   name: string;
 }
 
-export const hitSoundNames: Record<HitSoundType, string> = {
-  sf_body: 'SF body hit',
-  sf_head: 'SF head hit',
-  sf_kill: 'SF body kill',
-  sf_hskill: 'SF headshot kill',
-  sf_teamkill: 'SF teamkill',
-  slicer1: 'slicer1',
-  slicer2: 'slicer2',
-  slicer3: 'slicer3',
-  slicer4: 'slicer4',
-  blip1: 'blip1',
-  button10: 'button10',
-  button14: 'button14',
-  button15: 'button15',
-  button16: 'button16',
-  button17: 'button17',
-  button18: 'button18',
-  button19: 'button19',
-  button24: 'button24',
-  button3: 'button3',
-  button9: 'button9',
-  friend_join: 'friend_join',
-  message: 'message',
-  squashed: 'squashed',
-  alert2: 'alert2',
-  alert3: 'alert3',
-  pain1: 'pain1',
-  pain2: 'pain2',
-  dog_playfull4: 'dog_playfull4',
-  dog_playfull5: 'dog_playfull5',
-  bat_away: 'bat_away',
-  grind4: 'grind4',
-  grind5: 'grind5',
-  mh_blade_snick1: 'mh_blade_snick1',
-  blade_cut: 'blade_cut',
-  blade_in: 'blade_in',
-  blade_out: 'blade_out',
-  code2: 'code2',
-  combine_mine_deactivate1: 'combine_mine_deactivate1',
-  rmine_blip1: 'rmine_blip1',
-  rmine_blip3: 'rmine_blip3',
-  rmine_chirp_answer1: 'rmine_chirp_answer1',
-  rmine_chirp_quest1: 'rmine_chirp_quest1',
-  rmine_predetonate: 'rmine_predetonate',
-  rmine_taunt1: 'rmine_taunt1',
-  remote_yes: 'remote_yes',
-  cbot_servoscared: 'cbot_servoscared',
-  combat_scan1: 'combat_scan1',
-  combat_scan2: 'combat_scan2',
-  combat_scan3: 'combat_scan3',
-  combat_scan4: 'combat_scan4',
-  scanner_photo1: 'scanner_photo1',
-  scanner_scan4: 'scanner_scan4',
-  active: 'active',
-  click1: 'click1',
-  ping: 'ping',
-  flesh_bloody_break: 'flesh_bloody_break',
+const registeredSounds: Record<number, SoundInfo[]> = {};
+
+export const getPickableSounds = (category: SoundCategory) =>
+  registeredSounds[category] || [];
+
+const registerPickableSound = (
+  name: string,
+  srcdsPath: string,
+  category: SoundCategory,
+) => {
+  registeredSounds[category] ??= [];
+  registeredSounds[category].push({
+    assetPath: '/game/sound/' + srcdsPath,
+    srcdsPath,
+    name,
+  });
 };
 
-export const defaultHitSounds: HitSoundPathsData = {
-  body: hitSounds.sf_body,
-  head: hitSounds.sf_head,
-  kill: hitSounds.sf_kill,
-  hskill: hitSounds.sf_hskill,
-  teamkill: hitSounds.sf_teamkill,
-};
+registerPickableSound(
+  'SF Body Hit',
+  'sf_vox/hitbody.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'SF Head Hit',
+  'sf_vox/hithead.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'SF Body Kill',
+  'sf_vox/frag_snd.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'SF Head Kill',
+  'sf_vox/headshot_kill_snd.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'SF Team Kill',
+  'sf_vox/tkill.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'slicer1',
+  'ambient/machines/slicer1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'slicer2',
+  'ambient/machines/slicer2.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'slicer3',
+  'ambient/machines/slicer3.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'slicer4',
+  'ambient/machines/slicer4.wav',
+  SoundCategory.Default,
+);
+registerPickableSound('blip1', 'buttons/blip1.wav', SoundCategory.Default);
+registerPickableSound(
+  'button10',
+  'buttons/button10.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'button14',
+  'buttons/button14.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'button15',
+  'buttons/button15.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'button16',
+  'buttons/button16.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'button17',
+  'buttons/button17.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'button18',
+  'buttons/button18.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'button19',
+  'buttons/button19.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'button24',
+  'buttons/button24.wav',
+  SoundCategory.Default,
+);
+registerPickableSound('button3', 'buttons/button3.wav', SoundCategory.Default);
+registerPickableSound('button9', 'buttons/button9.wav', SoundCategory.Default);
+registerPickableSound(
+  'friend_join',
+  'friends/friend_join.wav',
+  SoundCategory.Default,
+);
+registerPickableSound('message', 'friends/message.wav', SoundCategory.Default);
+registerPickableSound(
+  'squashed',
+  'npc/antlion_grub/squashed.wav',
+  SoundCategory.Default,
+);
+registerPickableSound('alert2', 'npc/crow/alert2.wav', SoundCategory.Default);
+registerPickableSound('alert3', 'npc/crow/alert3.wav', SoundCategory.Default);
+registerPickableSound('pain1', 'npc/crow/pain1.wav', SoundCategory.Default);
+registerPickableSound('pain2', 'npc/crow/pain2.wav', SoundCategory.Default);
+registerPickableSound(
+  'dog_playfull4',
+  'npc/dog/dog_playfull4.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'dog_playfull5',
+  'npc/dog/dog_playfull5.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'bat_away',
+  'npc/manhack/bat_away.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'grind4',
+  'npc/manhack/grind4.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'grind5',
+  'npc/manhack/grind5.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'mh_blade_snick1',
+  'npc/manhack/mh_blade_snick1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'blade_cut',
+  'npc/roller/blade_cut.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'blade_in',
+  'npc/roller/blade_in.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'blade_out',
+  'npc/roller/blade_out.wav',
+  SoundCategory.Default,
+);
+registerPickableSound('code2', 'npc/roller/code2.wav', SoundCategory.Default);
+registerPickableSound(
+  'combine_mine_deactivate1',
+  'npc/roller/mine/combine_mine_deactivate1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'rmine_blip1',
+  'npc/roller/mine/rmine_blip1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'rmine_blip3',
+  'npc/roller/mine/rmine_blip3.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'rmine_chirp_answer1',
+  'npc/roller/mine/rmine_chirp_answer1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'rmine_chirp_quest1',
+  'npc/roller/mine/rmine_chirp_quest1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'rmine_predetonate',
+  'npc/roller/mine/rmine_predetonate.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'rmine_taunt1',
+  'npc/roller/mine/rmine_taunt1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'remote_yes',
+  'npc/roller/remote_yes.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'cbot_servoscared',
+  'npc/scanner/cbot_servoscared.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'combat_scan1',
+  'npc/scanner/combat_scan1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'combat_scan2',
+  'npc/scanner/combat_scan2.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'combat_scan3',
+  'npc/scanner/combat_scan3.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'combat_scan4',
+  'npc/scanner/combat_scan4.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'scanner_photo1',
+  'npc/scanner/scanner_photo1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'scanner_scan4',
+  'npc/scanner/scanner_scan4.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'active',
+  'npc/turret_floor/active.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'click1',
+  'npc/turret_floor/click1.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'ping',
+  'npc/turret_floor/ping.wav',
+  SoundCategory.Default,
+);
+registerPickableSound(
+  'flesh_bloody_break',
+  'physics/flesh/flesh_bloody_break.wav',
+  SoundCategory.Default,
+);

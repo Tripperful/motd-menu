@@ -1,16 +1,21 @@
-import { PlayerClientSettings } from '@motd-menu/common';
 import { motdApi } from 'src/api';
 import { createGlobalState } from './util';
 
-const fetchPlayerSettings = (steamId: string) =>
-  motdApi.getPlayerSettings(steamId);
+const playerSettingsMetadataState = createGlobalState(() =>
+  motdApi.getPlayerSettingsMetadata(),
+);
 
-export const playerSettingsState = createGlobalState(fetchPlayerSettings);
+export const usePlayerSettingsMetadata = () =>
+  playerSettingsMetadataState.useExternalState();
 
-export const usePlayerSettings = (steamId: string) =>
-  playerSettingsState.useExternalState(steamId);
+const playerSettingsValuesState = createGlobalState((steamId: string) =>
+  motdApi.getPlayerSettingsValues(steamId),
+);
 
-export const setPlayerSettings = (
+export const usePlayerSettingsValues = (steamId: string) =>
+  playerSettingsValuesState.useExternalState(steamId);
+
+export const setPlayerSettingsValues = (
   steamId: string,
-  settings: PlayerClientSettings,
-) => playerSettingsState.set(settings, steamId);
+  settings: Parameters<typeof playerSettingsValuesState.set>[0],
+) => playerSettingsValuesState.set(settings, steamId);

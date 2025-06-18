@@ -1,5 +1,6 @@
 import {
   BaseWsApiClient,
+  ClientSettingsMetadataData,
   ServerInfo,
   SrcdsWsSendSchema,
 } from '@motd-menu/common';
@@ -9,6 +10,8 @@ export class SrcdsWsApiClient extends BaseWsApiClient<
   SrcdsWsSendSchema,
   ServerInfo
 > {
+  public settingsMetadata: ClientSettingsMetadataData;
+
   override onDataSent(data: any): void {
     wsMessagesCounter.inc({
       direction: 'outgoing',

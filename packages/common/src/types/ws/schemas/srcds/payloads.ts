@@ -1,5 +1,8 @@
 import type { Cvar } from '../../../../cvars';
-import type { HitSoundPathsData } from '../../../players';
+import type {
+  ClientSettingMetadata,
+  ClientSettingsValues,
+} from '../../../clientSettings';
 import type { WeaponType } from '../../../weapons';
 
 export interface PlayerConnectedData {
@@ -17,25 +20,9 @@ export interface PlayerDisconnectedData {
   };
 }
 
-export interface ClientSettingsData {
-  fov: number;
-  magnumZoomFov: number;
-  crossbowZoomFov: number;
-  drawviewmodel: 1 | 0;
-  esp: 1 | 0;
-  dsp: 1 | 0;
-  amb: 1 | 0;
-  bob: 1 | 0;
-  fg: 1 | 0;
-  hitsound: 1 | 0;
-  killsound: 1 | 0;
-  kevlarsound: 1 | 0;
-  hitSoundPaths?: HitSoundPathsData;
-}
-
 export interface SetSettingsData {
   steamId: string;
-  settings: ClientSettingsData;
+  settings: ClientSettingsValues;
 }
 
 interface ConnectionStats {
@@ -339,3 +326,5 @@ export interface PlayerSubstitutionData {
   oldPlayer: string;
   newPlayer: string;
 }
+
+export type ClientSettingsMetadataData = Record<string, ClientSettingMetadata>;

@@ -1,7 +1,11 @@
 import { SrcdsWsApiServer } from '../srcds/SrcdsWsApiServer';
-import { MotdWsApiClient, MotdWsApiServer } from './MotdWsApiServer';
+import { MotdWsApiServer } from './MotdWsApiServer';
 
 let streamLoopInterval: NodeJS.Timeout;
+
+type MotdWsApiClient = ReturnType<
+  ReturnType<typeof MotdWsApiServer.getInstace>['getClient']
+>;
 
 export const startStreamLoop = () => {
   if (streamLoopInterval) return;

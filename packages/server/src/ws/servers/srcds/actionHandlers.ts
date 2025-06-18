@@ -1,9 +1,8 @@
-import { chatColor, PlayerClientSettings } from '@motd-menu/common';
+import { chatColor } from '@motd-menu/common';
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { matchCounter, onlinePlayersGauge } from 'src/metrics';
 import { getPlayerProfile } from 'src/steam';
-import { dbgErr } from 'src/util';
 import { EfpsClient } from 'src/util/efps';
 import { getRankData, toSrcdsRankData } from 'src/util/ranks';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
@@ -101,29 +100,10 @@ srcdsWsServer.onMessage('client_cvars', async (srcds, data) => {
   await db.client.saveCvars(steamId, cvars);
 });
 
-srcdsWsServer.onMessage('set_settings', async (srcds, data) => {
-  const { steamId, settings: s } = data;
+srcdsWsServer.onMessage('set_client_settings', async (srcds, data) => {
+  const { steamId, settings } = data;
 
-  const settings: PlayerClientSettings = {
-    fov: s.fov,
-    magnumZoomFov: s.magnumZoomFov,
-    crossbowZoomFov: s.crossbowZoomFov,
-    drawViewmodel: s.drawviewmodel == null ? null : Boolean(s.drawviewmodel),
-    esp: s.esp == null ? null : Boolean(s.esp),
-    dsp: s.dsp == null ? null : Boolean(s.dsp),
-    amb: s.amb == null ? null : Boolean(s.amb),
-    bob: s.bob == null ? null : Boolean(s.bob),
-    fg: s.fg == null ? null : Boolean(s.fg),
-    hitSound: s.hitsound == null ? null : Boolean(s.hitsound),
-    killSound: s.killsound == null ? null : Boolean(s.killsound),
-    kevlarSound: s.kevlarsound == null ? null : Boolean(s.kevlarsound),
-  };
-
-  if (s.hitSoundPaths) {
-    settings.hitSoundPaths = s.hitSoundPaths;
-  }
-
-  await db.client.settings.set(steamId, settings);
+  await db.client.settings.setValues(steamId, settings);
 });
 
 srcdsWsServer.onMessage('match_started', async (srcds, data) => {

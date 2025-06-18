@@ -1,34 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import type { WsApiClient, WsApiServer, WsClient } from '@motd-menu/common';
-import type http from 'http';
+import { IncomingMessage } from 'http';
 import type { Duplex } from 'stream';
-import type { WebSocketServer, WebSocket } from 'ws';
+import type { WebSocket, WebSocketServer } from 'ws';
+import { IWebSocket } from '../types/ws';
+import {
+  WsFetchRequestType,
+  WsQueryRequestType,
+  WsResponsePayloadType,
+  WsSendDataActionType,
+  WsSignalActionType,
+} from '../types/ws/util';
 import { BaseWsApiClient } from './BaseWsApiClient';
 
-export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
-  implements WsApiServer<TWsRecvSchema, TWsSendSchema>
-{
-  private clients: Record<string, BaseWsApiClient<TWsSendSchema, TClientInfo>> =
-    {};
+export abstract class BaseWsApiServer<
+  TWsRecvSchema,
+  TWsSendSchema,
+  TClientInfo,
+  TClient extends BaseWsApiClient<TWsSendSchema, TClientInfo> = BaseWsApiClient<
+    TWsSendSchema,
+    TClientInfo
+  >,
+> {
+  private clients: Record<string, TClient> = {};
   private subscriptions: Record<string, ((...args: any[]) => Promise<any>)[]> =
     {};
-  private static wsApiServers: WsApiServer[] = [];
-
-  public static registerWsApiServer<TServer extends WsApiServer<any, any, any>>(
-    wsApiServer: TServer,
-  ) {
-    this.wsApiServers.push(wsApiServer);
-  }
-
-  public static getRegisteredWsApiServers() {
-    return this.wsApiServers;
-  }
+  private static wsApiServers: BaseWsApiServer<any, any, any, any>[] = [];
 
   /**
    * Check if this server is supposed to handle this type of upgrade request
    */
-  public abstract canHandleUpgrade(req: http.IncomingMessage): boolean;
+  abstract canHandleUpgrade(req: IncomingMessage): boolean;
 
   /**
    * Authenticate a client
@@ -37,33 +39,20 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
    *
    * @returns Client ID if successful, otherwise null
    */
-  public abstract authenticate(req: http.IncomingMessage): Promise<{
+  abstract authenticate(req: IncomingMessage): Promise<{
     clientId: string;
     clientInfo: TClientInfo;
   }>;
 
-  protected clientFactory(clientId: string, clientWs: WebSocket, clientInfo: TClientInfo) {
-    return new BaseWsApiClient<TWsSendSchema, TClientInfo>(
-      clientId,
-      clientWs,
-      clientInfo,
-    );
-  }
-
   /**
-   * Override this method to handle data received from the client.
-   * 
-   * @param client The client that sent the data
-   * @param data The data received from the client
+   * Authenticate a client and connect them if successful
    */
-  public onDataReceived(client: WsApiClient<TWsSendSchema, TClientInfo>, data: any): void {}
-
   onUpgrade(
-    req: http.IncomingMessage,
+    req: IncomingMessage,
     socket: Duplex,
     head: Buffer,
     wsServer: WebSocketServer,
-  ): Promise<BaseWsApiClient<TWsSendSchema, TClientInfo>> {
+  ): Promise<TClient> {
     return new Promise(async (resolve, reject) => {
       const auth = await this.authenticate(req);
 
@@ -90,11 +79,7 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
 
       wsServer.handleUpgrade(req, socket, head, async (clientWs) => {
         try {
-          const client = this.clientFactory(
-            clientId,
-            clientWs,
-            clientInfo,
-          );
+          const client = this.clientFactory(clientId, clientWs, clientInfo);
 
           this.clients[clientId] = client;
 
@@ -150,19 +135,21 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
     });
   }
 
-  protected async onClientConnected(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    client: BaseWsApiClient<TWsSendSchema, TClientInfo>,
-  ) {}
+  /**
+   * Returns a client by their WebSocket connection
+   *
+   * @param clientWs Client WebSocket connection
+   */
+  getClient(clientWs: IWebSocket): TClient;
 
-  protected async onClientDisconnected(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    client: BaseWsApiClient<TWsSendSchema, TClientInfo>,
-  ) {}
+  /**
+   * Returns a client by their ID
+   *
+   * @param clientId Client ID
+   */
+  getClient(clientId: string): TClient;
 
-  getClient(
-    clientIdOrWs: string | WsClient,
-  ): WsApiClient<TWsSendSchema, TClientInfo> {
+  getClient(clientIdOrWs: string | IWebSocket): TClient {
     return typeof clientIdOrWs === 'string'
       ? this.clients[clientIdOrWs]
       : this.getConnectedClients().find(
@@ -170,13 +157,47 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
         );
   }
 
-  getConnectedClients(): WsApiClient<TWsSendSchema, TClientInfo>[] {
+  /**
+   * Get all connected clients
+   */
+  getConnectedClients(): TClient[] {
     return Object.values(this.clients);
   }
 
-  onMessage(type: string, callback: unknown): () => void {
+  /**
+   * Subscribe to a data message type
+   *
+   * @param type Message type
+   * @param callback Callback function with the client that sent the message and received data
+   * @returns A function to unsubscribe
+   */
+  onMessage<TAction extends WsSendDataActionType<TWsRecvSchema>>(
+    type: TAction,
+    callback: (
+      client: TClient,
+      data: 'reqData' extends keyof TWsRecvSchema[TAction]
+        ? TWsRecvSchema[TAction]['reqData']
+        : never,
+    ) => void,
+  ): () => void;
+
+  /**
+   * Subscribe to a signal-type message
+   *
+   * @param type Message type
+   * @param callback Callback function with the client that sent
+   * the message
+   *
+   * @returns A function to unsubscribe
+   */
+  onMessage<TAction extends WsSignalActionType<TWsRecvSchema>>(
+    type: TAction,
+    callback: (client: TClient) => void,
+  ): () => void;
+
+  onMessage(type: any, callback: any): () => void {
     this.subscriptions[type] = this.subscriptions[type] ?? [];
-    this.subscriptions[type].push(callback as any);
+    this.subscriptions[type].push(callback);
 
     return () => {
       this.subscriptions[type] = this.subscriptions[type].filter(
@@ -185,7 +206,84 @@ export abstract class BaseWsApiServer<TWsRecvSchema, TWsSendSchema, TClientInfo>
     };
   }
 
-  onRequest(type: string, callback: unknown): () => void {
+  /**
+   * Subscribe to a fetch-type request
+   *
+   * @param type Request type
+   * @param callback Callback function with the client that
+   * sent the request, sends returned value (if any) as response
+   *
+   * @returns A function to unsubscribe
+   */
+  onRequest<TReqest extends WsFetchRequestType<TWsRecvSchema>>(
+    type: TReqest,
+    callback: (
+      client: TClient,
+    ) => Promise<WsResponsePayloadType<TWsRecvSchema, TReqest>>,
+  ): () => void;
+
+  /**
+   * Subscribe to a query-type request
+   *
+   * @param type Request type
+   * @param callback Callback function with the client that
+   * sent the request and the received data, sends returned value
+   * (if any) as response
+   *
+   * @returns A function to unsubscribe
+   */
+  onRequest<TReqest extends WsQueryRequestType<TWsRecvSchema>>(
+    type: TReqest,
+    callback: (
+      client: TClient,
+      data: 'reqData' extends keyof TWsRecvSchema[TReqest]
+        ? TWsRecvSchema[TReqest]['reqData']
+        : never,
+    ) => Promise<WsResponsePayloadType<TWsRecvSchema, TReqest>>,
+  ): () => void;
+
+  onRequest(type: any, callback: any): () => void {
     return this.onMessage(type, callback);
   }
+
+  public static registerWsApiServer<
+    TServer extends BaseWsApiServer<any, any, any, any>,
+  >(wsApiServer: TServer) {
+    this.wsApiServers.push(wsApiServer);
+  }
+
+  public static getRegisteredWsApiServers() {
+    return this.wsApiServers;
+  }
+
+  /**
+   * Factory method to create a new client instance.
+   *
+   * @param clientId Client ID
+   * @param clientWs Client WebSocket connection
+   * @param clientInfo Client information
+   */
+  protected abstract clientFactory(
+    clientId: string,
+    clientWs: WebSocket,
+    clientInfo: TClientInfo,
+  ): TClient;
+
+  /**
+   * Override this method to handle data received from the client.
+   *
+   * @param client The client that sent the data
+   * @param data The data received from the client
+   */
+  public onDataReceived(client: TClient, data: any): void {}
+
+  protected async onClientConnected(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    client: TClient,
+  ) {}
+
+  protected async onClientDisconnected(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    client: TClient,
+  ) {}
 }

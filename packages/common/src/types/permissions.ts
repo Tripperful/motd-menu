@@ -9,7 +9,6 @@ export const permissionDescriptions = {
   cvars_admin_view: 'View admin cvars',
   cvars_admin_edit: 'Edit admin cvars',
   pub_change_maps: 'Change maps in public mode',
-  tg_admin: 'Administrate Telegram bot',
   permissions_view: "View players' permissions",
   permissions_edit: "Edit players' permissions",
   news_create: 'Create news',

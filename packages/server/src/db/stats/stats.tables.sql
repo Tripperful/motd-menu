@@ -28,25 +28,17 @@ CREATE TABLE IF NOT EXISTS
   );
 
 CREATE TABLE IF NOT EXISTS
-  client_settings (
-    steam_id bigint PRIMARY KEY,
-    hit_sound boolean,
-    kill_sound boolean,
-    kevlar_sound boolean,
-    fov int,
-    magnum_zoom_fov int,
-    crossbow_zoom_fov int,
-    esp boolean,
-    dsp boolean,
-    amb boolean,
-    bob boolean,
-    fg boolean,
-    draw_viewmodel boolean,
-    hitsound_body_path text,
-    hitsound_head_path text,
-    killsound_body_path text,
-    killsound_head_path text,
-    killsound_teammate_path text
+  client_settings_metadata (
+    setting_id text PRIMARY KEY,
+    metadata json
+  );
+
+CREATE TABLE IF NOT EXISTS
+  client_settings_values (
+    steam_id bigint,
+    setting_id text REFERENCES client_settings_metadata (setting_id) ON DELETE CASCADE,
+    value json,
+    PRIMARY KEY (steam_id, setting_id)
   );
 
 CREATE TABLE IF NOT EXISTS

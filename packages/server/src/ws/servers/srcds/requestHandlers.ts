@@ -2,7 +2,7 @@ import { db } from 'src/db';
 import { onlinePlayersGauge } from 'src/metrics';
 import { getPlayerProfile } from 'src/steam';
 import { dbgErr } from 'src/util';
-import { getGeoDataByIp, getGeoDataBySteamId } from 'src/util/countries';
+import { getGeoDataByIp } from 'src/util/countries';
 import { getRankData, toSrcdsRankData } from 'src/util/ranks';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
 
@@ -70,43 +70,7 @@ srcdsWsServer.onRequest('get_names_request', async (srcds, data) => ({
   data: await db.client.getNames(data),
 }));
 
-srcdsWsServer.onRequest('get_settings_request', async (srcds, data) => {
-  const {
-    fov,
-    magnumZoomFov,
-    crossbowZoomFov,
-    drawViewmodel,
-    esp,
-    dsp,
-    amb,
-    bob,
-    fg,
-    hitSound,
-    killSound,
-    kevlarSound,
-    hitSoundPaths,
-  } = await db.client.settings.get(data);
-
-  const aka = (await db.client.getAka(data)) ?? '';
-
-  return {
-    type: 'get_settings_response',
-    data: {
-      fov,
-      magnumZoomFov,
-      crossbowZoomFov,
-      drawviewmodel: drawViewmodel ? 1 : 0,
-      esp: esp ? 1 : 0,
-      dsp: dsp ? 1 : 0,
-      amb: amb ? 1 : 0,
-      bob: bob ? 1 : 0,
-      fg: fg ? 1 : 0,
-      hitsound: hitSound ? 1 : 0,
-      killsound: killSound ? 1 : 0,
-      kevlarsound: kevlarSound ? 1 : 0,
-      aka,
-      geo: (await getGeoDataBySteamId(data))?.country ?? '',
-      hitSoundPaths,
-    },
-  };
-});
+srcdsWsServer.onRequest('get_client_settings_request', async (srcds, data) => ({
+  type: 'get_client_settings_response',
+  data: await db.client.settings.getValues(data),
+}));

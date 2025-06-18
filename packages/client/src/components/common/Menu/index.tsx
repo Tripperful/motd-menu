@@ -5,12 +5,14 @@ import { createUseStyles } from 'react-jss';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useMyPermissions } from 'src/hooks/state/permissions';
 import { useMySteamId } from 'src/hooks/useMySteamId';
+import { MainMenuContext } from '~components/MainMenu/MainMenuContext';
 import { NewsBadge } from '~components/News/NewsBadge';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
 import BackIcon from '~icons/chevron-left.svg';
 import CrossIcon from '~icons/close.svg';
 import HelpIcon from '~icons/help.svg';
 import PersonIcon from '~icons/person.svg';
+import VoteIcon from '~icons/vote.svg';
 import { filterShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
 import { SidePanel } from '../SidePanel';
@@ -121,6 +123,8 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   const c = useStyles();
   const [hoveredItem, setHoveredItem] = useState<MenuItemInfo>();
 
+  const { availableVotes } = React.useContext(MainMenuContext);
+
   const mySteamId = useMySteamId();
   const permissions = useMyPermissions();
   const visibleItems = useMemo(
@@ -187,6 +191,11 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
         ))}
       </div>
       <div className={c.badges}>
+        {availableVotes.length > 0 && (
+          <MenuBadge to="vote">
+            <VoteIcon />
+          </MenuBadge>
+        )}
         <NewsBadge to="news" />
         <MenuBadge to="help">
           <HelpIcon />

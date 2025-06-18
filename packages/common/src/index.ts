@@ -1,5 +1,6 @@
 export * from './cvars';
 export * from './types/color';
+export * from './types/clientSettings';
 export * from './types/data';
 export * from './types/filters';
 export * from './types/log';

@@ -1,6 +1,8 @@
 import {
   ArrayElementType,
   ChatCommandInfo,
+  ClientSettingsMetadataData,
+  ClientSettingsValues,
   CustomRankData,
   Cvar,
   EfpsMatchSummaryStat,
@@ -19,7 +21,6 @@ import {
   OnlinePlayerInfo,
   PagedData,
   Permission,
-  PlayerClientSettings,
   RankData,
   ReactionData,
   ReactionName,
@@ -100,12 +101,6 @@ class MotdApi {
 
   public async closeMenu() {
     await this.post('menu/close');
-  }
-
-  public async getTgJoinLink() {
-    const res = await this.get('menu/tgLink');
-
-    return JSON.parse(res)?.link as string;
   }
 
   public async getOnlinePlayers() {
@@ -191,14 +186,20 @@ class MotdApi {
     );
   }
 
-  public async getPlayerSettings(steamId: string) {
+  public async getPlayerSettingsMetadata() {
     return JSON.parse(
-      await this.get(`players/settings/${steamId}`),
-    ) as PlayerClientSettings;
+      await this.get(`players/settings/metadata`),
+    ) as ClientSettingsMetadataData;
   }
 
-  public async setPlayerSettings(settings: PlayerClientSettings) {
-    await this.post(`players/settings`, JSON.stringify(settings));
+  public async getPlayerSettingsValues(steamId: string) {
+    return JSON.parse(
+      await this.get(`players/settings/values/${steamId}`),
+    ) as ClientSettingsValues;
+  }
+
+  public async setPlayerSettings(settings: ClientSettingsValues) {
+    await this.post(`players/settings/values`, JSON.stringify(settings));
   }
 
   public async getCvars<

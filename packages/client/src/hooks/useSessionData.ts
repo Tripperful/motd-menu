@@ -9,7 +9,7 @@ export const getSessionData = () => {
     steamId: cookies.steamId ?? 'Unknown',
     permissions: cookies.permissions ? JSON.parse(cookies.permissions) : [],
     volume: cookies.volume ? Number(cookies.volume) : 1,
-    // tgConnected: cookies.tgConnected === 'true',
+    srcdsVersion: cookies.srcdsVersion ? Number(cookies.srcdsVersion) : 0,
   };
 
   if (cookies.userId) {

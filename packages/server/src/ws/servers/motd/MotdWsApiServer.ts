@@ -1,20 +1,19 @@
 import {
+  BaseWsApiClient,
   BaseWsApiServer,
   MotdWsSendSchema,
   OnlinePlayerInfo,
-  WsApiClient,
 } from '@motd-menu/common';
 import { parse } from 'cookie';
 import { IncomingMessage } from 'http';
 import { getMotdUserCredentials } from 'src/auth';
+import { WebSocket } from 'ws';
 import { SrcdsWsApiServer } from '../srcds/SrcdsWsApiServer';
 import { startStreamLoop } from './stream';
 
 export interface MotdClientInfo extends OnlinePlayerInfo {
   remoteId: string;
 }
-
-export type MotdWsApiClient = WsApiClient<MotdWsSendSchema, OnlinePlayerInfo>;
 
 export class MotdWsApiServer extends BaseWsApiServer<
   unknown,
@@ -68,6 +67,18 @@ export class MotdWsApiServer extends BaseWsApiServer<
     } catch {
       return null;
     }
+  }
+
+  protected override clientFactory(
+    clientId: string,
+    clientWs: WebSocket,
+    clientInfo: MotdClientInfo,
+  ) {
+    return new BaseWsApiClient<MotdWsSendSchema, MotdClientInfo>(
+      clientId,
+      clientWs,
+      clientInfo,
+    );
   }
 
   public static getInstace() {

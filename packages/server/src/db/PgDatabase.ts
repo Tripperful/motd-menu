@@ -1,6 +1,8 @@
 import {
   AmmoPickupData,
   BatteryPickupData,
+  ClientSettingsMetadataData,
+  ClientSettingsValues,
   CustomRankData,
   EfpsMatchSummary,
   EfpsMatchSummaryStat,
@@ -24,7 +26,6 @@ import {
   PagedData,
   Permission,
   PlayerAttackData,
-  PlayerClientSettings,
   PlayerDamageData,
   PlayerDeathData,
   PlayerRespawnData,
@@ -42,26 +43,10 @@ import {
   allPermissions,
   allReactionNames,
 } from '@motd-menu/common';
-import { TelegramClientInfo } from 'src/telegram/types';
 import { ChargeAggregate } from 'src/ws/servers/srcds/chargerUseHandler';
 import { BasePgDatabase } from './BasePgDatabase';
 import { Database } from './Database';
 import { LogEventType } from './LogEventType';
-
-export const defaultSettings: PlayerClientSettings = {
-  fov: 90,
-  magnumZoomFov: 0,
-  crossbowZoomFov: 20,
-  drawViewmodel: true,
-  esp: true,
-  dsp: false,
-  amb: true,
-  bob: false,
-  fg: true,
-  hitSound: true,
-  killSound: true,
-  kevlarSound: true,
-};
 
 export class PgDatabase extends BasePgDatabase implements Database {
   logs = {
@@ -216,72 +201,21 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.select<string>('get_last_client_ip', steamId),
 
     settings: {
-      get: async (steamId: string) => {
-        const storedSettings = await this.select<PlayerClientSettings>(
-          'get_client_settings',
-          steamId,
-        );
+      getMetadata: async () =>
+        this.select<ClientSettingsMetadataData>('get_client_settings_metadata'),
 
-        const settings: PlayerClientSettings = {
-          ...defaultSettings,
-          ...(storedSettings ?? {}),
-        };
-
-        if (settings.hitSoundPaths) {
-          for (const key of Object.keys(settings.hitSoundPaths)) {
-            if (!settings.hitSoundPaths[key]) {
-              delete settings.hitSoundPaths[key];
-            }
-          }
-
-          if (Object.keys(settings.hitSoundPaths).length === 0) {
-            delete settings.hitSoundPaths;
-          }
-        }
-
-        return settings;
+      upsertMetadata: async (settingsMetadata: ClientSettingsMetadataData) => {
+        await this.call('upsert_client_settings_metadata', settingsMetadata);
       },
-      set: async (
-        steamId: string,
-        {
-          hitSound,
-          killSound,
-          kevlarSound,
-          fov,
-          magnumZoomFov,
-          crossbowZoomFov,
-          esp,
-          dsp,
-          amb,
-          bob,
-          fg,
-          drawViewmodel,
-          hitSoundPaths,
-        }: PlayerClientSettings,
-      ) => {
-        const curSettings = await this.client.settings.get(steamId);
 
-        this.call(
-          'set_client_settings',
+      getValues: async (steamId: string) =>
+        (await this.select<ClientSettingsValues>(
+          'get_client_settings_values',
           steamId,
-          hitSound ?? curSettings.hitSound,
-          killSound ?? curSettings.killSound,
-          kevlarSound ?? curSettings.kevlarSound,
-          fov ?? curSettings.fov,
-          magnumZoomFov ?? curSettings.magnumZoomFov,
-          crossbowZoomFov ?? curSettings.crossbowZoomFov,
-          esp ?? curSettings.esp,
-          dsp ?? curSettings.dsp,
-          amb ?? curSettings.amb,
-          bob ?? curSettings.bob,
-          fg ?? curSettings.fg,
-          drawViewmodel ?? curSettings.drawViewmodel,
-          hitSoundPaths?.body,
-          hitSoundPaths?.head,
-          hitSoundPaths?.kill,
-          hitSoundPaths?.hskill,
-          hitSoundPaths?.teamkill,
-        );
+        )) ?? {},
+
+      setValues: async (steamId: string, values: ClientSettingsValues) => {
+        await this.call('set_client_settings_values', steamId, values);
       },
     },
 
@@ -380,18 +314,6 @@ export class PgDatabase extends BasePgDatabase implements Database {
     markSentToEfps: async (matchId: string) =>
       this.call('mark_sent_to_efps', matchId),
     getNotSentToEfps: async () => this.select<string[]>('get_not_sent_to_efps'),
-  };
-
-  telegram = {
-    linkClient: (steamId: string, userId: number, chatId: number) =>
-      this.call('tg_link_client', steamId, userId, chatId),
-    unlinkClient: (steamId: string) => this.call('tg_unlink_client', steamId),
-    getClientBySteamId: (steamId: string) =>
-      this.select<TelegramClientInfo>('tg_get_client_by_steam_id', steamId),
-    getAllClients: () =>
-      this.select<TelegramClientInfo[]>('tg_get_all_clients'),
-    getClientByClientId: (clientId: number) =>
-      this.select<TelegramClientInfo>('tg_get_client_by_client_id', clientId),
   };
 
   news = {

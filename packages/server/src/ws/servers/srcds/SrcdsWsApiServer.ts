@@ -2,23 +2,24 @@ import type {
   ServerInfo,
   SrcdsWsRecvSchema,
   SrcdsWsSendSchema,
-  WsApiServer,
 } from '@motd-menu/common';
 import { BaseWsApiServer, chatColor } from '@motd-menu/common';
 import type { IncomingMessage } from 'http';
 import { db } from 'src/db';
-import { WebSocket } from 'ws';
-import { SrcdsWsApiClient } from './SrcdsWsApiClient';
 import {
   onlinePlayersGauge,
   onlineServersGauge,
   wsMessagesCounter,
 } from 'src/metrics';
+import { dbgErr } from 'src/util';
+import { WebSocket } from 'ws';
+import { SrcdsWsApiClient } from './SrcdsWsApiClient';
 
 export class SrcdsWsApiServer extends BaseWsApiServer<
   SrcdsWsRecvSchema,
   SrcdsWsSendSchema,
-  ServerInfo
+  ServerInfo,
+  SrcdsWsApiClient
 > {
   private static instance: SrcdsWsApiServer;
 
@@ -78,7 +79,7 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
     });
 
     if (type === 'get_players_response') {
-      const count = data.data?.length as number ?? 0;
+      const count = (data.data?.length as number) ?? 0;
 
       if (count != null) {
         onlinePlayersGauge.set(
@@ -91,10 +92,17 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
     }
   }
 
-  protected override async onClientConnected(client: SrcdsWsApiClientType) {
+  protected override async onClientConnected(client: SrcdsWsApiClient) {
     onlineServersGauge.set(this.getConnectedClients().length);
-
     try {
+      client
+        .request('get_client_settings_metadata_request')
+        .then((settingsMetadata) => {
+          db.client.settings.upsertMetadata(settingsMetadata);
+          client.settingsMetadata = settingsMetadata;
+        })
+        .catch(dbgErr);
+
       const onlinePlayers = await client.request('get_players_request');
       const playersPermissions = Object.fromEntries(
         await Promise.all(
@@ -121,21 +129,13 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
     } catch {}
   }
 
-  protected override async onClientDisconnected(client: SrcdsWsApiClientType) {
+  protected override async onClientDisconnected(client: SrcdsWsApiClient) {
     onlineServersGauge.set(this.getConnectedClients().length);
   }
 
   public static getInstace() {
     this.instance ??= new SrcdsWsApiServer();
 
-    return this.instance as WsApiServer<
-      SrcdsWsRecvSchema,
-      SrcdsWsSendSchema,
-      ServerInfo
-    >;
+    return this.instance;
   }
 }
-
-export type SrcdsWsApiClientType = ReturnType<
-  typeof SrcdsWsApiServer.prototype.getClient
->;

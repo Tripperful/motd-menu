@@ -9,7 +9,7 @@ const buildDir = cd('./dist');
 
 const config: () => Configuration = () => {
   return {
-    mode: process.env.NODE_ENV as Configuration['mode'] || 'development',
+    mode: (process.env.NODE_ENV as Configuration['mode']) || 'development',
     entry: {
       index: './src/index.ts',
     },

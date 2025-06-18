@@ -1,6 +1,8 @@
 import {
   AmmoPickupData,
   BatteryPickupData,
+  ClientSettingsMetadataData,
+  ClientSettingsValues,
   CustomRankData,
   EfpsMatchSummary,
   EfpsMatchSummaryStat,
@@ -24,7 +26,6 @@ import {
   PagedData,
   Permission,
   PlayerAttackData,
-  PlayerClientSettings,
   PlayerDamageData,
   PlayerDeathData,
   PlayerRespawnData,
@@ -40,7 +41,6 @@ import {
   ServerInfo,
   WeaponDropData,
 } from '@motd-menu/common';
-import { TelegramClientInfo } from 'src/telegram/types';
 import { ChargeAggregate } from 'src/ws/servers/srcds/chargerUseHandler';
 import { LogEventType } from './LogEventType';
 
@@ -147,8 +147,15 @@ export interface Database {
     setAka(steamId: string, name: string): Promise<void>;
     getAka(steamId: string): Promise<string>;
     settings: {
-      get: (steamId: string) => Promise<PlayerClientSettings>;
-      set: (steamId: string, settings: PlayerClientSettings) => Promise<void>;
+      getMetadata: () => Promise<ClientSettingsMetadataData>;
+      upsertMetadata: (
+        settingsMetadata: ClientSettingsMetadataData,
+      ) => Promise<void>;
+      getValues(steamId: string): Promise<ClientSettingsValues>;
+      setValues: (
+        steamId: string,
+        values: ClientSettingsValues,
+      ) => Promise<void>;
     };
     saveCvars(steamId: string, cvars: Record<string, string>): Promise<void>;
     getLastSavedCvar(steamId: string, cvar: string): Promise<string>;
@@ -202,13 +209,6 @@ export interface Database {
     getEfpsStats(matchId: string): Promise<EfpsMatchSummary>;
     markSentToEfps(matchId: string): Promise<void>;
     getNotSentToEfps(): Promise<string[]>;
-  };
-  telegram: {
-    linkClient(steamId: string, userId: number, chatId: number): Promise<void>;
-    unlinkClient(steamId: string): Promise<void>;
-    getAllClients(): Promise<TelegramClientInfo[]>;
-    getClientBySteamId(steamId: string): Promise<TelegramClientInfo>;
-    getClientByClientId(clientId: number): Promise<TelegramClientInfo>;
   };
   news: {
     getPreviews(

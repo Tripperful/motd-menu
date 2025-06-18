@@ -23,31 +23,6 @@ export interface ChatCommandInfo {
   matchmakingOnly: boolean;
   shortcuts: string[];
 }
-
-export interface HitSoundPathsData {
-  head?: string;
-  body?: string;
-  kill?: string;
-  hskill?: string;
-  teamkill?: string;
-}
-
-export interface PlayerClientSettings {
-  hitSound: boolean;
-  killSound: boolean;
-  kevlarSound: boolean;
-  fov: number;
-  magnumZoomFov: number;
-  crossbowZoomFov: number;
-  esp: boolean;
-  dsp: boolean;
-  amb: boolean;
-  bob: boolean;
-  fg: boolean;
-  drawViewmodel: boolean;
-  hitSoundPaths?: HitSoundPathsData;
-}
-
 export interface EfpsRankData {
   title: string;
   points: number;

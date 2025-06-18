@@ -17,9 +17,9 @@ import {
   setPlayerStats,
   usePlayerStats,
 } from '../../../hooks/state/playerStats';
-import { ColoredText } from '../ColoredText';
-import { Popup } from '../Popup';
-import { TextColorer } from '../TextColorer';
+import { ColoredText } from '../../common/ColoredText';
+import { Popup } from '../../common/Popup';
+import { TextColorer } from '../../common/TextColorer';
 import { dateFormat } from 'src/util';
 
 const useStyles = createUseStyles({

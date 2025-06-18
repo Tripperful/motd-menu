@@ -4,10 +4,10 @@ import { createUseStyles } from 'react-jss';
 import { Link } from 'react-router-dom';
 import { usePlayerStats } from 'src/hooks/state/playerStats';
 import { ColoredText } from '~components/common/ColoredText';
-import { CustomRank } from '~components/common/PlayerSettings/CustomRank';
 import EfpsIcon from '~icons/efps.svg';
 import { outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
+import { CustomRank } from './CustomRank';
 
 const useStyles = createUseStyles({
   root: {

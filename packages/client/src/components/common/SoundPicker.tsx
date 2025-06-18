@@ -66,7 +66,7 @@ const SoundPickerOption: FC<{
   }, []);
 
   const onPlay = useCallback(() => {
-    playSound(sound.path);
+    playSound(sound.assetPath);
   }, [sound]);
 
   return (
@@ -94,7 +94,7 @@ export const SoundPicker: FC<{
   const c = useStyles();
   const [pickerActive, setPickerActive] = React.useState(false);
 
-  const selectedOption = options.find((o) => o.path === sound);
+  const selectedOption = options.find((o) => o.srcdsPath === sound);
 
   return (
     <div className={c.root}>
@@ -109,11 +109,11 @@ export const SoundPicker: FC<{
           <div className={c.options}>
             {options.map((option) => (
               <SoundPickerOption
-                key={option.path}
+                key={option.srcdsPath}
                 sound={option}
-                selected={option.path === sound}
+                selected={option.srcdsPath === sound}
                 onClick={() => {
-                  setSound(option.path);
+                  setSound(option.srcdsPath);
                   setPickerActive(false);
                 }}
               />

@@ -91,6 +91,55 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE
+OR REPLACE FUNCTION get_client_settings_metadata () RETURNS json AS $$ BEGIN
+RETURN json_object_agg(
+  client_settings_metadata.setting_id,
+  client_settings_metadata.metadata
+) FROM client_settings_metadata;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE upsert_client_settings_metadata (
+  settings_metadata text
+) AS $$ BEGIN
+INSERT INTO client_settings_metadata (setting_id, metadata)
+SELECT
+  (key)::text AS setting_id,
+  (value)::json AS metadata
+FROM json_each(settings_metadata::json)
+ON CONFLICT ON CONSTRAINT client_settings_metadata_pkey DO
+  UPDATE SET metadata = EXCLUDED.metadata;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE FUNCTION get_client_settings_values (steam_id text) RETURNS json AS $$ BEGIN
+RETURN json_object_agg(
+  client_settings_values.setting_id,
+  client_settings_values.value
+) FROM client_settings_values
+WHERE client_settings_values.steam_id = get_client_settings_values.steam_id::bigint;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
+OR REPLACE PROCEDURE set_client_settings_values (
+  steam_id text,
+  settings_values text
+) AS $$ BEGIN
+INSERT INTO client_settings_values (steam_id, setting_id, value)
+SELECT
+  steam_id::bigint,
+  (key)::text AS setting_id,
+  (value)::json AS value
+FROM json_each(settings_values::json)
+ON CONFLICT ON CONSTRAINT client_settings_values_pkey DO
+  UPDATE SET value = EXCLUDED.value;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE
 OR REPLACE FUNCTION get_client_settings (steam_id text) RETURNS json AS $$ BEGIN RETURN json_build_object(
   'hitSound',
   client_settings.hit_sound,

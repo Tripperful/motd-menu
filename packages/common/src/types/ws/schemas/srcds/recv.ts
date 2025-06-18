@@ -1,10 +1,10 @@
+import { ClientSettingsValues } from '../../../clientSettings';
 import type { WsApiSchema } from '../WsApiSchema';
 import type {
   AmmoPickupData,
   BatteryPickupData,
   ChargerUseData,
   ClientCvarsData,
-  ClientSettingsData,
   EntityTeleportData,
   ItemPickupData,
   ItemRespawnData,
@@ -24,18 +24,20 @@ import type {
   ProjectileLifetimeResetData,
   ProjectileOwnerChangeData,
   ProjectileSpawnData,
-  SetSettingsData,
   WeaponDropData,
 } from './payloads';
 
 export type SrcdsWsRecvSchema = WsApiSchema<{
-  get_settings_request: {
+  get_client_settings_request: {
     reqData: string;
-    resType: 'get_settings_response';
-    resData: ClientSettingsData & { aka: string; geo: string };
+    resType: 'get_client_settings_response';
+    resData: ClientSettingsValues;
   };
-  set_settings: {
-    reqData: SetSettingsData;
+  set_client_settings: {
+    reqData: {
+      steamId: string;
+      settings: ClientSettingsValues;
+    };
   };
   get_names_request: {
     reqData: string;

@@ -1,10 +1,12 @@
 import type { Cvar } from '../../../../cvars';
+import type { ClientSettingsValues } from '../../../clientSettings';
 import type { ChatCommandInfo, OnlinePlayerInfo } from '../../../players';
 import type { WsApiSchema } from '../WsApiSchema';
 import type {
   ChangeLevelData,
   ChatPrintData,
   ClientCexecData,
+  ClientSettingsMetadataData,
   MatchStateData,
   MotdOpenData,
   RankUpdateData,
@@ -12,7 +14,6 @@ import type {
   SetCvarData,
   SetCvarsResponseData,
   SetPlayerTeamData,
-  SetSettingsData,
   StartMatchData,
 } from './payloads';
 
@@ -25,6 +26,16 @@ export type SrcdsWsSendSchema = WsApiSchema<{
   get_maps_request: {
     resType: 'get_maps_response';
     resData: string[];
+  };
+  get_client_settings_metadata_request: {
+    resType: 'get_client_settings_metadata_response';
+    resData: ClientSettingsMetadataData;
+  };
+  set_client_settings: {
+    reqData: {
+      steamId: string;
+      settings: ClientSettingsValues;
+    };
   };
   get_match_state_request: {
     resType: 'get_match_state_response';
@@ -66,9 +77,6 @@ export type SrcdsWsSendSchema = WsApiSchema<{
   };
   start_match: {
     reqData: StartMatchData;
-  };
-  apply_settings: {
-    reqData: SetSettingsData;
   };
   motd_open: {
     reqData: MotdOpenData;

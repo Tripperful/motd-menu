@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { createRoot } from 'react-dom/client';
+import { Tooltip } from 'react-tooltip';
 import { Notifications } from '~components/Notifications';
 import { SnowOverlay } from '~components/SnowOverlay/SnowOverlay';
 import { motdApi } from './api';
@@ -7,6 +8,7 @@ import { withCvars } from './hooks/useCvar';
 import { Router } from './router';
 import { useGlobalStyles } from './styles/global';
 import { getCookies } from './util';
+import { createPortal } from 'react-dom';
 
 window.addEventListener('error', (e) => {
   const cookies = getCookies();
@@ -26,8 +28,13 @@ const App: FC = () => {
   return (
     <>
       <Router />
+
       <Notifications />
       <SnowOverlay />
+      {createPortal(
+        <Tooltip id="tooltip" />,
+        document.getElementById('modalRoot'),
+      )}
     </>
   );
 };

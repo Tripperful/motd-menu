@@ -2,8 +2,8 @@ import Color from 'color';
 import { createUseStyles } from 'react-jss';
 import industryBoldFont from '~assets/fonts/Industry-Bold.woff2';
 import iconsFont from '~assets/fonts/motd-menu-icons.woff2';
-import arrowDownSrc from '~icons/chevron-down.svg?url';
-import arrowUpSrc from '~icons/chevron-up.svg?url';
+import triangleDownSrc from '~icons/triangle-down.svg?url';
+import triangleUpSrc from '~icons/triangle-up.svg?url';
 import { theme } from './theme';
 
 export const useGlobalStyles = createUseStyles({
@@ -82,7 +82,7 @@ export const useGlobalStyles = createUseStyles({
         backgroundRepeat: 'no-repeat',
         backgroundSize: '1.5em',
         backgroundPosition: 'top -0.2em right 0, bottom -0.2em right 0',
-        backgroundImage: `url('${arrowUpSrc}'), url('${arrowDownSrc}')`,
+        backgroundImage: `url('${triangleUpSrc}'), url('${triangleDownSrc}')`,
       },
     },
     iframe: {

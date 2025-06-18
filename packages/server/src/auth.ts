@@ -5,10 +5,8 @@ import { RequestHandler } from 'express';
 import { db } from './db';
 import { isPrometheusRequest } from './metrics/util';
 import { dbgWarn, logDbgInfo } from './util';
-import {
-  SrcdsWsApiClientType,
-  SrcdsWsApiServer,
-} from './ws/servers/srcds/SrcdsWsApiServer';
+import { SrcdsWsApiClient } from './ws/servers/srcds/SrcdsWsApiClient';
+import { SrcdsWsApiServer } from './ws/servers/srcds/SrcdsWsApiServer';
 
 export interface MotdSessionData {
   remoteId: string;
@@ -30,7 +28,7 @@ const authCache: Record<string, AuthCacheEntry> = {};
 
 export const getMotdUserCredentials = async (
   token: string,
-  srcds?: SrcdsWsApiClientType,
+  srcds?: SrcdsWsApiClient,
 ): Promise<OnlinePlayerInfo> => {
   try {
     const tokenAuthCache = authCache[token];
@@ -141,6 +139,7 @@ const authHandler: RequestHandler = async (req, res, next) => {
     const permissions = await db.permissions.get(steamId);
     const storedVolume = await db.client.getLastSavedCvar(steamId, 'volume');
     const volume = storedVolume ? Number(storedVolume) : 1;
+    const srcdsVersion = srcds?.getInfo()?.version;
 
     res.locals.sessionData = {
       remoteId,
@@ -169,6 +168,12 @@ const authHandler: RequestHandler = async (req, res, next) => {
         res.clearCookie('userId');
       }
 
+      if (srcdsVersion) {
+        res.cookie('srcdsVersion', srcdsVersion);
+      } else {
+        res.clearCookie('srcdsVersion');
+      }
+
       res.cookie('permissions', JSON.stringify(permissions));
       res.cookie('volume', volume.toString());
     }
@@ -179,6 +184,7 @@ const authHandler: RequestHandler = async (req, res, next) => {
     res.clearCookie('token');
     res.clearCookie('remoteId');
     res.clearCookie('userId');
+    res.clearCookie('srcdsVersion');
     res.clearCookie('steamId');
     res.clearCookie('permissions');
     res.status(401);
