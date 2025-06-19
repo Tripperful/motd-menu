@@ -50,20 +50,7 @@ const useStyles = createUseStyles({
   },
 });
 
-// TODO: Remove this wrapper when the code is stable
-export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = (
-  props,
-) => {
-  const { srcdsVersion } = getSessionData();
-
-  if (srcdsVersion && srcdsVersion < 92) {
-    return 'Please update your srcds to use this feature';
-  }
-
-  return <PlayerSettingsImpl {...props} />;
-};
-
-const PlayerSettingsImpl: FC<{ steamId: string } & ClassNameProps> = ({
+export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   steamId,
   className,
 }) => {
