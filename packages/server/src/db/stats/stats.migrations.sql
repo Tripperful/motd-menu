@@ -1,5 +1,19 @@
 DO $$
 BEGIN
+  CREATE TABLE IF NOT EXISTS
+    client_settings_metadata (
+      setting_id text PRIMARY KEY,
+      metadata json
+    );
+
+  CREATE TABLE IF NOT EXISTS
+    client_settings_values (
+      steam_id bigint,
+      setting_id text REFERENCES client_settings_metadata (setting_id) ON DELETE CASCADE,
+      value json,
+      PRIMARY KEY (steam_id, setting_id)
+    );
+
   IF EXISTS (
     SELECT FROM information_schema.tables 
     WHERE  table_schema = 'public'
