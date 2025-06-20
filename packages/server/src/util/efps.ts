@@ -57,12 +57,12 @@ export class EfpsClient {
     if (!res.ok) {
       throw new Error(
         'Request to eFPS failed: ' +
-          {
+          JSON.stringify({
             method,
             url,
             status: res.status,
             body,
-          },
+          }),
       );
     }
 
