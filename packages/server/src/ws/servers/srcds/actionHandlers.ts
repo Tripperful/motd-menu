@@ -3,6 +3,7 @@ import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { matchCounter, onlinePlayersGauge } from 'src/metrics';
 import { getPlayerProfile } from 'src/steam';
+import { dbgErr } from 'src/util';
 import { EfpsClient } from 'src/util/efps';
 import { getRankData, toSrcdsRankData } from 'src/util/ranks';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
@@ -43,7 +44,17 @@ srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
 });
 
 srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
-  const { steamId, msg } = data;
+  const { steamId, msg, teamIdx, matchId } = data;
+
+  db.chat
+    .addMessage(
+      steamId,
+      msg,
+      srcds.getInfo().id,
+      teamIdx ?? 0,
+      matchId ?? null,
+    )
+    .catch(dbgErr);
 
   if (msg.startsWith('@') && msg.length > 1) {
     const servers = SrcdsWsApiServer.getInstace().getConnectedClients();

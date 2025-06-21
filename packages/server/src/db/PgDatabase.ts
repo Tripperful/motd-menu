@@ -54,6 +54,24 @@ export class PgDatabase extends BasePgDatabase implements Database {
       this.call('add_log', eventType, steamId, eventData),
   };
 
+  chat = {
+    addMessage: (
+      steamId: string,
+      message: string,
+      serverId: number,
+      teamIdx: number,
+      matchId: string | null,
+    ) =>
+      this.call(
+        'add_chat_message',
+        steamId,
+        message,
+        serverId,
+        teamIdx,
+        matchId,
+      ),
+  };
+
   maps = {
     init: (mapNames: string[]) => this.call('maps_init', mapNames),
     get: ((steamId: string, mapName?: string) =>

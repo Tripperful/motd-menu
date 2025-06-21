@@ -53,6 +53,15 @@ export interface Database {
       eventData?: unknown,
     ): Promise<void>;
   };
+  chat: {
+    addMessage(
+      steamId: string,
+      message: string,
+      serverId: number,
+      teamIdx: number,
+      matchId: string | null,
+    ): Promise<void>;
+  };
   maps: {
     init(mapNames: string[]): Promise<void>;
     get(steamId: string): Promise<MapPreviewData[]>;

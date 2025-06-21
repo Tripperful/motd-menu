@@ -102,8 +102,9 @@ export interface BasePointMessageData extends BaseStatsMessageData {
 
 export interface PlayerChatData {
   steamId: string;
-  teamIdx: number;
   msg: string;
+  teamIdx: number;
+  matchId?: string;
 }
 
 export interface ClientCexecData {
