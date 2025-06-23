@@ -54,19 +54,35 @@ export class EfpsClient {
       body,
     });
 
-    if (!res.ok) {
-      throw new Error(
+    let resJson: any;
+
+    try {
+      resJson = await res.json();
+    } catch {}
+
+    const resStatus = resJson?.status;
+    const resSuccess =
+      typeof resStatus === 'boolean'
+        ? resStatus
+        : typeof resStatus === 'number'
+          ? resStatus < 400
+          : resJson.message?.toLowerCase() === 'success';
+
+    if (!res.ok || !resSuccess) {
+      const errText =
         'Request to eFPS failed: ' +
-          JSON.stringify({
-            method,
-            url,
-            status: res.status,
-            body,
-          }),
-      );
+        JSON.stringify({
+          method,
+          url,
+          status: res.status,
+          body,
+          resJson,
+        });
+      dbgErr(errText);
+      throw new Error(errText);
     }
 
-    return res;
+    return resJson;
   }
 
   public async sendMatch(matchId: string) {
@@ -92,11 +108,9 @@ export class EfpsClient {
 
   public async getRankData(steamId: string) {
     try {
-      const res = await this.cronRequest('GET', 'player_stats', {
+      const efpsData = (await this.cronRequest('GET', 'player_stats', {
         steamId: steamId64ToLegacy(steamId),
-      });
-
-      const efpsData = (await res.json()) as Record<string, string>;
+      })) as Record<string, string>;
 
       if (efpsData.rank) {
         const [pos, max] = efpsData.place.split(' of ').map(Number);
