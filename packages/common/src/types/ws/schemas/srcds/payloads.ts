@@ -116,6 +116,7 @@ export interface RankUpdateData {
   steamId: string;
   points: number;
   rank: string;
+  customTag?: string;
   pos: number;
   max: number;
   r: number;

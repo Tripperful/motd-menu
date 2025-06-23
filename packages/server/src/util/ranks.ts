@@ -27,10 +27,11 @@ export const toSrcdsRankData = (data: RankData): RankUpdateData => {
   const max = efpsRank?.max ?? 0;
   const points = efpsRank?.points ?? 0;
 
-  const rank = customRank
+  const rank = efpsRank?.title ?? 'Unranked';
+
+  const customTag = customRank
     ? composeColoredText(customRank.title, customRank.colorStops)
-    : efpsRank?.title;
+    : '';
 
-  return { steamId, rank, points, pos, max, r, g, b };
+  return { steamId, rank, customTag, points, pos, max, r, g, b };
 };
-
