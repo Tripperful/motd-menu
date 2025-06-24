@@ -4,6 +4,7 @@ import { ReplaceConfirm } from '~components/common/ReplaceConfirm';
 import { Exit } from '~components/Exit';
 import { MainMenu } from '~components/MainMenu';
 import { TeamMenu } from '~components/TeamMenu';
+import { Translation } from '~components/Translation';
 
 const MapList = React.lazy(
   () => import(/* webpackChunkName: "lazy-main" */ '~components/MapList'),
@@ -58,6 +59,7 @@ export const Router: FC = () => {
             </Suspense>
           }
         />
+        <Route path="translation/*" element={<Translation />} />
         <Route path="teams/*" element={<TeamMenu />} />
         <Route
           path="serverSettings/*"

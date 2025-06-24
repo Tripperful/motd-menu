@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, Suspense, useMemo, useState } from 'react';
 import { useSessionData } from 'src/hooks/useSessionData';
 import { Menu, MenuItemInfo } from '~components/common/Menu';
 import TeamsIcon from '~icons/flag.svg';
@@ -21,43 +21,45 @@ export const MainMenu: FC = () => {
   );
 
   return (
-    <MainMenuContext.Provider value={contextValue}>
-      <Menu
-        items={
-          [
-            { title: 'Maps', link: 'maps', Icon: <TerrainIcon /> },
-            {
-              title: 'Teams',
-              link: 'teams',
-              Icon: <TeamsIcon />,
-              shouldShow: () => userId != null,
-            },
-            {
-              title: 'Players',
-              link: 'players',
-              Icon: <PlayersIcon />,
-            },
-            {
-              title: 'Client settings',
-              link: 'clientSettings',
-              Icon: <SettingsIcon />,
-            },
-            {
-              title: 'Server settings',
-              link: 'serverSettings',
-              Icon: <KnobsIcon />,
-              permissions: ['cvars_matchmaking_view', 'cvars_admin_view'],
-            },
-            {
-              title: 'Matches',
-              link: 'matches',
-              Icon: <MatchesIcon />,
-            },
-          ] as MenuItemInfo[]
-        }
-        title="Main menu"
-      />
-      <AvailableVotesFetcher />
-    </MainMenuContext.Provider>
+    <Suspense>
+      <MainMenuContext.Provider value={contextValue}>
+        <Menu
+          items={
+            [
+              { title: 'Maps', link: 'maps', Icon: <TerrainIcon /> },
+              {
+                title: 'Teams',
+                link: 'teams',
+                Icon: <TeamsIcon />,
+                shouldShow: () => userId != null,
+              },
+              {
+                title: 'Players',
+                link: 'players',
+                Icon: <PlayersIcon />,
+              },
+              {
+                title: 'Client settings',
+                link: 'clientSettings',
+                Icon: <SettingsIcon />,
+              },
+              {
+                title: 'Server settings',
+                link: 'serverSettings',
+                Icon: <KnobsIcon />,
+                permissions: ['cvars_matchmaking_view', 'cvars_admin_view'],
+              },
+              {
+                title: 'Matches',
+                link: 'matches',
+                Icon: <MatchesIcon />,
+              },
+            ] as MenuItemInfo[]
+          }
+          title="Main menu"
+        />
+        <AvailableVotesFetcher />
+      </MainMenuContext.Provider>
+    </Suspense>
   );
 };

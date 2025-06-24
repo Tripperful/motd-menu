@@ -13,6 +13,7 @@ import CrossIcon from '~icons/close.svg';
 import HelpIcon from '~icons/help.svg';
 import PersonIcon from '~icons/person.svg';
 import VoteIcon from '~icons/vote.svg';
+import TranslateIcon from '~icons/translate.svg';
 import { filterShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
 import { SidePanel } from '../SidePanel';
@@ -192,15 +193,18 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
       </div>
       <div className={c.badges}>
         {availableVotes.length > 0 && (
-          <MenuBadge to="vote">
+          <MenuBadge to="vote" hint="Vote">
             <VoteIcon />
           </MenuBadge>
         )}
+        <MenuBadge to="translation" hint="Chat translation">
+          <TranslateIcon />
+        </MenuBadge>
         <NewsBadge to="news" />
-        <MenuBadge to="help">
+        <MenuBadge to="help" hint="Help">
           <HelpIcon />
         </MenuBadge>
-        <MenuBadge to="myProfile">
+        <MenuBadge to="myProfile" hint="My Profile">
           <PersonIcon />
         </MenuBadge>
       </div>

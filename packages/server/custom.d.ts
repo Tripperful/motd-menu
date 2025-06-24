@@ -25,5 +25,6 @@ declare namespace NodeJS {
     POSTGRES_PORT: string;
     POSTGRES_USER: string;
     POSTGRES_PASSWORD: string;
+    GOOGLE_TRANSLATE_KEYFILE_BASE64: string;
   }
 }

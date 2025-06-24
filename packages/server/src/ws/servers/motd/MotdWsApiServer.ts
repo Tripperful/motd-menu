@@ -56,7 +56,7 @@ export class MotdWsApiServer extends BaseWsApiServer<
 
     try {
       const clientInfo: MotdClientInfo = {
-        ...(await getMotdUserCredentials(token)),
+        ...(await getMotdUserCredentials(token, req)),
         remoteId,
       };
 

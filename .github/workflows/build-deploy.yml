@@ -109,6 +109,7 @@ jobs:
           POSTGRES_PORT=\"${{ vars.POSTGRES_PORT }}\"
           POSTGRES_USER=\"${{ secrets.POSTGRES_USER }}\"
           POSTGRES_PASSWORD=\"${{ secrets.POSTGRES_PASSWORD }}\"
+          GOOGLE_TRANSLATE_KEYFILE_BASE64=\"${{ secrets.GOOGLE_TRANSLATE_KEYFILE_BASE64 }}\"
           EOF'"
 
       - name: Write prometheus web config to the server (via decoded base64)

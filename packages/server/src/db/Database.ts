@@ -61,6 +61,8 @@ export interface Database {
       teamIdx: number,
       matchId: string | null,
     ): Promise<void>;
+    getPreferredLanguages(steamId: string): Promise<string[]>;
+    setPreferredLanguages(steamId: string, languages: string[]): Promise<void>;
   };
   maps: {
     init(mapNames: string[]): Promise<void>;

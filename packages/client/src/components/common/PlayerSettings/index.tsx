@@ -104,9 +104,6 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
 
       motdApi
         .setPlayerSettings({ [key]: value })
-        .then(() => {
-          addNotification('success', `Setting "${metadata[key].name}" updated`);
-        })
         .catch(() => {
           addNotification(
             'error',

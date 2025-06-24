@@ -2,9 +2,11 @@ import { OnlinePlayerInfo, Permission } from '@motd-menu/common';
 import cookieParser from 'cookie-parser';
 import type { Request } from 'express';
 import { RequestHandler } from 'express';
+import { IncomingMessage } from 'http';
 import { db } from './db';
 import { isPrometheusRequest } from './metrics/util';
 import { dbgWarn, logDbgInfo } from './util';
+import { initPreferredLanguages } from './util/language';
 import { SrcdsWsApiClient } from './ws/servers/srcds/SrcdsWsApiClient';
 import { SrcdsWsApiServer } from './ws/servers/srcds/SrcdsWsApiServer';
 
@@ -28,6 +30,7 @@ const authCache: Record<string, AuthCacheEntry> = {};
 
 export const getMotdUserCredentials = async (
   token: string,
+  req: IncomingMessage,
   srcds?: SrcdsWsApiClient,
 ): Promise<OnlinePlayerInfo> => {
   try {
@@ -53,6 +56,14 @@ export const getMotdUserCredentials = async (
     const srcdsAuth = await srcds.request('motd_auth_request', token);
 
     if (srcdsAuth?.steamId) {
+      const languages = req.headers['accept-language']
+        ?.split(/,|;/)
+        .filter((l) => l.trim().length === 2);
+
+      if (languages?.length) {
+        initPreferredLanguages(srcdsAuth.steamId, languages);
+      }
+
       authCache[token] = { ts: Date.now(), auth: srcdsAuth };
       return srcdsAuth;
     }
@@ -135,7 +146,7 @@ const authHandler: RequestHandler = async (req, res, next) => {
       res.locals.srcds = srcds;
     }
 
-    const { steamId, userId } = await getMotdUserCredentials(token, srcds);
+    const { steamId, userId } = await getMotdUserCredentials(token, req, srcds);
     const permissions = await db.permissions.get(steamId);
     const storedVolume = await db.client.getLastSavedCvar(steamId, 'volume');
     const volume = storedVolume ? Number(storedVolume) : 1;

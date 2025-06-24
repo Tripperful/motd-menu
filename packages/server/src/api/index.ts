@@ -11,6 +11,7 @@ import { newsRouter } from './news';
 import { playersRouter } from './players';
 import { srcdsRouter } from './srcds';
 import { teamsRouter } from './teams';
+import { languagesRouter } from './languages';
 
 export const api = Router();
 
@@ -25,4 +26,5 @@ api.use('/srcds', srcdsRouter);
 api.use('/news', newsRouter);
 api.use('/debug', debugRouter);
 api.use('/efps', efpsRouter);
+api.use('/languages', languagesRouter);
 api.use((_, res) => res.status(400).end());

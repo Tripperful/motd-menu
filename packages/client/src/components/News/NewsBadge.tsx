@@ -43,7 +43,7 @@ const NewsBadgeDot: FC = () => {
 
 export const NewsBadge: FC<LinkProps> = (props) => {
   return (
-    <MenuBadge {...props}>
+    <MenuBadge {...props} hint="News">
       <EnvelopeIcon />
       <Suspense>
         <NewsBadgeDot />

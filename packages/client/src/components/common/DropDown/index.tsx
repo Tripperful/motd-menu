@@ -70,7 +70,7 @@ const DropDownOption = <TValue,>(
   const c = useStyles();
   const { title, value, onClick } = option;
   return (
-    <div className={c.option} onClick={() => onClick(value)}>
+    <div className={c.option} onClick={() => onClick?.(value)}>
       {title ?? String(value)}
     </div>
   );

@@ -186,6 +186,14 @@ class MotdApi {
     );
   }
 
+  public async getPreferredLanguages() {
+    return JSON.parse(await this.get('languages')) as string[];
+  }
+
+  public async setPreferredLanguages(languages: string[]) {
+    await this.post('languages', JSON.stringify(languages));
+  }
+
   public async getPlayerSettingsMetadata() {
     return JSON.parse(
       await this.get(`players/settings/metadata`),

@@ -21,5 +21,6 @@ export * from './util/color';
 export * from './util/steam';
 export * from './util/uuid';
 export * from './util/countries';
+export * from './util/languages';
 export * from './ws';
 export * from './constants';

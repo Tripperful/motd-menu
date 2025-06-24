@@ -18,11 +18,21 @@ const useStyles = createUseStyles({
   },
 });
 
-export const MenuBadge: FC<LinkProps> = ({ to, className, children }) => {
+export const MenuBadge: FC<LinkProps & { hint: string }> = ({
+  to,
+  hint,
+  className,
+  children,
+}) => {
   const c = useStyles();
 
   return (
-    <Link className={classNames(c.root, className)} to={to}>
+    <Link
+      className={classNames(c.root, className)}
+      to={to}
+      data-tooltip-id="tooltip"
+      data-tooltip-content={hint}
+    >
       {children}
     </Link>
   );

@@ -70,6 +70,12 @@ export class PgDatabase extends BasePgDatabase implements Database {
         teamIdx,
         matchId,
       ),
+
+    getPreferredLanguages: async (steamId: string) =>
+      (await this.select<string[]>('get_player_languages', steamId)) ?? [],
+
+    setPreferredLanguages: (steamId: string, languages: string[]) =>
+      this.call('set_player_languages', steamId, languages),
   };
 
   maps = {
