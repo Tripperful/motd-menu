@@ -52,6 +52,8 @@ srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
     .catch(dbgErr);
 
   (async () => {
+    if (msg.startsWith('!') || msg.startsWith('@')) return;
+
     const translator = getTranslator();
     if (!translator) return;
 
