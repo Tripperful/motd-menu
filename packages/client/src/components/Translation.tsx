@@ -7,36 +7,62 @@ import {
   setPreferredLanguages,
   usePreferredLanguages,
 } from 'src/hooks/state/preferredLanguages';
+import EditIcon from '~icons/pencil.svg';
+import { activeItemNoTransform } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { DropDown } from './common/DropDown';
 import { Page } from './common/Page';
+import { Popup } from './common/Popup';
 import { Switch } from './common/Switch';
 
 const useStyles = createUseStyles({
   root: {
     display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: '0.5em',
-    padding: '1em',
+    padding: '4em',
     minHeight: 0,
+    fontSize: '1.2em',
+    flex: '1 1 auto',
   },
-  section: {
+  content: {
     backgroundColor: theme.bg1,
-    borderRadius: '1em',
-    flex: '1 1 50%',
-    minWidth: 0,
-    minHeight: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5em',
-    overflow: 'hidden auto',
     padding: '1em',
-    alignItems: 'flex-start',
-    border: '0.5em solid transparent',
+    borderRadius: '1em',
+    maxWidth: 'min(50em, 60vw)',
+    lineHeight: '1.5em',
   },
   langRow: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.5em',
+  },
+  otherLangs: {
+    ...activeItemNoTransform(),
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.2em',
+  },
+  otherLangsPopup: {
+    maxHeight: 'calc(100vh - 10em)',
+    width: '50vw',
+  },
+  otherLangsPopupContent: {
+    height: '30em',
+    overflow: 'hidden scroll',
+    marginRight: '-0.5em',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(10em, 1fr))',
+    alignContent: 'start',
+    gap: '0.5em',
+  },
+  inlineDropDown: {
+    display: 'inline-flex',
+  },
+  editIcon: {
+    fontSize: '0.65em',
+    flex: '0 0 auto',
   },
 });
 
@@ -51,8 +77,10 @@ const LanguagePicker: FC<{
   language: string;
   setLanguage: (lang: string) => void;
 }> = ({ language, setLanguage }) => {
+  const c = useStyles();
   return (
     <DropDown
+      className={c.inlineDropDown}
       value={language}
       setValue={setLanguage}
       options={supportedLanguagesOptions}
@@ -95,33 +123,69 @@ const TranslationContent: FC = () => {
     });
   }, [languages]);
 
+  const [showOtherLangs, setShowOtherLangs] = React.useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
+
+  useEffect(() => {
+    setSearchQuery('');
+  }, [showOtherLangs]);
+
   return (
     <div className={c.root}>
-      <div className={c.section}>
-        <h3>Main Language</h3>
-        <p>
-          Select your main language for chat translation. This is the language
-          into which unknown languages will be translated
-        </p>
+      <span className={c.content}>
+        <span>My primary language is </span>
         <LanguagePicker language={mainLang} setLanguage={setMainLang} />
-      </div>
-      <div className={c.section}>
-        <h3>Other Languages</h3>
-        <p>
-          Select additional languages that you understand and don't need to be
-          translated.
-        </p>
-        {Object.keys(supportedLanguages).map((lang) => (
-          <span key={lang} className={c.langRow}>
-            <Switch
-              disabled={lang === mainLang}
-              active={lang === mainLang || otherLangs.includes(lang)}
-              setActive={(active) => setOtherLang(lang, active)}
+        <br />
+        <span>Besides that, I understand </span>
+        <span className={c.otherLangs} onClick={() => setShowOtherLangs(true)}>
+          {otherLangs.length > 0 ? (
+            <span>
+              {otherLangs.map((l) => supportedLanguages[l]).join(', ')}
+            </span>
+          ) : (
+            <span>no other languages</span>
+          )}
+          <EditIcon className={c.editIcon} />
+        </span>
+        {showOtherLangs && (
+          <Popup
+            className={c.otherLangsPopup}
+            title="Other languages I understand"
+            onClose={() => setShowOtherLangs(false)}
+          >
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-            {supportedLanguages[lang]}
-          </span>
-        ))}
-      </div>
+            <div className={c.otherLangsPopupContent}>
+              {Object.entries(supportedLanguages)
+                .filter(([lang, langName]) => {
+                  if (searchQuery) {
+                    return (
+                      langName
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase()) ||
+                      lang.includes(searchQuery)
+                    );
+                  }
+                  return true;
+                })
+                .map(([lang, langName]) => (
+                  <span key={lang} className={c.langRow}>
+                    <Switch
+                      disabled={lang === mainLang}
+                      active={lang === mainLang || otherLangs.includes(lang)}
+                      setActive={(active) => setOtherLang(lang, active)}
+                    />
+                    {langName}
+                  </span>
+                ))}
+            </div>
+          </Popup>
+        )}
+      </span>
     </div>
   );
 };

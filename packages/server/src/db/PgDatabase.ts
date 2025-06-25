@@ -59,6 +59,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
       steamId: string,
       message: string,
       serverId: number,
+      teamOnly: boolean,
       teamIdx: number,
       matchId: string | null,
     ) =>
@@ -67,6 +68,7 @@ export class PgDatabase extends BasePgDatabase implements Database {
         steamId,
         message,
         serverId,
+        teamOnly,
         teamIdx,
         matchId,
       ),

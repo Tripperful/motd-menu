@@ -45,10 +45,17 @@ srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
 });
 
 srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
-  const { steamId, msg, teamIdx, matchId } = data;
+  const { steamId, msg, teamIdx, matchId, teamOnly } = data;
 
   db.chat
-    .addMessage(steamId, msg, srcds.getInfo().id, teamIdx ?? 0, matchId ?? null)
+    .addMessage(
+      steamId,
+      msg,
+      srcds.getInfo().id,
+      teamOnly,
+      teamIdx ?? 0,
+      matchId ?? null,
+    )
     .catch(dbgErr);
 
   (async () => {
@@ -63,7 +70,12 @@ srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
 
     await Promise.all(
       players
-        .filter((p) => p.steamId !== steamId)
+        .filter((p) => {
+          if (p.steamId !== steamId) return false;
+          if (teamOnly && p.teamIdx !== teamIdx && p.teamIdx !== 1)
+            return false;
+          return true;
+        })
         .map(async (player) => {
           const [settings, languages] = await Promise.all([
             db.client.settings.getValues(player.steamId),

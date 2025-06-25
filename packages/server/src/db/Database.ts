@@ -58,6 +58,7 @@ export interface Database {
       steamId: string,
       message: string,
       serverId: number,
+      teamOnly: boolean,
       teamIdx: number,
       matchId: string | null,
     ): Promise<void>;
