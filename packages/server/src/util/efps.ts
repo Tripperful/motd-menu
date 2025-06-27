@@ -66,7 +66,7 @@ export class EfpsClient {
         ? resStatus
         : typeof resStatus === 'number'
           ? resStatus < 400
-          : resJson.message?.toLowerCase() === 'success';
+          : resJson?.message?.toLowerCase() === 'success';
 
     if (!res.ok || !resSuccess) {
       const errText =
@@ -75,7 +75,6 @@ export class EfpsClient {
           method,
           url,
           status: res.status,
-          body,
           resJson,
         });
       dbgErr(errText);
