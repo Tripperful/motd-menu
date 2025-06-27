@@ -99,8 +99,8 @@ export class EfpsClient {
       await db.matches.markSentToEfps(matchId);
 
       return true;
-    } catch {
-      dbgErr('Failed to send eFPS stats (match id: ' + matchId + ')');
+    } catch (e) {
+      dbgErr('Failed to send eFPS stats (match id: ' + matchId + '): ', e);
     }
 
     return false;
