@@ -71,7 +71,7 @@ srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
     await Promise.all(
       players
         .filter((p) => {
-          if (p.steamId !== steamId) return false;
+          if (p.steamId === steamId) return false;
           if (teamOnly && p.teamIdx !== teamIdx && p.teamIdx !== 1)
             return false;
           return true;
