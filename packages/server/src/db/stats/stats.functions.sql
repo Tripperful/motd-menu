@@ -296,7 +296,10 @@ BEGIN
             client_connections.ip IN (
               SELECT client_connections.ip
               FROM client_connections
-              WHERE client_connections.id IN (SELECT smurf_ids.id FROM smurf_ids)
+              WHERE
+                client_connections.ip::text NOT LIKE '169.%' -- Don't take local IPs into account
+                AND
+                client_connections.id IN (SELECT smurf_ids.id FROM smurf_ids)
             )
           );
 
