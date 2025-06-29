@@ -60,15 +60,13 @@ export class EfpsClient {
       resJson = await res.json();
     } catch {}
 
-    const resStatus = resJson?.status;
-    const resSuccess =
-      typeof resStatus === 'boolean'
-        ? resStatus
-        : typeof resStatus === 'number'
-          ? resStatus < 400
-          : resJson?.message?.toLowerCase() === 'success';
+    let resFailed = !res.ok;
 
-    if (!res.ok || !resSuccess) {
+    const resStatus = resJson?.status;
+    resFailed ||= typeof resStatus === 'boolean' && !resStatus;
+    resFailed ||= typeof resStatus === 'number' && resStatus >= 400;
+
+    if (resFailed) {
       const errText =
         'Request to eFPS failed: ' +
         JSON.stringify({

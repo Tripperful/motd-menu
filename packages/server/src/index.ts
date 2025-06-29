@@ -97,7 +97,7 @@ db.init().then(() => {
       `${protocol.toUpperCase()} server is listening on port ${port}`,
     );
 
-    // new EfpsWatchdog();
+    new EfpsWatchdog();
 
     const wsServer = new WebSocketServer({ noServer: true });
 
