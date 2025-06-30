@@ -1,11 +1,11 @@
-import { chatColor, supportedLanguages } from '@motd-menu/common';
+import { chatColor } from '@motd-menu/common';
 import { dropAuthCache } from 'src/auth';
 import { db } from 'src/db';
 import { matchCounter, onlinePlayersGauge } from 'src/metrics';
 import { getPlayerProfile } from 'src/steam';
 import { dbgErr, dbgWarn } from 'src/util';
 import { EfpsClient } from 'src/util/efps';
-import { getTranslator } from 'src/util/language';
+import { translateMessageForPlayers } from 'src/util/language';
 import { getRankData, toSrcdsRankData } from 'src/util/ranks';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
 import { chargerUseHandler } from './chargerUseHandler';
@@ -58,72 +58,9 @@ srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
     )
     .catch(dbgErr);
 
-  (async () => {
-    if (msg.startsWith('!') || msg.startsWith('@')) return;
-
-    const translator = getTranslator();
-    if (!translator) return;
-
-    const players = await srcds.request('get_players_request');
-
-    const playersLanguages: Record<string, string[]> = {};
-
-    await Promise.all(
-      players
-        .filter((p) => {
-          if (p.steamId === steamId) return false;
-          if (teamOnly && p.teamIdx !== teamIdx && p.teamIdx !== 1)
-            return false;
-          return true;
-        })
-        .map(async (player) => {
-          const [settings, languages] = await Promise.all([
-            db.client.settings.getValues(player.steamId),
-            db.chat.getPreferredLanguages(player.steamId),
-          ]);
-
-          if (settings?.translateChat && languages?.length > 0) {
-            playersLanguages[player.steamId] = languages;
-          }
-        }),
-    );
-
-    const [{ language: detectedLanguage }] = await translator.detect(msg);
-
-    if (!supportedLanguages[detectedLanguage]) return;
-
-    const targetTranslations = new Set<string>();
-
-    for (const [, languages] of Object.entries(playersLanguages)) {
-      if (!languages.includes(detectedLanguage)) {
-        targetTranslations.add(languages[0]);
-      }
-    }
-
-    const translationsByLanguage: Record<string, string> = {};
-
-    await Promise.all(
-      Array.from(targetTranslations).map(async (mainLanguage) => {
-        const [translation] = await translator.translate(msg, mainLanguage);
-        translationsByLanguage[mainLanguage] = translation;
-      }),
-    );
-
-    const sender = await getPlayerProfile(steamId);
-
-    for (const [language, translation] of Object.entries(
-      translationsByLanguage,
-    )) {
-      const clients = Object.keys(playersLanguages).filter(
-        (steamId) => playersLanguages[steamId][0] === language,
-      );
-
-      srcds.send('chat_print', {
-        clients,
-        text: `${chatColor.MOTD}[${detectedLanguage.toUpperCase()} ➔ ${language.toUpperCase()}] ${chatColor.Yellow}${sender.name}: ${chatColor.White}${translation}`,
-      });
-    }
-  })().catch(dbgWarn);
+  if (!msg.startsWith('!') && !msg.startsWith('@')) {
+    translateMessageForPlayers(srcds, data).catch(dbgWarn);
+  }
 
   if (msg.startsWith('@') && msg.length > 1) {
     const servers = SrcdsWsApiServer.getInstace().getConnectedClients();
