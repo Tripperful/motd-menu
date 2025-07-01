@@ -1,6 +1,5 @@
 export const supportedLanguages = {
   ar: 'Arabic',
-  bg: 'Bulgarian',
   ca: 'Catalan',
   hr: 'Croatian',
   cs: 'Czech',
@@ -28,5 +27,4 @@ export const supportedLanguages = {
   es: 'Spanish',
   sv: 'Swedish',
   tr: 'Turkish',
-  uk: 'Ukrainian',
 };
