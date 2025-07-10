@@ -266,55 +266,55 @@ SET
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE
-OR REPLACE FUNCTION get_smurf_connections (steam_id text) RETURNS SETOF client_connections AS $$
-DECLARE
-  prev_smurf_count int;
-  cur_smurf_count int;
+CREATE OR REPLACE FUNCTION get_smurf_steamids(steam_id text)
+RETURNS SETOF bigint AS $$
 BEGIN
-  CREATE TEMP TABLE smurf_ids ( 
-    id uuid
-  ) ON COMMIT DROP;
+  RETURN QUERY
+  WITH RECURSIVE smurf_chain AS (
+    SELECT steam_id::bigint, ip
+    FROM client_connections
+    WHERE steam_id = steam_id::bigint
 
-  LOOP
-    SELECT COUNT(*) INTO prev_smurf_count FROM smurf_ids;
+    UNION
 
-    INSERT INTO smurf_ids (id)
-      SELECT client_connections.id FROM client_connections
-      WHERE
-        client_connections.id NOT IN (SELECT smurf_ids.id FROM smurf_ids)
-          AND
-          (
-            client_connections.steam_id = get_smurf_connections.steam_id::bigint
-            OR
-            client_connections.steam_id IN (
-              SELECT client_connections.steam_id
-              FROM client_connections
-              WHERE client_connections.id IN (SELECT smurf_ids.id FROM smurf_ids)
-            )
-            OR
-            client_connections.ip IN (
-              SELECT client_connections.ip
-              FROM client_connections
-              WHERE
-                client_connections.ip::text NOT LIKE '169.%' -- Don't take local IPs into account
-                AND
-                client_connections.id IN (SELECT smurf_ids.id FROM smurf_ids)
-            )
-          );
-
-    SELECT COUNT(*) INTO cur_smurf_count FROM smurf_ids;
-    
-    EXIT WHEN prev_smurf_count = cur_smurf_count;
-  END LOOP;
-
-  RETURN QUERY SELECT * FROM client_connections WHERE client_connections.id IN (SELECT smurf_ids.id FROM smurf_ids);
+    SELECT cc.steam_id, cc.ip
+    FROM client_connections cc
+    JOIN smurf_chain sc
+      ON (
+        cc.steam_id = sc.steam_id
+        OR (cc.ip = sc.ip AND cc.ip NOT LIKE '169.254.%')
+      )
+  )
+  SELECT DISTINCT steam_id FROM smurf_chain;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE
-OR REPLACE FUNCTION client_get_smurf_steam_ids (steam_id text) RETURNS json AS $$ BEGIN RETURN json_agg(DISTINCT a.steam_id::text)
-FROM get_smurf_connections(client_get_smurf_steam_ids.steam_id) a;
+CREATE OR REPLACE FUNCTION client_get_smurf_steam_ids(steam_id TEXT)
+RETURNS json AS $$
+DECLARE
+  result json;
+BEGIN
+  WITH RECURSIVE smurf_chain AS (
+    SELECT cc1.steam_id, cc1.ip
+    FROM client_connections cc1
+    WHERE cc1.steam_id = client_get_smurf_steam_ids.steam_id::bigint
+
+    UNION
+
+    SELECT cc2.steam_id, cc2.ip
+    FROM client_connections cc2
+    JOIN smurf_chain sc
+      ON (
+        cc2.ip = sc.ip
+        AND
+        cc2.ip::text NOT LIKE '169.254.%'
+      )
+  )
+
+  SELECT json_agg(DISTINCT smurf_chain.steam_id::text) INTO result 
+  FROM smurf_chain;
+
+  RETURN result;
 END;
 $$ LANGUAGE plpgsql;
 
