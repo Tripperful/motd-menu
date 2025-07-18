@@ -1885,3 +1885,27 @@ BEGIN
     RETURN player;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_client_servers_stats(steam_id text) 
+RETURNS json AS $$
+BEGIN
+  RETURN json_agg(json_build_object(
+    'serverId', row_data.serverid,
+    'serverName', row_data.servername,
+    'avgPing', row_data.avgping,
+    'numSessions', row_data.numsessions
+  ))
+  FROM (
+    SELECT 
+      servers.id AS serverId,
+      servers.name AS serverName,
+      ROUND(AVG(client_connections.out_avg_latency) * 1000) AS avgPing,
+      COUNT(*) AS numSessions
+    FROM client_connections
+    JOIN servers ON servers.id = client_connections.server_id
+    WHERE client_connections.steam_id = get_client_servers_stats.steam_id::bigint
+    GROUP BY servers.id, servers.name
+  ) AS row_data;
+END;
+$$ LANGUAGE plpgsql;
+

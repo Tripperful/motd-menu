@@ -29,6 +29,7 @@ import {
   PlayerDamageData,
   PlayerDeathData,
   PlayerRespawnData,
+  PlayerServerStats,
   PlayerSubstitutionData,
   ProjectileBounceData,
   ProjectileDeathData,
@@ -175,6 +176,7 @@ export interface Database {
     setCustomRank(steamId: string, rank: CustomRankData): Promise<void>;
     getCustomRankSubscription(steamId: string): Promise<number>;
     getLastIp(steamId: string): Promise<string>;
+    getServersStats(steamId: string): Promise<PlayerServerStats[]>;
   };
   server: {
     getById(serverId: number): Promise<ServerInfo>;

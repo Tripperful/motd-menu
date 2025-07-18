@@ -7,10 +7,10 @@ import { Router } from 'express';
 import { db } from 'src/db';
 import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
 import { getRankData, toSrcdsRankData } from 'src/util/ranks';
+import { SrcdsWsApiServer } from 'src/ws/servers/srcds/SrcdsWsApiServer';
 import { akaRouter } from './aka';
 import { permissionsRouter } from './permissions';
 import { playerSettingsRouter } from './settings';
-import { SrcdsWsApiServer } from 'src/ws/servers/srcds/SrcdsWsApiServer';
 
 export const playersRouter = Router();
 
@@ -184,6 +184,25 @@ playersRouter.get('/findByName/:name', async (req, res) => {
       : [];
 
     res.status(200).json(profiles);
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+playersRouter.get('/serversStats/:steamId', async (req, res) => {
+  try {
+    const {
+      sessionData: { permissions },
+    } = res.locals;
+
+    if (!permissions.includes('dev')) {
+      return res.status(403).end();
+    }
+
+    const { steamId } = req.params;
+
+    res.status(200).json(await db.client.getServersStats(steamId));
   } catch (e) {
     console.error(e);
     res.status(500).end();

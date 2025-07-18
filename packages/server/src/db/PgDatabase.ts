@@ -29,6 +29,7 @@ import {
   PlayerDamageData,
   PlayerDeathData,
   PlayerRespawnData,
+  PlayerServerStats,
   PlayerSubstitutionData,
   ProjectileBounceData,
   ProjectileDeathData,
@@ -260,6 +261,12 @@ export class PgDatabase extends BasePgDatabase implements Database {
 
     getCustomRankSubscription: async (steamId: string) =>
       this.select<number>('get_client_custom_rank_subscription', steamId),
+
+    getServersStats: async (steamId: string) =>
+      (await this.select<PlayerServerStats[]>(
+        'get_client_servers_stats',
+        steamId,
+      )) ?? [],
   };
 
   server = {

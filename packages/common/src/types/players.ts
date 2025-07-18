@@ -42,3 +42,10 @@ export interface RankData {
   show?: boolean;
   customRankExpiresOn?: number;
 }
+
+export interface PlayerServerStats {
+  serverId: number;
+  serverName: string;
+  numConnections: number;
+  avgPing: number;
+}
