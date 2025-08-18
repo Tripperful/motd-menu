@@ -8,9 +8,12 @@ import {
 } from '../types/ws/util';
 import { uuid } from '../util/uuid';
 
+const defaultRequestTimeout = 10_000;
+
 export class BaseWsApiClient<TWsSendSchema, TClientInfo> {
   private requests: Record<string, (data: any) => void> = {};
   private connectedTimestamp = Date.now();
+  private nextRequestTimeout = defaultRequestTimeout;
 
   constructor(
     private id: string,
@@ -81,6 +84,14 @@ export class BaseWsApiClient<TWsSendSchema, TClientInfo> {
   }
 
   /**
+   * Call this to set custom timeout for the next request.
+   * @param timeout Timeout in milliseconds
+   */
+  setNextRequestTimeout(timeout: number): void {
+    this.nextRequestTimeout = timeout;
+  }
+
+  /**
    * Make a fetch-type request
    *
    * @param type Message type
@@ -115,13 +126,16 @@ export class BaseWsApiClient<TWsSendSchema, TClientInfo> {
   >;
 
   request(type: string, data?: unknown) {
+    const timeoutMs = this.nextRequestTimeout || defaultRequestTimeout;
+    this.setNextRequestTimeout(defaultRequestTimeout);
+
     return new Promise<any>((resolve, reject) => {
       const guid = uuid();
 
       const timeout = setTimeout(() => {
         delete this.requests[guid];
-        reject(new Error(`Request ${type} timed out after 10s`));
-      }, 10000);
+        reject(new Error(`Request ${type} timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
 
       this.requests[guid] = (response) => {
         clearTimeout(timeout);

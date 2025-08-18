@@ -69,7 +69,7 @@ export abstract class BaseWsApiServer<
           `Duplicate connection from WS client ${clientId}, dropping the old connection`,
         );
 
-        existingClient.getSocket().close();
+        existingClient.getSocket().terminate();
         delete this.clients[clientId];
       }
 
@@ -85,7 +85,7 @@ export abstract class BaseWsApiServer<
 
           clientWs.on('error', (e) => {
             console.error(`WS client ${clientId} errored, disconnecting:`, e);
-            clientWs.close();
+            clientWs.terminate();
           });
 
           clientWs.on('close', () => {

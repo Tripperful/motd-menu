@@ -18,6 +18,9 @@ import type {
 } from './payloads';
 
 export type SrcdsWsSendSchema = WsApiSchema<{
+  ping_request: {
+    resType: 'ping_response';
+  };
   motd_auth_request: {
     reqData: string;
     resType: 'motd_auth_response';
