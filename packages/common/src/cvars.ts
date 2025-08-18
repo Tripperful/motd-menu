@@ -48,6 +48,7 @@ export type Cvar =
   | 'mp_flashlight'
   | 'mp_footsteps'
   | 'mp_forcerespawn'
+  | 'sv_physcannon_every_tick'
   | 'sv_physcannon_fast_gather'
   | 'sv_physcannon_ez_yoyo'
   | 'sv_follow_projectiles'
@@ -193,6 +194,12 @@ const registeredCvarsInfo: Record<Cvar, CvarInfo> = {
     description: 'Magnum alt fire zoom',
     type: 'bool',
     permissions: adminEditPermissions,
+    mockValue: '1',
+  },
+  sv_physcannon_every_tick: {
+    description: 'Poll gravity gun every tick',
+    type: 'bool',
+    permissions: matchmakingPermissions,
     mockValue: '1',
   },
   sv_physcannon_fast_gather: {
