@@ -19,7 +19,9 @@ efpsRouter.get('/servers', async (req, res) => {
         .getConnectedClients()
         .map(async (connectedSrcds) => {
           const players =
-            (await connectedSrcds.request('get_players_request')) ?? [];
+            (await connectedSrcds
+              .request('get_players_request')
+              .catch(() => [])) ?? [];
 
           const { mp_teamplay } = await connectedSrcds.request(
             'get_cvars_request',
