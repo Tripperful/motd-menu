@@ -1,6 +1,7 @@
 import { errorSteamProfile, SteamPlayerData } from '@motd-menu/common';
 import { parseStringPromise as xmlParse } from 'xml2js';
 import { getGeoDataBySteamId } from './util/countries';
+import { unescapeXmlValue } from './util';
 
 const profileCacheLifetime = 1000 * 60 * 10; // 10 min
 
@@ -50,7 +51,9 @@ export const getPlayerProfile = async (
 
       profile = {
         avatar: json.profile?.avatarFull ?? errorProfile.avatar,
-        name: json.profile?.steamID ?? errorProfile.name,
+        name: json.profile?.steamID
+          ? unescapeXmlValue(json.profile.steamID)
+          : errorProfile.name,
         steamId: json.profile?.steamID64 ?? errorProfile.steamId,
       };
 

@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from 'src/db';
+import { EfpsClient } from 'src/util/efps';
 import { SrcdsWsApiServer } from 'src/ws/servers/srcds/SrcdsWsApiServer';
 
 export const efpsRouter = Router();
@@ -56,5 +57,19 @@ efpsRouter.get('/servers', async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).end();
+  }
+});
+
+efpsRouter.post('/balancer', async (req, res) => {
+  const steamIds = req.body as string[];
+
+  try {
+    const efpsClient = EfpsClient.getInstance();
+    const balancedTeams = await efpsClient.balanceTeams(steamIds);
+
+    res.status(200).json(balancedTeams).end();
+  } catch (e) {
+    console.error(e);
+    return res.status(500).end();
   }
 });

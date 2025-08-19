@@ -11,6 +11,7 @@ import { db } from 'src/db';
 import { getPlayerProfile, getPlayersProfiles } from 'src/steam';
 import { sanitizeCvarValue } from 'src/util';
 import { base64encode } from 'src/util/base64';
+import { EfpsClient } from 'src/util/efps';
 
 export const matchRouter = Router();
 
@@ -300,6 +301,69 @@ matchRouter.get('/efps/:matchId', async (req, res) => {
     }
 
     res.status(404).end();
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});
+
+matchRouter.post('/balance', async (req, res) => {
+  try {
+    const { players } = req.body as { players: string[] };
+
+    if (!players || players.length < 3) {
+      return res
+        .status(400)
+        .end('At least 3 players are required to balance teams');
+    }
+
+    const { srcds } = res.locals;
+
+    const { mp_match, mp_teamplay } = await srcds.request('get_cvars_request', [
+      'mp_match',
+      'mp_teamplay',
+    ]);
+
+    if (mp_match !== '0') {
+      return res.status(400).end("Balancer can't be used in a match");
+    }
+
+    if (mp_teamplay !== '1') {
+      return res
+        .status(400)
+        .end('Balancer can only be used in Team Deathmatch');
+    }
+
+    const onlinePlayers = (await srcds.request('get_players_request')) ?? [];
+
+    for (const steamId of players) {
+      if (!onlinePlayers.some((p) => p.steamId === steamId)) {
+        const playerProfile = await getPlayerProfile(steamId);
+        return res.status(400).end(`${playerProfile.name} is not online`);
+      }
+    }
+
+    const balancedTeams = await EfpsClient.getInstance().balanceTeams(players);
+
+    for (const { userId, steamId } of onlinePlayers) {
+      const teamIndex = balancedTeams.findIndex((team) =>
+        team.some((p) => p.steamId === steamId),
+      );
+
+      srcds.send('set_player_team', {
+        userId,
+        teamIndex: teamIndex === -1 ? 1 : teamIndex + 2,
+      });
+    }
+
+    const initiator = await getPlayerProfile(res.locals.sessionData.steamId);
+
+    srcds.send('chat_print', {
+      clients: onlinePlayers.map((p) => p.steamId),
+      text: `${chatColor.Value}${initiator.name} ${chatColor.Info}has balanced the teams!`,
+    });
+
+    res.status(200).end();
   } catch (e) {
     console.error(e);
     res.status(500).end();

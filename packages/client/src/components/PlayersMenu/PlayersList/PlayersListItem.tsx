@@ -1,20 +1,25 @@
-import React, { FC } from 'react';
+import React, { ComponentPropsWithRef, FC } from 'react';
 import { usePlayerSteamProfile } from 'src/hooks/state/players';
 import { PlayerItem } from '~components/common/PlayerItem';
 
-export const PlayersListItem: FC<{
+type PlayersListItemProps = Omit<
+  ComponentPropsWithRef<typeof PlayerItem>,
+  'profile'
+> & {
   steamId: string;
-  aka?: string;
-  ping?: number;
-}> = ({ steamId, aka, ping }) => {
+};
+
+export const PlayersListItem: FC<PlayersListItemProps> = ({
+  steamId,
+  ...rest
+}) => {
   const profile = usePlayerSteamProfile(steamId);
 
   return (
     <PlayerItem
       profile={profile}
-      link={profile.steamId}
-      aka={aka}
-      ping={ping}
+      link={rest.link === undefined ? profile.steamId : rest.link}
+      {...rest}
     />
   );
 };

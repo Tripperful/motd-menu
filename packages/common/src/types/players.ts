@@ -49,3 +49,5 @@ export interface PlayerServerStats {
   numConnections: number;
   avgPing: number;
 }
+
+export type BalancedTeamsData = { steamId: string; elo: number }[][];

@@ -4,16 +4,18 @@ import React, { FC, useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useMyPermissions } from 'src/hooks/state/permissions';
+import { useCvar } from 'src/hooks/useCvar';
 import { useMySteamId } from 'src/hooks/useMySteamId';
 import { MainMenuContext } from '~components/MainMenu/MainMenuContext';
 import { NewsBadge } from '~components/News/NewsBadge';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
+import BalanceIcon from '~icons/balance.svg';
 import BackIcon from '~icons/chevron-left.svg';
 import CrossIcon from '~icons/close.svg';
 import HelpIcon from '~icons/help.svg';
 import PersonIcon from '~icons/person.svg';
-import VoteIcon from '~icons/vote.svg';
 import TranslateIcon from '~icons/translate.svg';
+import VoteIcon from '~icons/vote.svg';
 import { filterShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
 import { SidePanel } from '../SidePanel';
@@ -148,6 +150,9 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
   const centerItem = pathname === '/' ? exitItem : backItem;
 
   const isDev = permissions.includes('dev');
+  const isMatch = useCvar('mp_match')[0] !== '0';
+  const isTeamDeathmatch = useCvar('mp_teamplay')[0] === '1';
+  const showBalancer = !isMatch && isTeamDeathmatch;
 
   return (
     <div className={c.root}>
@@ -195,6 +200,11 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
         {availableVotes.length > 0 && (
           <MenuBadge to="vote" hint="Vote">
             <VoteIcon />
+          </MenuBadge>
+        )}
+        {showBalancer && (
+          <MenuBadge to="balancer" hint="Team balancer">
+            <BalanceIcon />
           </MenuBadge>
         )}
         <MenuBadge to="translation" hint="Chat translation">

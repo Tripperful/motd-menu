@@ -1,5 +1,6 @@
 import {
   ArrayElementType,
+  BalancedTeamsData,
   ChatCommandInfo,
   ClientSettingsMetadataData,
   ClientSettingsValues,
@@ -564,6 +565,16 @@ class MotdApi {
     reaction: ReactionName,
   ) {
     await this.delete(`news/comments/reactions/${commentId}/${reaction}`);
+  }
+
+  public async getBalancedTeams(steamIds: string[]) {
+    return JSON.parse(
+      await this.post(`efps/balancer`, JSON.stringify(steamIds)),
+    ) as Promise<BalancedTeamsData>;
+  }
+
+  public async applyBalancedTeams(players: string[]) {
+    await this.post(`match/balance`, JSON.stringify({ players }));
   }
 }
 

@@ -29,3 +29,11 @@ export const sanitizeCvarValue = (value: string) => {
     ? '"' + value + '"'
     : value;
 };
+
+export const unescapeXmlValue = (value: string) => {
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+};

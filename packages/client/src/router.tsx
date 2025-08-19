@@ -46,6 +46,10 @@ const StartVote = React.lazy(
   () => import(/* webpackChunkName: "lazy-main" */ '~components/StartVoteMenu'),
 );
 
+const BalancerMenu = React.lazy(
+  () => import(/* webpackChunkName: "lazy-main" */ '~components/BalancerMenu'),
+);
+
 export const Router: FC = () => {
   return (
     <BrowserRouter>
@@ -56,6 +60,14 @@ export const Router: FC = () => {
           element={
             <Suspense>
               <MapList />
+            </Suspense>
+          }
+        />
+        <Route
+          path="balancer/*"
+          element={
+            <Suspense>
+              <BalancerMenu />
             </Suspense>
           }
         />

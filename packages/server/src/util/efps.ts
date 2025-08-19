@@ -1,8 +1,17 @@
+import {
+  BalancedTeamsData,
+  EfpsRankData,
+  steamId64ToLegacy,
+} from '@motd-menu/common';
 import { db } from 'src/db';
 import { dbgErr } from '.';
-import { EfpsRankData, steamId64ToLegacy } from '@motd-menu/common';
 
-type EfpsCron = 'data_new' | 'player_stats' | 'match_start' | 'match_cancel';
+type EfpsCron =
+  | 'data_new'
+  | 'player_stats'
+  | 'match_start'
+  | 'match_cancel'
+  | 'balance_new';
 
 interface EfpsMatchStartData {
   id: string;
@@ -143,6 +152,26 @@ export class EfpsClient {
       );
     } catch (e) {
       dbgErr(e);
+    }
+  }
+
+  public async balanceTeams(steamIds: string[]): Promise<BalancedTeamsData> {
+    try {
+      const res = await this.cronRequest(
+        'POST',
+        'balance_new',
+        null,
+        JSON.stringify(steamIds),
+      );
+
+      if (!Array.isArray(res) || !res.length) {
+        return null;
+      }
+
+      return res;
+    } catch (e) {
+      dbgErr(e);
+      return null;
     }
   }
 }

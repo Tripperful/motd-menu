@@ -15,6 +15,7 @@ export const useStyles = createUseStyles({
     backgroundColor: theme.bg1,
     borderRadius: '0.5em',
     position: 'relative',
+    alignItems: 'center',
   },
   active: {
     ...activeItem(),
@@ -74,42 +75,51 @@ export const PlayerItem = forwardRef<
     aka?: string;
     ping?: number;
     onClick?: (steamId: string) => void;
+    before?: React.ReactNode;
+    after?: React.ReactNode;
   } & HTMLAttributes<HTMLDivElement> &
     ClassNameProps
->(({ profile, className, link, aka, ping, onClick, ...attrs }, ref) => {
-  const c = useStyles();
-  const countryCode = profile.geo?.countryCode;
+>(
+  (
+    { profile, className, link, aka, ping, onClick, before, after, ...attrs },
+    ref,
+  ) => {
+    const c = useStyles();
+    const countryCode = profile.geo?.countryCode;
 
-  const content = (
-    <>
-      <img className={c.avatar} src={profile.avatar} />
-      <div className={c.playerInfo}>
-        <div className={c.nameWrapper}>
-          {countryCode && <Flag code={countryCode} />}
-          <span className={c.name}>{profile.name}</span>
+    const content = (
+      <>
+        {before}
+        <img className={c.avatar} src={profile.avatar} />
+        <div className={c.playerInfo}>
+          <div className={c.nameWrapper}>
+            {countryCode && <Flag code={countryCode} />}
+            <span className={c.name}>{profile.name}</span>
+          </div>
+          {aka && aka !== profile.name ? (
+            <div className={c.aka}>({aka})</div>
+          ) : null}
         </div>
-        {aka && aka !== profile.name ? (
-          <div className={c.aka}>({aka})</div>
-        ) : null}
+        {ping != null ? <div className={c.ping}>{ping} ms</div> : null}
+        {after}
+      </>
+    );
+
+    const cn = classNames(c.root, { [c.active]: link || onClick }, className);
+
+    return link ? (
+      <Link className={cn} to={link}>
+        {content}
+      </Link>
+    ) : (
+      <div
+        ref={ref}
+        className={cn}
+        onClick={onClick ? () => onClick(profile.steamId) : null}
+        {...attrs}
+      >
+        {content}
       </div>
-      {ping != null ? <div className={c.ping}>{ping} ms</div> : null}
-    </>
-  );
-
-  const cn = classNames(c.root, { [c.active]: link || onClick }, className);
-
-  return link ? (
-    <Link className={cn} to={link}>
-      {content}
-    </Link>
-  ) : (
-    <div
-      ref={ref}
-      className={cn}
-      onClick={onClick ? () => onClick(profile.steamId) : null}
-      {...attrs}
-    >
-      {content}
-    </div>
-  );
-});
+    );
+  },
+);

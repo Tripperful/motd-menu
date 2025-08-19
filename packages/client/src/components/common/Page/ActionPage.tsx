@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import RefreshIcon from '~icons/refresh.svg';
 import { activeItem, outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
-import { ChildrenProps } from '~types/props';
+import { ChildrenProps, ClassNameProps } from '~types/props';
 import { Page } from '.';
 
 const useStyles = createUseStyles({
@@ -72,17 +72,19 @@ export const ActionPageAction: FC<ActionPageActionProps> = (props) => {
 };
 
 export const ActionPage: FC<
-  ChildrenProps & {
-    title: ReactNode;
-    refreshAction?: () => void;
-    actions?: ActionPageActionProps[];
-    headerContent?: ReactNode;
-  }
-> = ({ title, refreshAction, actions, headerContent, children }) => {
+  ChildrenProps &
+    ClassNameProps & {
+      title: ReactNode;
+      refreshAction?: () => void;
+      actions?: ActionPageActionProps[];
+      headerContent?: ReactNode;
+    }
+> = ({ title, refreshAction, actions, headerContent, children, className }) => {
   const c = useStyles();
 
   return (
     <Page
+      className={className}
       title={
         <>
           <h2>{title}</h2>
