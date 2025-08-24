@@ -20,10 +20,10 @@ const useStyles = createUseStyles({
   row: {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: '0.5em',
+    gap: '0.2em',
   },
   editIcon: {
-    fontSize: '0.75em',
+    fontSize: '0.65em',
   },
   selected: {
     filter: 'brightness(1.5)',

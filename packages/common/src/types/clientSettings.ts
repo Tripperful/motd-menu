@@ -34,6 +34,12 @@ export interface IntToggleClientSettingMetadata
   onValue: number;
 }
 
+export interface EnumClientSettingMetadata
+  extends BaseIntClientSettingMetadata {
+  type: 'enum';
+  options: string[];
+}
+
 export interface SoundClientSettingMetadata
   extends BaseClientSettingMetadata<string> {
   type: 'sound';
@@ -44,6 +50,7 @@ export type ClientSettingMetadata =
   | BoolClientSettingMetadata
   | IntClientSettingMetadata
   | IntToggleClientSettingMetadata
+  | EnumClientSettingMetadata
   | SoundClientSettingMetadata;
 
 export type ClientSettingValue<TSetting extends ClientSettingMetadata> =

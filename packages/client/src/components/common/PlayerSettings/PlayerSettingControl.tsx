@@ -1,6 +1,7 @@
 import {
   BoolClientSettingMetadata,
   ClientSettingMetadata,
+  EnumClientSettingMetadata,
   IntClientSettingMetadata,
   IntToggleClientSettingMetadata,
   SoundClientSettingMetadata,
@@ -10,6 +11,7 @@ import { createUseStyles } from 'react-jss';
 import { getPickableSounds, SoundCategory } from 'src/util/sounds';
 import { activeItem } from '~styles/elements';
 import { theme } from '~styles/theme';
+import { DropDown } from '../DropDown';
 import { SoundPicker } from '../SoundPicker';
 import { Switch } from '../Switch';
 
@@ -51,6 +53,12 @@ const useStyles = createUseStyles({
         background: theme.fg1,
       },
     },
+  },
+  enum: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '0.2em',
   },
   sliderDisabled: {
     color: theme.fg3,
@@ -174,6 +182,26 @@ const IntToggleClientSettingControl: FC<
   );
 };
 
+const EnumClientSettingControl: FC<
+  PlayerSettingControlProps<EnumClientSettingMetadata>
+> = ({ metadata, value, setValue }) => {
+  const c = useStyles();
+
+  return (
+    <div className={c.enum}>
+      <span className={c.settingName}>{metadata.name}</span>
+      <DropDown
+        value={value}
+        setValue={setValue}
+        options={metadata.options.map((option, idx) => ({
+          title: option,
+          value: idx,
+        }))}
+      />
+    </div>
+  );
+};
+
 const SoundClientSettingControl: FC<
   PlayerSettingControlProps<SoundClientSettingMetadata>
 > = ({ metadata, value, setValue }) => {
@@ -197,6 +225,7 @@ const controlsMap: Record<
   bool: BoolSettingControl,
   int: IntClientSettingControl,
   int_toggle: IntToggleClientSettingControl,
+  enum: EnumClientSettingControl,
   sound: SoundClientSettingControl,
 };
 
