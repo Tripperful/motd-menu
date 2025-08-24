@@ -2,7 +2,7 @@ import range from 'lodash/range';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { useOnlinePlayers } from 'src/hooks/state/players';
-import { skeletonBg } from '~styles/elements';
+import { skeletonBg, verticalScroll } from '~styles/elements';
 import { PlayersListItem } from './PlayersListItem';
 
 const useStyles = createUseStyles({
@@ -15,14 +15,13 @@ const useStyles = createUseStyles({
     },
   },
   root: {
+    ...verticalScroll(),
     display: 'grid',
     position: 'relative',
     gridTemplateColumns: 'repeat(auto-fill, minmax(15em, 1fr))',
     alignContent: 'start',
     gap: '0.5em',
     flex: '1 1 auto',
-    overflow: 'hidden scroll',
-    padding: '0.5em',
   },
   skeleton: {
     ...skeletonBg(),

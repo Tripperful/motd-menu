@@ -4,9 +4,11 @@ import { createUseStyles } from 'react-jss';
 import { ChildrenProps, ClassNameProps } from '~types/props';
 import { PageHeader } from '../PageHeader';
 import { Spinner } from '../Spinner';
+import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
   root: {
+    backgroundColor: theme.bg1,
     display: 'flex',
     flexDirection: 'column',
     flex: '1 1 auto',

@@ -12,10 +12,6 @@ import { addNotification } from 'src/hooks/state/notifications';
 import { CopyOnClick } from '~components/common/CopyOnClick';
 
 const useStyles = createUseStyles({
-  root: {
-    width: '25em',
-    maxHeight: '25em',
-  },
   center: {
     textAlign: 'center',
   },
@@ -95,7 +91,7 @@ export const EditImagesPopup: FC<{
   };
 
   return (
-    <Popup title={'Edit map images'} onClose={goBack} className={c.root}>
+    <Popup title={'Edit map images'} onClose={goBack} poster>
       <small>Images (optional)</small>
       <Link className={c.addImgButton} to="add">
         <AddImgIcon />

@@ -1,3 +1,4 @@
+import { SteamPlayerData } from '@motd-menu/common';
 import React, { FC, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { motdApi } from 'src/api';
@@ -14,9 +15,10 @@ const useStyles = createUseStyles({
   },
 });
 
-export const SetAkaPopup: FC<{ steamId: string }> = ({ steamId }) => {
+export const SetAkaPopup: FC<{ profile: SteamPlayerData }> = ({ profile }) => {
   const c = useStyles();
   const goBack = useGoBack();
+  const { steamId } = profile;
   const initialAka = usePlayerAka(steamId);
   const [aka, setAka] = useState(initialAka);
 
@@ -32,12 +34,16 @@ export const SetAkaPopup: FC<{ steamId: string }> = ({ steamId }) => {
   };
 
   return (
-    <Popup title={'Set player alias'} onClose={goBack} className={c.root}>
+    <Popup
+      title={`Set ${profile.name}'s alias`}
+      onClose={goBack}
+      className={c.root}
+    >
       <small>Leave blank to remove</small>
       <input
         type="text"
         value={aka}
-        placeholder="Player alias"
+        placeholder={profile.name}
         onChange={(e) => setAka(e.currentTarget.value)}
       />
       <div className={c.button} onClick={onSubmit}>

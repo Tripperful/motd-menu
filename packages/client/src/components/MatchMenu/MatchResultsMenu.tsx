@@ -16,7 +16,7 @@ import { ActionPage } from '~components/common/Page/ActionPage';
 import { PageFetcher } from '~components/common/PageFetcher';
 import SearchIcon from '~icons/search.svg';
 import ArrowRightIcon from '~icons/thick-arrow-right.svg';
-import { activeItem, skeletonBg } from '~styles/elements';
+import { activeItem, skeletonBg, verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { MatchResultPopup } from './MatchResultPopup';
 import { MatchResultsFilters } from './MatchResultsFilters';
@@ -28,13 +28,11 @@ const useStyles = createUseStyles({
     gap: '0.5em',
   },
   content: {
+    ...verticalScroll(),
     display: 'flex',
     flexDirection: 'column',
     flex: '1 1 auto',
-    minHeight: 0,
     gap: '0.5em',
-    overflow: 'hidden scroll',
-    padding: '0.5em',
   },
   result: {
     display: 'flex',
@@ -80,7 +78,7 @@ const useStyles = createUseStyles({
   },
   mapImageWrapper: {
     minWidth: '10em',
-    borderRadius: '0.5em',
+    borderRadius: '0.25em',
     backgroundColor: theme.bg2,
     overflow: 'hidden',
     position: 'relative',

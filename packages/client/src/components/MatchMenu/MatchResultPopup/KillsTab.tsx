@@ -11,8 +11,6 @@ import { MatchKillFeed } from './MatchKillFeed';
 const useStyles = createUseStyles({
   root: {
     display: 'flex',
-    overflow: 'hidden scroll',
-    marginRight: '-0.5em',
   },
   weaponKills: {
     display: 'flex',

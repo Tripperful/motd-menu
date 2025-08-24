@@ -14,17 +14,15 @@ const useStyles = createUseStyles({
     height: '25em',
   },
   mapsList: {
-    marginTop: '0.5em',
-    display: 'flex',
-    flexDirection: 'column',
-    flex: '1 1 auto',
-    overflow: 'hidden scroll',
+    gap: '0.5em',
   },
   map: {
-    padding: '0.5em',
     display: 'flex',
     gap: '0.5em',
     alignItems: 'center',
+  },
+  input: {
+    flex: '1 1 auto',
   },
 });
 
@@ -111,19 +109,26 @@ export const MapVersionsPopup: FC<{ mapName: string }> = ({ mapName }) => {
   );
 
   return (
-    <Popup title="Other versions" onClose={goBack} className={c.root}>
-      <input
-        type="text"
-        placeholder="Search maps..."
-        value={filter}
-        onChange={(e) => setFilter(e.currentTarget.value)}
-      />
+    <Popup
+      title={
+        <input
+          type="text"
+          placeholder="Search maps..."
+          className={c.input}
+          value={filter}
+          onChange={(e) => setFilter(e.currentTarget.value)}
+        />
+      }
+      onClose={goBack}
+      className={c.root}
+      contentClassName={c.mapsList}
+    >
       {filteredMaps?.length ? (
-        <div className={c.mapsList}>
+        <>
           {filteredMaps.map(({ name }) => (
             <MapVersionItem key={name} mapName={name} parentMapName={mapName} />
           ))}
-        </div>
+        </>
       ) : (
         <div>No maps found</div>
       )}

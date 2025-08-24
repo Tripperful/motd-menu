@@ -13,7 +13,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useMapsPreviews } from 'src/hooks/state/mapPreviews';
 import { Page } from '~components/common/Page';
 import ClearFiltersIcon from '~icons/filter-clear.svg';
-import { activeItem, skeletonBg } from '~styles/elements';
+import { activeItem, skeletonBg, verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { Filters } from './Filters';
 import { FiltersContext } from './FiltersContext';
@@ -32,14 +32,13 @@ const useStyles = createUseStyles({
     },
   },
   list: {
+    ...verticalScroll(),
     display: 'grid',
     position: 'relative',
     gridTemplateColumns: 'repeat(auto-fill, minmax(12em, 1fr))',
     alignContent: 'start',
     gap: '0.5em',
     flex: '1 1 auto',
-    overflow: 'hidden scroll',
-    padding: '0.5em',
   },
   notFound: {
     position: 'absolute',

@@ -1,20 +1,16 @@
+import { SteamPlayerData } from '@motd-menu/common';
 import React, { FC, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Routes, useParams } from 'react-router-dom';
-import { usePlayerSteamProfile } from 'src/hooks/state/players';
+import { usePlayerReviews } from 'src/hooks/state/playerReviews';
 import { useGoBack } from 'src/hooks/useGoBack';
 import { Popup } from '~components/common/Popup';
 import { MapDetails } from '~components/MapList/MapDetails';
+import { MapReview } from '~components/MapList/MapDetails/MapReview';
+import { verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
-import { PlayerReviews } from './PlayerReviews';
 
 const useStyles = createUseStyles({
-  root: {
-    width: 'calc(50vw - 2em)',
-    height: 'calc(80vh - 2em)',
-    display: 'flex',
-    flexDirection: 'column',
-  },
   header: {
     display: 'flex',
     alignItems: 'center',
@@ -31,10 +27,13 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     flex: '1 1 auto',
-    minHeight: 0,
     gap: '0.5em',
-    overflow: 'hidden scroll',
-    paddingRight: '0.5em',
+  },
+  list: {
+    ...verticalScroll(),
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1em',
   },
 });
 
@@ -44,33 +43,31 @@ const RatedMapDetails: FC = () => {
   return <MapDetails mapName={mapName} />;
 };
 
-const MapsReviewsPopupTitle: FC<{ steamId: string; total: number }> = ({
-  steamId,
-  total,
+export const MapsReviewsPopup: FC<{ profile: SteamPlayerData }> = ({
+  profile,
 }) => {
-  const c = useStyles();
-  const profile = usePlayerSteamProfile(steamId);
-
-  return (
-    <span className={c.header}>
-      {`${profile.name}'s maps reviews`}
-      {total != null && <span className={c.chip}>{total}</span>}
-    </span>
-  );
-};
-
-export const MapsReviewsPopup: FC<{ steamId: string }> = ({ steamId }) => {
   const c = useStyles();
   const goBack = useGoBack();
   const [total, setTotal] = useState(null as number);
+  const { steamId } = profile;
+  const reviews = usePlayerReviews(steamId);
+
+  if (reviews.length === 0) return null;
 
   return (
     <Popup
-      title={<MapsReviewsPopupTitle steamId={steamId} total={total} />}
+      title={
+        <span className={c.header}>
+          {`${profile.name}'s maps reviews`}
+          {total != null && <span className={c.chip}>{total}</span>}
+        </span>
+      }
       onClose={goBack}
-      className={c.root}
+      poster
     >
-      <PlayerReviews steamId={steamId} />
+      {reviews?.map((r) => (
+        <MapReview key={r.mapName} review={r} mapDetailsMode />
+      ))}
       <Routes>
         <Route path="/:mapName/*" element={<RatedMapDetails />} />
       </Routes>

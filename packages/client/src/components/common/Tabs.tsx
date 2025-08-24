@@ -2,13 +2,12 @@ import classNames from 'classnames';
 import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { activeItem } from '~styles/elements';
-import { Spinner } from './Spinner';
 import { ClassNameProps } from '~types/props';
+import { Spinner } from './Spinner';
 
 const useStyles = createUseStyles({
   root: {
     flex: '1 1 auto',
-    minHeight: 0,
     display: 'flex',
     flexDirection: 'column',
   },

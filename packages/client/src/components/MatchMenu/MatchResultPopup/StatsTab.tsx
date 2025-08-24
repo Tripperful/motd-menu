@@ -27,10 +27,6 @@ import { theme } from '~styles/theme';
 const useStyles = createUseStyles({
   content: {
     flex: '1 1 auto',
-    minHeight: 0,
-    overflow: 'hidden scroll',
-    marginRight: '-0.5em',
-    paddingRight: '0.5em',
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
@@ -167,7 +163,6 @@ export const StatsTab: FC<{ matchId: string }> = ({ matchId }) => {
   const c = useStyles();
   const match = useMatchResult(matchId);
   const deaths = useMatchDeaths(matchId);
-  const damage = useMatchDamage(matchId);
 
   const players = useMemo(
     () => match?.teams?.flatMap((team) => team.players),

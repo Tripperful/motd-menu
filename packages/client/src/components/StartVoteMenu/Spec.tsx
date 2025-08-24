@@ -11,8 +11,7 @@ import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
 import { ConfirmDialog } from '~components/common/ConfirmDialog';
 import { Page } from '~components/common/Page';
 import { PlayerItem } from '~components/common/PlayerItem';
-import { SidePanel } from '~components/common/SidePanel';
-import { activeItem } from '~styles/elements';
+import { activeItem, verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
@@ -33,12 +32,11 @@ const useStyles = createUseStyles({
     fontSize: '1.5em',
   },
   playerList: {
+    ...verticalScroll(),
     display: 'flex',
     alignItems: 'center',
     flexDirection: 'column',
     gap: '0.5em',
-    overflow: 'hidden scroll',
-    marginRight: '-0.5em',
     width: '100%',
   },
   playerItem: {
@@ -75,14 +73,7 @@ const VoteSpecConfirm: FC = () => {
         onCancel={() => onVote(false)}
       />
       <Routes>
-        <Route
-          path="playerDetails"
-          element={
-            <SidePanel title={<h2>Player details</h2>}>
-              <PlayerDetails />
-            </SidePanel>
-          }
-        />
+        <Route path="playerDetails" element={<PlayerDetails />} />
       </Routes>
     </>
   );

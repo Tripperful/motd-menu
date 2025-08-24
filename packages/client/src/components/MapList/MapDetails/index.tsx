@@ -13,7 +13,7 @@ import HeartEmptyIcon from '~icons/heart-outline.svg';
 import HeartIcon from '~icons/heart.svg';
 import PencilIcon from '~icons/pencil.svg';
 import ArrowRightIcon from '~icons/thick-arrow-right.svg';
-import { outlineButton } from '~styles/elements';
+import { outlineButton, verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { EditDescriptionPopup } from './EditDescriptionPopup';
 import { MapImages } from './MapImages';
@@ -27,15 +27,15 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     flex: '1 1 auto',
-    overflow: 'hidden',
+    minHeight: 0,
   },
   content: {
+    ...verticalScroll(),
+    minHeight: 0,
     flex: '1 1 100%',
-    padding: '1em',
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
-    overflow: 'hidden auto',
   },
   previewImage: {
     borderRadius: '1em',
@@ -214,6 +214,7 @@ export const MapDetails: FC<MapDetailsProps> = ({
     <SidePanel
       backPath={backPath}
       title={<h2>{'Map details - ' + mapName}</h2>}
+      noContentWrapper
     >
       <div className={c.root}>
         <div className={c.content}>

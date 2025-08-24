@@ -17,7 +17,7 @@ import CrossIcon from '~icons/close.svg';
 import ClearFiltersIcon from '~icons/filter-clear.svg';
 import AddPlayerIcon from '~icons/person-add.svg';
 import SearchIcon from '~icons/search.svg';
-import { activeItem, outlineButton } from '~styles/elements';
+import { activeItem, outlineButton, verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
@@ -28,13 +28,12 @@ const useStyles = createUseStyles({
     minHeight: 0,
   },
   content: {
+    ...verticalScroll(),
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
-    padding: '1em',
     flex: '1 1 auto',
     minHeight: 0,
-    overflow: 'hidden auto',
   },
   sectionTitle: {
     marginBottom: '-0.5em',
@@ -55,7 +54,6 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexWrap: 'wrap',
     gap: '0.5em',
-    fontSize: '0.8em',
   },
   player: {
     padding: '0.2em 0.5em',
@@ -82,7 +80,6 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
-    fontSize: '0.8em',
   },
   statusFilter: {
     display: 'flex',
@@ -242,7 +239,7 @@ const MatchResultsFiltersContent: FC = () => {
 };
 
 export const MatchResultsFilters: FC = () => (
-  <SidePanel title={<h2>Match filters</h2>}>
+  <SidePanel title={<h2>Match filters</h2>} noContentWrapper>
     <Suspense fallback={<Spinner />}>
       <MatchResultsFiltersContent />
     </Suspense>

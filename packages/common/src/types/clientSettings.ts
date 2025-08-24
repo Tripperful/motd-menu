@@ -4,6 +4,7 @@ export const enum SoundClientSettingCategory {
 
 interface BaseClientSettingMetadata<TValue> {
   type: unknown;
+  tab: string;
   section: string;
   name: string;
   description: string;

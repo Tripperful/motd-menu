@@ -3,10 +3,14 @@ import { createUseStyles } from 'react-jss';
 import { useMySteamId } from 'src/hooks/useMySteamId';
 import { Page } from '~components/common/Page';
 import { PlayerSettings } from '~components/common/PlayerSettings';
+import { verticalScroll } from '~styles/elements';
 
 const useStyles = createUseStyles({
-  root: {
-    padding: '0.5em',
+  content: {
+    ...verticalScroll(),
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1em',
   },
 });
 
@@ -16,7 +20,7 @@ export const ClientSettings: FC = () => {
 
   return (
     <Page title={<h2>Client settings</h2>}>
-      <PlayerSettings steamId={steamId} className={c.root} />
+      <PlayerSettings steamId={steamId} className={c.content} />
     </Page>
   );
 };

@@ -5,7 +5,6 @@ import {
   IntToggleClientSettingMetadata,
   SoundClientSettingMetadata,
 } from '@motd-menu/common';
-import classNames from 'classnames';
 import React, { ChangeEventHandler, FC, useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { getPickableSounds, SoundCategory } from 'src/util/sounds';
@@ -25,11 +24,6 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
-  },
-  intRoot: {
-    '&:not(:last-child)': {
-      marginBottom: '0.5em',
-    },
   },
   slider: {
     minWidth: '20em',
@@ -68,6 +62,11 @@ const useStyles = createUseStyles({
     marginRight: '-0.5em',
     textAlign: 'center',
   },
+  description: {
+    fontSize: '0.8em',
+    color: theme.fg3,
+    marginTop: '0.25em',
+  },
 });
 
 type PlayerSettingControlProps<
@@ -87,13 +86,7 @@ const BoolSettingControl: FC<
   return (
     <span className={c.row}>
       <Switch disabled={disabled} active={value} setActive={setValue} />
-      <span
-        className={c.settingName}
-        data-tooltip-id="tooltip"
-        data-tooltip-content={metadata.description}
-      >
-        {metadata.name}
-      </span>
+      <span className={c.settingName}>{metadata.name}</span>
     </span>
   );
 };
@@ -123,16 +116,10 @@ const IntClientSettingControl: FC<
   };
 
   return (
-    <div className={classNames(c.intRoot, c.col)}>
+    <div>
       <div className={c.row}>
         {toggleControl}
-        <span
-          className={c.settingName}
-          data-tooltip-id="tooltip"
-          data-tooltip-content={metadata.description}
-        >
-          {metadata.name}
-        </span>
+        <span className={c.settingName}>{metadata.name}</span>
       </div>
       {isOff ? (
         <span className={c.sliderDisabled}>Disabled</span>
@@ -193,13 +180,7 @@ const SoundClientSettingControl: FC<
   const c = useStyles();
   return (
     <div>
-      <span
-        className={c.settingName}
-        data-tooltip-id="tooltip"
-        data-tooltip-content={metadata.description}
-      >
-        {metadata.name}
-      </span>
+      <span className={c.settingName}>{metadata.name}</span>
       <SoundPicker
         sound={value}
         setSound={setValue}
@@ -224,8 +205,14 @@ export const PlayerSettingControl = <
 >(
   props: PlayerSettingControlProps<TSettingMetadata>,
 ) => {
+  const c = useStyles();
   const { metadata } = props;
   const ControlComponent = controlsMap[metadata.type];
 
-  return <ControlComponent {...props} />;
+  return (
+    <div>
+      <ControlComponent {...props} />
+      <div className={c.description}>{metadata.description}</div>
+    </div>
+  );
 };

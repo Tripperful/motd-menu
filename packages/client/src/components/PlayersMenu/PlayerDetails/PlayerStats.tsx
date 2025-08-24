@@ -23,7 +23,6 @@ const useStyles = createUseStyles({
   },
   line: {
     display: 'flex',
-    paddingLeft: '0.5em',
     gap: '0.5em',
     alignItems: 'center',
   },
@@ -32,6 +31,11 @@ const useStyles = createUseStyles({
   },
   button: {
     ...outlineButton(),
+  },
+  efpsSection: {
+    display: 'flex',
+    gap: '1em',
+    alignItems: 'flex-start',
   },
 });
 
@@ -49,39 +53,39 @@ export const PlayerStats: FC<{ steamId: string }> = ({ steamId }) => {
   return (
     <>
       <div className={c.root}>
-        <div className={c.sectionHeader}>
+        <div className={c.line}>
+          <span>Custom rank:</span>
+          <CustomRank steamId={steamId} />
+        </div>
+        <div className={c.efpsSection}>
+          {efpsRank && (
+            <div className={c.root}>
+              <div className={c.line}>
+                <span>eFPS Rank:</span>
+                <ColoredText
+                  text={efpsRank.title}
+                  colorStops={efpsRankColorStops}
+                />
+              </div>
+              <div className={c.line}>
+                <span>Place:</span>
+                <span>
+                  <span className={c.value}>{efpsRank.pos}</span>
+                  &nbsp;of&nbsp;
+                  <span className={c.value}>{efpsRank.max}</span>
+                </span>
+              </div>
+              <div className={c.line}>
+                <span>ELO:</span>
+                <span className={c.value}>{efpsRank.points}</span>
+              </div>
+            </div>
+          )}
           <Link className={c.button} to="efps">
             <EfpsIcon />
             eFPS stats
           </Link>
         </div>
-        <div className={c.line}>
-          <span>Custom rank:</span>
-          <CustomRank steamId={steamId} />
-        </div>
-        {efpsRank && (
-          <>
-            <div className={c.line}>
-              <span>eFPS Rank:</span>
-              <ColoredText
-                text={efpsRank.title}
-                colorStops={efpsRankColorStops}
-              />
-            </div>
-            <div className={c.line}>
-              <span>Place:</span>
-              <span>
-                <span className={c.value}>{efpsRank.pos}</span>
-                &nbsp;of&nbsp;
-                <span className={c.value}>{efpsRank.max}</span>
-              </span>
-            </div>
-            <div className={c.line}>
-              <span>ELO:</span>
-              <span className={c.value}>{efpsRank.points}</span>
-            </div>
-          </>
-        )}
       </div>
     </>
   );

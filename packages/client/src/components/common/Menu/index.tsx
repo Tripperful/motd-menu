@@ -237,11 +237,7 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
         />
         <Route
           path="myProfile/*"
-          element={
-            <SidePanel title={<h2>Help</h2>}>
-              <PlayerDetails steamId={mySteamId} />
-            </SidePanel>
-          }
+          element={<PlayerDetails steamId={mySteamId} />}
         />
       </Routes>
     </div>

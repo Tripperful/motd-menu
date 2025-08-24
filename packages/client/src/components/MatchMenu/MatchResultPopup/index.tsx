@@ -20,12 +20,6 @@ import { PlayerMatchStats } from './PlayerMatchStats';
 import { StatsTab } from './StatsTab';
 
 const useStyles = createUseStyles({
-  root: {
-    width: 'calc(100vw - 2em)',
-    height: 'calc(100vh - 2em)',
-    display: 'flex',
-    flexDirection: 'column',
-  },
   popupTitle: {
     display: 'inline-flex',
     alignItems: 'center',
@@ -41,6 +35,9 @@ const useStyles = createUseStyles({
     display: 'inline-flex',
     alignItems: 'center',
     gap: '0.5em',
+  },
+  tabs: {
+    minHeight: 0,
   },
   tabHeader: {
     display: 'flex',
@@ -92,7 +89,7 @@ export const MatchResultPopup: FC = () => {
           </Suspense>
         </span>
       }
-      className={c.root}
+      fullScreen
     >
       <Suspense fallback={<Spinner />}>
         <Tabs

@@ -5,11 +5,9 @@ import { Popup } from '~components/common/Popup';
 import { outlineButton } from '~styles/elements';
 
 const useStyles = createUseStyles({
-  root: {
-    width: '20em',
-  },
   submit: {
     ...outlineButton(),
+    width: '20em',
     textAlign: 'center',
   },
 });
@@ -27,7 +25,7 @@ export const AddImagePopup: FC<{
   };
 
   return (
-    <Popup title={'Add map image'} onClose={goBack} className={c.root}>
+    <Popup title="Add map image" onClose={goBack}>
       <small>Image URL</small>
       <input
         type="text"

@@ -17,7 +17,7 @@ export const IFramePopup: FC<{
   const c = useStyles();
 
   return (
-    <Popup title={title} onClose={onClose}>
+    <Popup title={title} onClose={onClose} noContentWrapper>
       <iframe src={url} className={c.root} />
     </Popup>
   );

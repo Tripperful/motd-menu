@@ -16,7 +16,6 @@ const useStyles = createUseStyles({
     gap: '1em',
     flex: '1 1 auto',
     alignItems: 'flex-end',
-    padding: '0.5em',
   },
   killFeedItemWrapper: {
     display: 'flex',

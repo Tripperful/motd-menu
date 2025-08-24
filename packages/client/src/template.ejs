@@ -5,7 +5,9 @@
     <title><%= htmlWebpackPlugin.options.title %></title>
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;700;900&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      as="style"
+      onload="this.rel='stylesheet'"
     />
     <%= htmlWebpackPlugin.tags.headTags %>
   </head>

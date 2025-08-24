@@ -60,7 +60,7 @@ export const SetPlayerTeam: FC<{ steamId: string }> = ({ steamId }) => {
 
   return (
     <div className={c.root}>
-      <span>Set team</span>
+      <span>Set team:</span>
       <span className={c.buttons}>
         {availableTeams.map((t) => (
           <SetTeamButton

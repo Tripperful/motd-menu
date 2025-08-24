@@ -10,9 +10,9 @@ import {
   usePlayerSettingsValues,
 } from 'src/hooks/state/playerSettings';
 import { useMySteamId } from 'src/hooks/useMySteamId';
-import { getSessionData } from 'src/hooks/useSessionData';
 import { theme } from '~styles/theme';
 import { ClassNameProps } from '~types/props';
+import { Tabs } from '../Tabs';
 import { PlayerSettingControl } from './PlayerSettingControl';
 
 const useStyles = createUseStyles({
@@ -20,27 +20,18 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
-    overflow: 'hidden scroll',
-    containerType: 'inline-size',
   },
   settings: {
     display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     gap: '1em',
-    alignItems: 'flex-start',
-
-    '@container(max-width: 90vw)': {
-      flexDirection: 'column',
-      alignItems: 'stretch',
-    },
   },
   section: {
     display: 'flex',
     flexDirection: 'column',
     padding: '1em',
     borderRadius: '1em',
-    gap: '0.5em',
+    gap: '1em',
     backgroundColor: theme.bg1,
   },
   sectionTitle: {
@@ -54,41 +45,30 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
   steamId,
   className,
 }) => {
-  const { srcdsVersion } = getSessionData();
-
-  if (srcdsVersion && srcdsVersion < 92) {
-    return 'Please update your srcds to use this feature';
-  }
-
   const c = useStyles();
   const metadata = usePlayerSettingsMetadata();
   const settingsValues = usePlayerSettingsValues(steamId);
   const mySteamId = useMySteamId();
   const disabled = steamId !== mySteamId;
 
-  const sortedSections = useMemo(() => {
-    const settingsBySection = Object.entries(metadata).reduce(
-      (acc, [key, value]) => {
-        const section = value.section;
-        acc[section] ??= {};
-        acc[section][key] = value;
-        return acc;
-      },
-      {} as Record<string, Record<string, ClientSettingMetadata>>,
+  const sortedTabs = useMemo(() => {
+    const tabs: Record<
+      string,
+      Record<string, Record<string, ClientSettingMetadata>>
+    > = {};
+
+    const sortedSettings = Object.entries(metadata).sort(
+      ([, a], [, b]) => a.sortOrder - b.sortOrder,
     );
 
-    return Object.entries(settingsBySection)
-      .sort(([, a], [, b]) => {
-        return Object.values(a)[0].sortOrder - Object.values(b)[0].sortOrder;
-      })
-      .map(([section, settings]) => {
-        return {
-          section,
-          settings: Object.entries(settings).sort(
-            ([, a], [, b]) => a.sortOrder - b.sortOrder,
-          ),
-        };
-      });
+    for (const [settingName, setting] of sortedSettings) {
+      const { tab, section } = setting;
+      tabs[tab] ??= {};
+      tabs[tab][section] ??= {};
+      tabs[tab][section][settingName] = setting;
+    }
+
+    return tabs;
   }, [metadata]);
 
   const setValue = useCallback(
@@ -102,36 +82,41 @@ export const PlayerSettings: FC<{ steamId: string } & ClassNameProps> = ({
         };
       });
 
-      motdApi
-        .setPlayerSettings({ [key]: value })
-        .catch(() => {
-          addNotification(
-            'error',
-            `Failed to save setting "${metadata[key].name}"`,
-          );
-        });
+      motdApi.setPlayerSettings({ [key]: value }).catch(() => {
+        addNotification(
+          'error',
+          `Failed to save setting "${metadata[key].name}"`,
+        );
+      });
     },
     [steamId],
   );
 
   return (
     <div className={classNames(c.root, className)}>
-      <div className={c.settings}>
-        {sortedSections.map(({ section, settings }) => (
-          <div key={section} className={c.section}>
-            <div className={c.sectionTitle}>{section}</div>
-            {settings.map(([key, setting]) => (
-              <PlayerSettingControl
-                key={key}
-                disabled={disabled}
-                metadata={setting}
-                value={settingsValues[key]}
-                setValue={(value) => setValue(key, value)}
-              />
-            ))}
-          </div>
-        ))}
-      </div>
+      <Tabs
+        tabs={Object.entries(sortedTabs).map(([tab, sections]) => ({
+          label: tab,
+          content: (
+            <div className={c.settings}>
+              {Object.entries(sections).map(([section, settings]) => (
+                <div key={section} className={c.section}>
+                  <div className={c.sectionTitle}>{section}</div>
+                  {Object.entries(settings).map(([key, setting]) => (
+                    <PlayerSettingControl
+                      key={key}
+                      disabled={disabled}
+                      metadata={setting}
+                      value={settingsValues[key]}
+                      setValue={(value) => setValue(key, value)}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          ),
+        }))}
+      />
     </div>
   );
 };

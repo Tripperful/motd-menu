@@ -24,7 +24,6 @@ export class SrcdsWsApiClient extends BaseWsApiClient<
         await this.request('ping_request');
         setTimeout(sendPing, this.pingInterval);
       } catch (err) {
-        dbgWarn('Failed to send ping request', err);
         this.getSocket().terminate();
       }
     };

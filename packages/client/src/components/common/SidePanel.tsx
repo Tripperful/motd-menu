@@ -9,7 +9,7 @@ import React, {
 import { createPortal } from 'react-dom';
 import { createUseStyles } from 'react-jss';
 import { useNavigate } from 'react-router-dom';
-import { fullscreen } from '~styles/elements';
+import { fullscreen, verticalScroll } from '~styles/elements';
 import { boxShadow } from '~styles/shadows';
 import { theme } from '~styles/theme';
 import { ChildrenProps } from '~types/props';
@@ -31,6 +31,7 @@ const useStyles = createUseStyles({
     backgroundColor: theme.bg1,
   },
   content: {
+    ...verticalScroll(),
     flex: '1 1 auto',
     display: 'flex',
     flexDirection: 'column',
@@ -39,8 +40,12 @@ const useStyles = createUseStyles({
 });
 
 export const SidePanel: FC<
-  ChildrenProps & { title: ReactNode; backPath?: string }
-> = ({ title, backPath = '..', children }) => {
+  ChildrenProps & {
+    title: ReactNode;
+    backPath?: string;
+    noContentWrapper?: boolean;
+  }
+> = ({ title, backPath = '..', children, noContentWrapper = false }) => {
   const c = useStyles();
   const [shown, setShown] = useState(false);
   const nav = useNavigate();
@@ -61,9 +66,13 @@ export const SidePanel: FC<
       <div className={c.bg} onPointerDown={onBgClick}>
         <div className={c.root}>
           <PageHeader title={title} backPath={backPath} />
-          <div className={c.content}>
+          {noContentWrapper ? (
             <Suspense fallback={<Spinner />}>{children}</Suspense>
-          </div>
+          ) : (
+            <div className={c.content}>
+              <Suspense fallback={<Spinner />}>{children}</Suspense>
+            </div>
+          )}
         </div>
       </div>,
       document.getElementById('modalRoot'),

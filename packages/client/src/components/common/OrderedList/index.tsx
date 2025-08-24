@@ -3,16 +3,16 @@ import React, { FC, Fragment, Key, PointerEventHandler, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import DeleteIcon from '~icons/delete.svg';
 import GripIcon from '~icons/grip.svg';
-import { activeItem } from '~styles/elements';
+import { activeItem, verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { ClassNameProps } from '~types/props';
 
 const useStyles = createUseStyles({
   root: {
+    ...verticalScroll(),
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
-    overflow: 'hidden scroll',
     minHeight: 0,
   },
   item: {

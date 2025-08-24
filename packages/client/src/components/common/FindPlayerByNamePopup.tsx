@@ -11,18 +11,15 @@ const useStyles = createUseStyles({
   root: {
     width: '50vw',
     height: '70vh',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5em',
   },
   list: {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
-    paddingRight: '0.25em',
-    marginRight: '-0.75em',
-    overflow: 'hidden scroll',
   },
+  input: {
+    flex: '1 1 auto'
+  }
 });
 
 type OnPlayerPickedAction =
@@ -56,39 +53,42 @@ export const FindPlayerByNamePopup: FC<OnPlayerPickedAction> = (props) => {
   }, [name, fetchDebounced]);
 
   return (
-    <Popup title={'Find player by name'} onClose={goBack}>
-      <div className={c.root}>
+    <Popup
+      className={c.root}
+      title={
         <input
           type="text"
+          className={c.input}
           value={name}
-          placeholder="Player's name..."
+          placeholder="Find player by name..."
           onChange={(e) => setName(e.currentTarget.value)}
+          autoFocus
         />
-        {profiles === null ? null : profiles.length === 0 ? (
-          <div>No players found</div>
-        ) : (
-          <div className={c.list}>
-            {profiles.map((profile) =>
-              'linkPrefix' in props ? (
-                <PlayerItem
-                  key={profile.steamId}
-                  profile={profile}
-                  link={props.linkPrefix + profile.steamId}
-                />
-              ) : (
-                <PlayerItem
-                  key={profile.steamId}
-                  profile={profile}
-                  onClick={() => {
-                    props.onPlayerPicked(profile.steamId);
-                    goBack();
-                  }}
-                />
-              ),
-            )}
-          </div>
-        )}
-      </div>
+      }
+      onClose={goBack}
+    >
+      {profiles === null ? null : profiles.length === 0 ? (
+        <div>No players found</div>
+      ) : (
+        profiles.map((profile) =>
+          'linkPrefix' in props ? (
+            <PlayerItem
+              key={profile.steamId}
+              profile={profile}
+              link={props.linkPrefix + profile.steamId}
+            />
+          ) : (
+            <PlayerItem
+              key={profile.steamId}
+              profile={profile}
+              onClick={() => {
+                props.onPlayerPicked(profile.steamId);
+                goBack();
+              }}
+            />
+          ),
+        )
+      )}
     </Popup>
   );
 };

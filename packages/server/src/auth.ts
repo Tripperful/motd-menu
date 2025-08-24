@@ -5,7 +5,7 @@ import { RequestHandler } from 'express';
 import { IncomingMessage } from 'http';
 import { db } from './db';
 import { isPrometheusRequest } from './metrics/util';
-import { dbgWarn, logDbgInfo } from './util';
+import { dbgErr, dbgWarn, logDbgInfo } from './util';
 import { initPreferredLanguages } from './util/language';
 import { SrcdsWsApiClient } from './ws/servers/srcds/SrcdsWsApiClient';
 import { SrcdsWsApiServer } from './ws/servers/srcds/SrcdsWsApiServer';
@@ -79,28 +79,19 @@ export const dropAuthCache = (token: string) => {
   delete authCache[token];
 };
 
-const getReqQueryParams = (req: Request) => {
-  const referer = req.headers.referer && new URL(req.headers.referer);
-  const token = req.query.token ?? referer?.searchParams.get('token');
-  const remoteId = req.query.guid ?? referer?.searchParams.get('guid');
-
-  return { token, remoteId };
-};
-
 const getMotdReqAuthParams = (req: Request) => {
-  const query = getReqQueryParams(req);
+  const reqToken = req.query.token as string;
+  const reqRemoteId = req.query.guid as string;
+  const cookie = req.cookies as Record<string, string>;
 
-  const reqAuthVersion = req.cookies?.version ?? authVersion;
-  const cookie = reqAuthVersion === authVersion ? req.cookies : null;
-  const token: string = query.token ?? cookie?.token;
-  const remoteId: string = query.remoteId ?? cookie?.remoteId;
+  const token = reqToken ?? cookie?.token;
+  const remoteId: string = reqToken ? reqRemoteId : cookie?.remoteId;
 
   return {
-    reqAuthVersion,
     cookie,
     token,
     remoteId,
-    isQueryAuth: !!query.token,
+    isQueryAuth: !!reqToken,
   };
 };
 
@@ -111,8 +102,7 @@ const authHandler: RequestHandler = async (req, res, next) => {
   }
 
   try {
-    const { reqAuthVersion, cookie, token, remoteId, isQueryAuth } =
-      getMotdReqAuthParams(req);
+    const { cookie, token, remoteId, isQueryAuth } = getMotdReqAuthParams(req);
 
     if (!token) {
       throw 'Unauthorized';
@@ -129,7 +119,6 @@ const authHandler: RequestHandler = async (req, res, next) => {
       dbgWarn(
         `Auth token for non-existent remoteId: ${remoteId}, request info: ${JSON.stringify(
           {
-            reqAuthVersion,
             cookie,
             token,
             remoteId,
@@ -190,7 +179,9 @@ const authHandler: RequestHandler = async (req, res, next) => {
     }
 
     next();
-  } catch {
+  } catch (e) {
+    dbgErr('Auth error:', e);
+
     res.clearCookie('version');
     res.clearCookie('token');
     res.clearCookie('remoteId');

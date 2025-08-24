@@ -39,13 +39,6 @@ const useStyles = createUseStyles({
   link: {
     ...activeItemNoTransform(),
   },
-  otherPopup: {
-    width: 'calc(100vw - 2em)',
-    height: 'calc(100vh - 2em)',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1em',
-  },
   otherList: {
     display: 'flex',
     flexDirection: 'column',
@@ -70,6 +63,9 @@ const useStyles = createUseStyles({
     gap: '0.5em',
     fontSize: '0.65em',
     flexWrap: 'wrap',
+  },
+  input: {
+    flex: '1 1 auto',
   },
 });
 
@@ -144,13 +140,19 @@ const MapsPopup: FC = () => {
   const [search, setSearch] = useState('');
 
   return (
-    <Popup onClose={goBack} title="Maps" className={c.otherPopup}>
-      <input
-        type="text"
-        placeholder="Search maps..."
-        value={search}
-        onChange={(e) => setSearch(e.currentTarget.value)}
-      />
+    <Popup
+      onClose={goBack}
+      title={
+        <input
+          type="text"
+          className={c.input}
+          placeholder="Search maps..."
+          value={search}
+          onChange={(e) => setSearch(e.currentTarget.value)}
+        />
+      }
+      fullScreen
+    >
       <AllServersMaps search={search} />
     </Popup>
   );
@@ -162,7 +164,7 @@ const PlayersPopup: FC = () => {
   const serversPlayers = useOnlineServersPlayers();
 
   return (
-    <Popup onClose={goBack} title="Players" className={c.otherPopup}>
+    <Popup onClose={goBack} title="Players" fullScreen>
       <div className={c.otherList}>
         {serversPlayers.map(({ serverInfo, players }) => (
           <div key={serverInfo.id}>

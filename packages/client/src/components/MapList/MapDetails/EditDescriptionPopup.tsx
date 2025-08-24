@@ -31,7 +31,7 @@ export const EditDescriptionPopup: FC<{
   };
 
   return (
-    <Popup title={'Edit map description'} onClose={goBack}>
+    <Popup title={'Edit map description'} onClose={goBack} poster>
       <small>Description (optional)</small>
       <textarea
         className={c.description}

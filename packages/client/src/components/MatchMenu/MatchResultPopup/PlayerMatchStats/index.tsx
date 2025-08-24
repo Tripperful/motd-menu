@@ -2,18 +2,15 @@ import React, { FC, Suspense } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes, useParams } from 'react-router-dom';
 import { usePlayerSteamProfile } from 'src/hooks/state/players';
+import { itemNameToIconGlyph } from 'src/util/iconGlyph';
 import { SidePanel } from '~components/common/SidePanel';
 import { Tabs } from '~components/common/Tabs';
 import { PlayerDetails } from '~components/PlayersMenu/PlayerDetails';
 import { activeItemNoTransform } from '~styles/elements';
 import { MiscStatsTab } from './MiscStatsTab';
 import { WeaponStatsTab } from './WeaponStatsTab';
-import { itemNameToIconGlyph } from 'src/util/iconGlyph';
 
 const useStyles = createUseStyles({
-  root: {
-    padding: '1em',
-  },
   playerTitle: {
     ...activeItemNoTransform(),
   },
@@ -41,7 +38,6 @@ const PlayerStats: FC<{ steamId: string; matchId: string }> = ({
   return (
     <>
       <Tabs
-        className={c.root}
         tabs={[
           {
             label: (

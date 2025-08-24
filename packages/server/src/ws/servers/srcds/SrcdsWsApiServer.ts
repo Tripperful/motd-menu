@@ -98,6 +98,10 @@ export class SrcdsWsApiServer extends BaseWsApiServer<
       client
         .request('get_client_settings_metadata_request')
         .then((settingsMetadata) => {
+          for (const setting in settingsMetadata) {
+            settingsMetadata[setting].tab ??= 'General';
+            settingsMetadata[setting].section ??= 'Gameplay';
+          }
           db.client.settings.upsertMetadata(settingsMetadata);
           client.settingsMetadata = settingsMetadata;
         })

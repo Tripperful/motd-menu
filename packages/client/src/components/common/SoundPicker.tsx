@@ -1,12 +1,12 @@
-import React, { FC, useCallback, useEffect, useMemo } from 'react';
+import classNames from 'classnames';
+import React, { FC, useCallback, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
+import { usePreferredVolume } from 'src/hooks/usePreferredVolume';
 import { SoundInfo } from 'src/util/sounds';
+import EditIcon from '~icons/pencil.svg';
 import SoundIcon from '~icons/sound.svg';
 import { activeItem } from '~styles/elements';
 import { Popup } from './Popup';
-import { usePreferredVolume } from 'src/hooks/usePreferredVolume';
-import EditIcon from '~icons/pencil.svg';
-import classNames from 'classnames';
 
 const useStyles = createUseStyles({
   root: {
@@ -25,17 +25,11 @@ const useStyles = createUseStyles({
   editIcon: {
     fontSize: '0.75em',
   },
-  options: {
-    maxHeight: '20em',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5em',
-    paddingRight: '0.25em',
-    marginRight: '-0.75em',
-    overflow: 'hidden scroll',
-  },
   selected: {
     filter: 'brightness(1.5)',
+  },
+  input: {
+    flex: '1 1 auto',
   },
 });
 
@@ -93,8 +87,18 @@ export const SoundPicker: FC<{
 }> = ({ sound, setSound, options, disabled }) => {
   const c = useStyles();
   const [pickerActive, setPickerActive] = React.useState(false);
+  const [filter, setFilter] = React.useState('');
 
   const selectedOption = options.find((o) => o.srcdsPath === sound);
+
+  const filteredOptions = useMemo(() => {
+    return options.filter(
+      (o) =>
+        o.assetPath === selectedOption?.assetPath ||
+        o.name.toLowerCase().includes(filter.toLowerCase()) ||
+        o.assetPath.includes(filter.toLowerCase()),
+    );
+  }, [options, filter]);
 
   return (
     <div className={c.root}>
@@ -105,20 +109,31 @@ export const SoundPicker: FC<{
         disabled={disabled}
       />
       {pickerActive && (
-        <Popup title="Select a sound" onClose={() => setPickerActive(false)}>
-          <div className={c.options}>
-            {options.map((option) => (
-              <SoundPickerOption
-                key={option.srcdsPath}
-                sound={option}
-                selected={option.srcdsPath === sound}
-                onClick={() => {
-                  setSound(option.srcdsPath);
-                  setPickerActive(false);
-                }}
-              />
-            ))}
-          </div>
+        <Popup
+          title={
+            <input
+              type="text"
+              className={c.input}
+              value={filter}
+              placeholder="Search sounds..."
+              onChange={(e) => setFilter(e.currentTarget.value)}
+              autoFocus
+            />
+          }
+          fullHeight
+          onClose={() => setPickerActive(false)}
+        >
+          {filteredOptions.map((option) => (
+            <SoundPickerOption
+              key={option.srcdsPath}
+              sound={option}
+              selected={option.srcdsPath === sound}
+              onClick={() => {
+                setSound(option.srcdsPath);
+                setPickerActive(false);
+              }}
+            />
+          ))}
         </Popup>
       )}
     </div>

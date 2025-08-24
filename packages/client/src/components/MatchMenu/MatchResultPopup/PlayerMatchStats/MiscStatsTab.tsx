@@ -10,8 +10,6 @@ const useStyles = createUseStyles({
     flexWrap: 'wrap',
     gap: '2em',
     fontSize: '0.75em',
-    overflow: 'hidden scroll',
-    marginRight: '-0.5em',
   },
   title: {
     fontSize: '1.25em',

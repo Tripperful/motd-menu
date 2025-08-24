@@ -6,11 +6,9 @@ import { SidePanel } from '~components/common/SidePanel';
 const useStyles = createUseStyles({
   root: {
     flex: '1 1 auto',
-    padding: '1em',
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
-    overflow: 'hidden scroll',
   },
 });
 

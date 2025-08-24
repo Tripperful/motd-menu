@@ -18,7 +18,7 @@ import { ConfirmDialog } from '~components/common/ConfirmDialog';
 import { CopyOnClick } from '~components/common/CopyOnClick';
 import { Page } from '~components/common/Page';
 import { PlayerItem } from '~components/common/PlayerItem';
-import { activeItemNoTransform } from '~styles/elements';
+import { activeItemNoTransform, verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
@@ -34,12 +34,11 @@ const useStyles = createUseStyles({
     },
   },
   root: {
+    ...verticalScroll(),
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
-    padding: '1em',
     alignItems: 'center',
-    overflow: 'hidden auto',
   },
   title: {
     textAlign: 'center',

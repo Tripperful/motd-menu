@@ -17,19 +17,19 @@ const useStyles = createUseStyles({
     position: 'relative',
     minHeight: '1.5em',
     flex: '0 0 auto',
+    display: 'flex',
+    flexDirection: 'column',
   },
   editButton: {
     ...outlineButton(),
     fontSize: '0.75em',
-    position: 'absolute',
-    top: 0,
-    right: 0,
+    alignSelf: 'flex-end',
+    marginTop: '1em',
   },
   emptyText: {
     color: theme.fg3,
   },
   carousel: {
-    margin: '-1em -1em 0 -1em',
     height: '15em',
   },
 });

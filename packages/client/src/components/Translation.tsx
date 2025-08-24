@@ -50,8 +50,6 @@ const useStyles = createUseStyles({
   },
   otherLangsPopupContent: {
     height: '30em',
-    overflow: 'hidden scroll',
-    marginRight: '-0.5em',
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(10em, 1fr))',
     alignContent: 'start',
@@ -63,6 +61,9 @@ const useStyles = createUseStyles({
   editIcon: {
     fontSize: '0.65em',
     flex: '0 0 auto',
+  },
+  input: {
+    flex: '1 1 auto',
   },
 });
 
@@ -150,15 +151,17 @@ const TranslationContent: FC = () => {
         {showOtherLangs && (
           <Popup
             className={c.otherLangsPopup}
-            title="Other languages I understand"
+            title={
+              <input
+                type="text"
+                className={c.input}
+                placeholder="Other languages I understand..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            }
             onClose={() => setShowOtherLangs(false)}
           >
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
             <div className={c.otherLangsPopupContent}>
               {Object.entries(supportedLanguages)
                 .filter(([lang, langName]) => {

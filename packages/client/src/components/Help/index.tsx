@@ -7,8 +7,6 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
-    padding: '1em',
-    overflowY: 'auto',
   },
 });
 

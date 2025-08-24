@@ -1,3 +1,4 @@
+import { SteamPlayerData } from '@motd-menu/common';
 import React, { FC, useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Route, Routes } from 'react-router-dom';
@@ -13,12 +14,7 @@ import { PlayerDetails } from '.';
 import { PlayersListItem } from '../PlayersList/PlayersListItem';
 
 const useStyles = createUseStyles({
-  root: {
-    width: '50vw',
-    height: '70vh',
-    overflow: 'hidden auto',
-    display: 'flex',
-    flexDirection: 'column',
+  content: {
     gap: '0.2em',
   },
   header: {
@@ -80,15 +76,18 @@ export const SmurfsPopupContent: FC<{ steamId: string }> = ({ steamId }) => {
   );
 };
 
-export const SmurfsPopup: FC<{ steamId: string }> = ({ steamId }) => {
+export const SmurfsPopup: FC<{ profile: SteamPlayerData }> = ({ profile }) => {
   const c = useStyles();
   const goBack = useGoBack();
 
   return (
-    <Popup title="Player accounts details" onClose={goBack}>
-      <div className={c.root}>
-        <SmurfsPopupContent steamId={steamId} />
-      </div>
+    <Popup
+      title={`${profile.name}'s accounts details`}
+      onClose={goBack}
+      contentClassName={c.content}
+      poster
+    >
+      <SmurfsPopupContent steamId={profile.steamId} />
       <Routes>
         <Route path=":steamId/*" element={<PlayerDetails />} />
       </Routes>

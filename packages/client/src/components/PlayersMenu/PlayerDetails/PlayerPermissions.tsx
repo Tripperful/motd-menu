@@ -1,11 +1,11 @@
 import {
   Permission,
+  SteamPlayerData,
   allPermissions,
   permissionDescriptions,
 } from '@motd-menu/common';
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
-import { useParams } from 'react-router-dom';
 import { motdApi } from 'src/api';
 import { addNotification } from 'src/hooks/state/notifications';
 import {
@@ -13,12 +13,12 @@ import {
   usePlayerPermissions,
 } from 'src/hooks/state/permissions';
 import { useCheckPermission } from 'src/hooks/useCheckPermission';
+import { useGoBack } from 'src/hooks/useGoBack';
 import { LabeledSwitch } from '~components/common/LabeledSwitch';
+import { Popup } from '~components/common/Popup';
 
 const useStyles = createUseStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
+  content: {
     gap: '0.5em',
   },
 });
@@ -54,19 +54,25 @@ const PermissionItem: FC<{
   );
 };
 
-export const PlayerPermissions: FC<{ steamId: string }> = ({ steamId }) => {
+export const PlayerPermissionsPopup: FC<{ profile: SteamPlayerData }> = ({
+  profile,
+}) => {
   const c = useStyles();
+  const goBack = useGoBack();
 
   return (
-    <div className={c.root}>
-      <div>Permissions</div>
+    <Popup
+      title={`${profile.name}'s permissions`}
+      onClose={goBack}
+      contentClassName={c.content}
+    >
       {allPermissions.map((permission) => (
         <PermissionItem
           key={permission}
-          steamId={steamId}
+          steamId={profile.steamId}
           permission={permission}
         />
       ))}
-    </div>
+    </Popup>
   );
 };

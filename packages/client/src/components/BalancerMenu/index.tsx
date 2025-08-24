@@ -9,23 +9,19 @@ import { ActionPage } from '~components/common/Page/ActionPage';
 import { Switch } from '~components/common/Switch';
 import { PlayersListItem } from '~components/PlayersMenu/PlayersList/PlayersListItem';
 import BalanceIcon from '~icons/balance.svg';
-import { outlineButton } from '~styles/elements';
+import { outlineButton, verticalScroll } from '~styles/elements';
 import { theme } from '~styles/theme';
 
 const useStyles = createUseStyles({
-  page: {
-    backgroundColor: theme.bg1,
-  },
   root: {
     display: 'flex',
-    padding: '1em',
     gap: '1em',
     minHeight: 0,
     '& > *': {
       flex: '1 1 100%',
       minWidth: 0,
     },
-    overflow: 'hidden auto',
+    ...verticalScroll(),
   },
   title: {
     fontSize: '1.5em',
@@ -92,7 +88,6 @@ const BalancerMenu: FC = () => {
 
   return (
     <ActionPage
-      className={c.page}
       title="Team Balancer"
       actions={[
         {

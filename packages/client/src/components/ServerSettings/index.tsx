@@ -14,15 +14,14 @@ import { ServerCvarControl } from '~components/common/CvarControl';
 import { Page } from '~components/common/Page';
 import { Popup } from '~components/common/Popup';
 import TerminalIcon from '~icons/terminal.svg';
-import { activeItem, outlineButton } from '~styles/elements';
+import { activeItem, outlineButton, verticalScroll } from '~styles/elements';
 
 const useStyles = createUseStyles({
   root: {
-    padding: '1em',
+    ...verticalScroll(),
     display: 'flex',
     flexDirection: 'column',
     gap: '0.5em',
-    overflow: 'hidden auto',
   },
   button: {
     ...activeItem(),

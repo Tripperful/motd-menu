@@ -1,4 +1,4 @@
-import { steamId64ToLegacy } from '@motd-menu/common';
+import { steamId64ToLegacy, SteamPlayerData } from '@motd-menu/common';
 import React, { FC } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Link, Route, Routes } from 'react-router-dom';
@@ -12,8 +12,9 @@ import { steamProfileLink } from 'src/util';
 import { Flag } from '~components/common/Flag';
 import { IFramePopup } from '~components/common/IFramePopup';
 import { LineWithCopy } from '~components/common/LineWithCopy';
-import { PlayerSettings } from '~components/common/PlayerSettings';
 import MatchesIcon from '~icons/playlist.svg';
+import SettingsIcon from '~icons/settings.svg';
+import ShieldIcon from '~icons/shield.svg';
 import StarIcon from '~icons/star.svg';
 import UserInspectIcon from '~icons/user-inspect.svg';
 import { outlineButton } from '~styles/elements';
@@ -21,7 +22,8 @@ import { theme } from '~styles/theme';
 import { MapsReviewsPopup } from './MapsReviewsPopup';
 import { PlayerAka } from './PlayerAka';
 import { PlayerMatchesPopup } from './PlayerMatchesPopup';
-import { PlayerPermissions } from './PlayerPermissions';
+import { PlayerPermissionsPopup } from './PlayerPermissions';
+import { PlayerSettingsPopup } from './PlayerSettingsPopup';
 import { PlayerStats } from './PlayerStats';
 import { PlayerTimePlayed } from './PlayerTimePlayed';
 import { SetAkaPopup } from './SetAkaPopup';
@@ -61,14 +63,14 @@ const useStyles = createUseStyles({
   },
 });
 
-const EfpsStatsPopup: FC<{ steamId: string }> = ({ steamId }) => {
+const EfpsStatsPopup: FC<{ profile: SteamPlayerData }> = ({ profile }) => {
   const goBack = useGoBack();
 
   return (
     <IFramePopup
-      title="eFPS stats"
+      title={`${profile.name}'s eFPS stats`}
       url={`https://hl2dm.everythingfps.com/profile.php?id=${steamId64ToLegacy(
-        steamId,
+        profile.steamId,
       )}`}
       onClose={goBack}
     />
@@ -107,46 +109,59 @@ const PlayerDetailsContent: FC<{ steamId: string }> = ({ steamId }) => {
           >
             Steam ID: <span className={c.value}>{player.steamId}</span>
           </LineWithCopy>
-          <div className={c.profileButtons}>
-            <Link className={c.profileButton} to="smurfs">
-              <UserInspectIcon />
-              Who is..?
-            </Link>
-            <Link className={c.profileButton} to="matches">
-              <MatchesIcon />
-              Matches
-            </Link>
-            <Link className={c.profileButton} to="mapsReviews">
-              <StarIcon />
-              Maps reviews
-            </Link>
-          </div>
+          <PlayerTimePlayed steamId={steamId} />
+          {lastGeo && (
+            <div>
+              Last connected from: <span className={c.value}>{lastGeo}</span>
+            </div>
+          )}
         </div>
       </div>
-      <PlayerTimePlayed steamId={steamId} />
-      {lastGeo && (
-        <div>
-          Last connected from: <span className={c.value}>{lastGeo}</span>
-        </div>
-      )}
+      <div className={c.profileButtons}>
+        <Link className={c.profileButton} to="smurfs">
+          <UserInspectIcon />
+          Who is..?
+        </Link>
+        <Link className={c.profileButton} to="matches">
+          <MatchesIcon />
+          Matches
+        </Link>
+        <Link className={c.profileButton} to="settings">
+          <SettingsIcon />
+          Settings
+        </Link>
+        <Link className={c.profileButton} to="mapsReviews">
+          <StarIcon />
+          Maps reviews
+        </Link>
+        {canViewPermissions && (
+          <Link className={c.profileButton} to="permissions">
+            <ShieldIcon />
+            Permissions
+          </Link>
+        )}
+      </div>
       {canEditTeam && <SetPlayerTeam steamId={steamId} />}
       <PlayerStats steamId={steamId} />
-      <div className={c.playerInfoList}>
-        <div>Client settings</div>
-        <PlayerSettings steamId={steamId} />
-      </div>
-      {canViewPermissions && <PlayerPermissions steamId={steamId} />}
       <Routes>
-        <Route path="/smurfs/*" element={<SmurfsPopup steamId={steamId} />} />
-        <Route path="/efps/*" element={<EfpsStatsPopup steamId={steamId} />} />
-        <Route path="/setAka/*" element={<SetAkaPopup steamId={steamId} />} />
+        <Route path="/smurfs/*" element={<SmurfsPopup profile={player} />} />
+        <Route path="/efps/*" element={<EfpsStatsPopup profile={player} />} />
+        <Route path="/setAka/*" element={<SetAkaPopup profile={player} />} />
         <Route
           path="/matches/*"
-          element={<PlayerMatchesPopup steamId={steamId} />}
+          element={<PlayerMatchesPopup profile={player} />}
         />
         <Route
           path="/mapsReviews/*"
-          element={<MapsReviewsPopup steamId={steamId} />}
+          element={<MapsReviewsPopup profile={player} />}
+        />
+        <Route
+          path="/settings/*"
+          element={<PlayerSettingsPopup profile={player} />}
+        />
+        <Route
+          path="/permissions/*"
+          element={<PlayerPermissionsPopup profile={player} />}
         />
       </Routes>
     </>

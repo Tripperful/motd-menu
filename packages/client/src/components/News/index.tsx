@@ -30,7 +30,11 @@ import { PlayerItem } from '~components/common/PlayerItem';
 import { Popup } from '~components/common/Popup';
 import { SidePanel } from '~components/common/SidePanel';
 import CopyIcon from '~icons/copy.svg';
-import { activeItem, activeItemNoTransform } from '~styles/elements';
+import {
+  activeItem,
+  activeItemNoTransform,
+  verticalScroll,
+} from '~styles/elements';
 import { theme } from '~styles/theme';
 import { NewsCommentPopup } from './NewsCommentPopup';
 import { NewsComments } from './NewsComments';
@@ -40,8 +44,6 @@ const useStyles = createUseStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: '1em',
-    padding: '1em',
-    overflow: 'hidden scroll',
   },
   newsRow: {
     display: 'flex',
@@ -56,13 +58,15 @@ const useStyles = createUseStyles({
     flex: '1 1 100%',
   },
   newsPopup: {
-    width: '50vw',
-    maxHeight: 'calc(100vh - 4em)',
     '& a': {
       ...activeItemNoTransform(),
     },
+  },
+  newsPopupTitle: {
+    flex: '1 1 auto',
     display: 'flex',
-    flexDirection: 'column',
+    justifyContent: 'space-between',
+    gap: '0.5em',
   },
   newsTitle: {
     fontSize: '2em',
@@ -89,11 +93,9 @@ const useStyles = createUseStyles({
     },
   },
   newsRenderer: {
+    ...verticalScroll(),
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'hidden auto',
-    marginRight: '-0.5em',
-    paddingRight: '0.5em',
   },
   publishDate: {
     fontSize: '0.8em',
@@ -123,15 +125,10 @@ const useStyles = createUseStyles({
     ...activeItem(),
     marginLeft: 'auto',
   },
-  editing: {
-    width: 'calc(100vw - 4em)',
-    height: 'calc(100vh - 4em)',
-  },
   editorWrapper: {
     flex: '1 1 auto',
     minHeight: 0,
     display: 'flex',
-    gap: '1em',
     '& > div': {
       flex: '1 1 100%',
       minWidth: 0,
@@ -140,7 +137,9 @@ const useStyles = createUseStyles({
   editor: {
     display: 'flex',
     flexDirection: 'column',
+    padding: '1em',
     gap: '0.5em',
+    marginRight: '-1em',
     '& textarea': {
       flex: '1 1 100%',
     },
@@ -164,8 +163,6 @@ const useStyles = createUseStyles({
     alignContent: 'start',
     gap: '0.5em',
     flex: '1 1 auto',
-    overflow: 'hidden scroll',
-    padding: '0.5em',
   },
   '@keyframes blink': {
     '0%': {
@@ -244,23 +241,13 @@ const NewsRenderer: FC<{
   const c = useStyles();
   const permissions = useMyPermissions();
 
-  const { title, content, authorSteamId, publishedOn, createdOn, readBy } =
-    news;
-
-  const canEdit = permissions.includes('news_create');
-  const canPublish = permissions.includes('news_publish');
-  const isEditor = canEdit || canPublish;
+  const { title, content, authorSteamId, publishedOn, createdOn } = news;
 
   return (
     <div className={c.newsRenderer}>
       <div className={c.newsTitle}>
         <span>{title}</span>
       </div>
-      {isEditor && readBy && (
-        <Link to="views" className={c.editButton}>
-          Views ({readBy.length})
-        </Link>
-      )}
       <div className={c.newsPublishInfo}>
         <span>
           <span>{publishedOn ? 'Published by' : 'Created by'}</span>
@@ -290,7 +277,8 @@ const NewsContent: FC<{
   newsId: string;
   editing: boolean;
   setEditing: (editing: boolean) => void;
-}> = ({ newsId, editing, setEditing }) => {
+  setActionsElement?: (element: React.ReactNode) => void;
+}> = ({ newsId, editing, setEditing, setActionsElement }) => {
   const c = useStyles();
   const news = useNews(newsId);
   const author = usePlayerSteamProfile(news.authorSteamId);
@@ -303,6 +291,7 @@ const NewsContent: FC<{
   const canEdit = permissions.includes('news_create');
   const canPublish =
     (permissions.includes('news_publish') || canEdit) && !published;
+  const isEditor = canEdit || canPublish;
 
   useEffect(() => {
     if (!editing) {
@@ -315,6 +304,36 @@ const NewsContent: FC<{
       markNewsRead(newsId);
     }
   }, [newsId, news.readOn]);
+
+  useEffect(() => {
+    setActionsElement(
+      (canEdit || (canPublish && !published)) && (
+        <div className={c.editActions}>
+          {editing ? (
+            <>
+              <div onClick={showSaveConfirmDialog}>Save</div>
+              <div onClick={() => setEditing(false)}>Cancel</div>
+            </>
+          ) : (
+            <>
+              {canEdit && <div onClick={() => setEditing(!editing)}>Edit</div>}
+              {canEdit && newsId && (
+                <div onClick={showDeleteConfirmDialog}>Delete</div>
+              )}
+              {canPublish && (
+                <div onClick={showPublishConfirmDialog}>Publish</div>
+              )}
+              {isEditor && news.readBy && (
+                <Link to="views" className={c.editButton}>
+                  Views ({news.readBy.length})
+                </Link>
+              )}
+            </>
+          )}
+        </div>
+      ),
+    );
+  }, [canEdit, canPublish, editing, newsId, published, setActionsElement]);
 
   const [saveConfirmDialog, showSaveConfirmDialog] = useConfirmDialog(
     'Do you want to save the changes?',
@@ -402,26 +421,6 @@ const NewsContent: FC<{
           showComments={!editing}
         />
       </div>
-      {(canEdit || (canPublish && !published)) && (
-        <div className={c.editActions}>
-          {editing ? (
-            <>
-              <div onClick={showSaveConfirmDialog}>Save</div>
-              <div onClick={() => setEditing(false)}>Cancel</div>
-            </>
-          ) : (
-            <>
-              {canEdit && <div onClick={() => setEditing(!editing)}>Edit</div>}
-              {canEdit && newsId && (
-                <div onClick={showDeleteConfirmDialog}>Delete</div>
-              )}
-              {canPublish && (
-                <div onClick={showPublishConfirmDialog}>Publish</div>
-              )}
-            </>
-          )}
-        </div>
-      )}
       {saveConfirmDialog}
       {deleteConfirmDialog}
       {publishConfirmDialog}
@@ -452,14 +451,34 @@ const NewsPopup: FC = () => {
   const { newsId } = useParams();
   const goBack = useGoBack();
   const [editing, setEditing] = useState(!newsId);
+  const [actionsElement, setActionsElement] = useState<React.ReactNode>(null);
+
+  useEffect(() => {
+    if (!editing && !newsId) {
+      goBack();
+    }
+  }, [newsId, editing]);
 
   return (
     <Popup
-      title={editing ? `News (${newsId ? 'editing' : 'creating'})` : 'News'}
+      title={
+        <span className={c.newsPopupTitle}>
+          {editing ? `News (${newsId ? 'editing' : 'creating'})` : 'News'}
+          {actionsElement}
+        </span>
+      }
       onClose={goBack}
-      className={classNames(c.newsPopup, editing && c.editing)}
+      className={c.newsPopup}
+      poster
+      fullScreen={editing}
+      noContentWrapper
     >
-      <NewsContent newsId={newsId} editing={editing} setEditing={setEditing} />
+      <NewsContent
+        newsId={newsId}
+        editing={editing}
+        setEditing={setEditing}
+        setActionsElement={setActionsElement}
+      />
       <Routes>
         <Route
           path="author/:steamId/*"

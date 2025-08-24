@@ -77,3 +77,12 @@ export const skeletonBg: () => JssStyle = () => ({
   backgroundImage: `linear-gradient(90deg, transparent, 10%, ${theme.bg1}, 20%, ${theme.bg1}, 30%, transparent, 70%, ${theme.bg1}, 80%, ${theme.bg1}, 90%, transparent)`,
   backgroundAttachment: 'fixed',
 });
+
+export const verticalScroll: (padding?: number) => JssStyle = (
+  padding = 1,
+) => ({
+  overflow: 'hidden scroll',
+  padding: `${padding}em`,
+  paddingRight: `${(padding - 0.5) / 2}em`,
+  marginRight: `${(padding - 0.5) / 2}em`,
+});
