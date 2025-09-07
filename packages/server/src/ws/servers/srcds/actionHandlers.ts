@@ -44,6 +44,8 @@ srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
   );
 });
 
+const translatorEnabled = false;
+
 srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
   const { steamId, msg, teamIdx, matchId, teamOnly } = data;
 
@@ -58,7 +60,7 @@ srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
     )
     .catch(dbgErr);
 
-  if (!msg.startsWith('!') && !msg.startsWith('@')) {
+  if (translatorEnabled && !msg.startsWith('!') && !msg.startsWith('@')) {
     translateMessageForPlayers(srcds, data).catch(dbgWarn);
   }
 
