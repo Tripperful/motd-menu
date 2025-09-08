@@ -44,7 +44,7 @@ srcdsWsServer.onMessage('player_disconnected', async (srcds, data) => {
   );
 });
 
-const translatorEnabled = false;
+const translatorEnabled = true;
 
 srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
   const { steamId, msg, teamIdx, matchId, teamOnly } = data;
