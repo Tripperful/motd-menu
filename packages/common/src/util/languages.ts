@@ -27,4 +27,5 @@ export const supportedLanguages = {
   es: 'Spanish',
   sv: 'Swedish',
   tr: 'Turkish',
+  zh: 'Chinese',
 };
