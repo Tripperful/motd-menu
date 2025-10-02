@@ -21,6 +21,7 @@ import { MapReactions } from './MapReactions';
 import { MapReviews } from './MapReviews';
 import { MapTags } from './MapTags';
 import { OtherVersions } from './OtherVersions';
+import { useMapsPreviews } from 'src/hooks/state/mapPreviews';
 
 const useStyles = createUseStyles({
   root: {
@@ -133,10 +134,7 @@ const MapDetailsContent: FC<MapDetailsProps> = ({ mapName }) => {
             />
           }
         />
-        <Route
-          path="/versions/:mapName/*"
-          Component={MapVersion}
-        />
+        <Route path="/versions/:mapName/*" Component={MapVersion} />
       </Routes>
     </>
   );
@@ -204,7 +202,13 @@ export const MapDetails: FC<MapDetailsProps> = ({
 
   const [mmPublic] = useCvar('mm_public');
   const isPublic = mmPublic === '1';
-  const canChangeMap = useCheckPermission('pub_change_maps') || !isPublic;
+
+  const serverMaps = useMapsPreviews();
+  const serverHasMap = Boolean(serverMaps.find((map) => map.name === mapName));
+  const hasChangeMapPermission =
+    useCheckPermission('pub_change_maps') || !isPublic;
+
+  const canChangeMap = hasChangeMapPermission && serverHasMap;
 
   return (
     <SidePanel
