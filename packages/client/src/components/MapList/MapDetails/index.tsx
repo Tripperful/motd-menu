@@ -77,6 +77,11 @@ interface MapDetailsProps {
   backPath?: string;
 }
 
+const MapVersion: FC = () => {
+  const { mapName } = useParams();
+  return <MapDetails mapName={mapName} backPath="../.." />;
+};
+
 const MapDetailsContent: FC<MapDetailsProps> = ({ mapName }) => {
   const c = useStyles();
   const canEdit = useCheckPermission('maps_edit');
@@ -130,16 +135,7 @@ const MapDetailsContent: FC<MapDetailsProps> = ({ mapName }) => {
         />
         <Route
           path="/versions/:mapName/*"
-          Component={function OtherVersionDetails() {
-            const { mapName } = useParams();
-            return <MapDetails mapName={mapName} backPath="../.." />;
-          }}
-          element={
-            <EditDescriptionPopup
-              initialDescription={description}
-              onSubmit={onDescriptionSubmit}
-            />
-          }
+          Component={MapVersion}
         />
       </Routes>
     </>
