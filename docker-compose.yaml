@@ -8,13 +8,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=motd-menu
-      - POSTGRES_PASSWORD=123123
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "pg_isready --username=motd-menu && psql --username=motd-menu --list"
+          "pg_isready --username=${POSTGRES_USER} && psql --username=${POSTGRES_USER} --list"
         ]
       interval: 1s
       timeout: 60s
@@ -39,9 +39,9 @@ services:
       - MOTD_MAXMIND_LICENSE_KEY=${MOTD_MAXMIND_LICENSE_KEY}
       - YANDEX_TRANSLATE_API_KEY=${YANDEX_TRANSLATE_API_KEY}
       - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_USER=motd-menu
-      - POSTGRES_PASSWORD=123123
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     healthcheck:
       test:
         [
