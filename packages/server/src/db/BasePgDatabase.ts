@@ -35,31 +35,26 @@ export class BasePgDatabase {
   }
 
   async init() {
-    try {
-      await Promise.race([
-        this.pg.connect(),
-        new Promise((_, reject) =>
-          setTimeout(
-            () => reject('Failed to connect to PostgreSQL after 10 seconds'),
-            10_000,
-          ),
+    await Promise.race([
+      this.pg.connect(),
+      new Promise((_, reject) =>
+        setTimeout(
+          () => reject('Failed to connect to PostgreSQL after 10 seconds'),
+          10_000,
         ),
-      ]);
+      ),
+    ]);
 
-      console.log('Connected to PostgreSQL, initializing database...');
+    console.log('Connected to PostgreSQL, initializing database...');
 
-      const sqlContext = require.context('.', true, /\.sql$/i, 'sync');
-      const sqlScripts = sqlContext
-        .keys()
-        .sort(sqlOrderCmp)
-        .map((sqlPath) => sqlContext(sqlPath).default as string);
+    const sqlContext = require.context('.', true, /\.sql$/i, 'sync');
+    const sqlScripts = sqlContext
+      .keys()
+      .sort(sqlOrderCmp)
+      .map((sqlPath) => sqlContext(sqlPath).default as string);
 
-      for (const sql of sqlScripts) {
-        await this.pg.query(sql);
-      }
-    } catch (e) {
-      console.error('Failed to initialize database:', e);
-      process.exit(1);
+    for (const sql of sqlScripts) {
+      await this.pg.query(sql);
     }
   }
 

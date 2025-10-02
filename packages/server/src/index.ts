@@ -4,7 +4,6 @@ import './ws/servers';
 import bodyParser from 'body-parser';
 import express, { type ErrorRequestHandler } from 'express';
 import expressStaticGzip from 'express-static-gzip';
-import http from 'http';
 import https from 'https';
 import path from 'path';
 
@@ -13,9 +12,9 @@ import { WebSocketServer } from 'ws';
 import { api } from './api';
 import { authMiddleware } from './auth';
 import { db } from './db';
-import { EfpsWatchdog } from './util/efps';
-import { metricsRouter } from './metrics/router';
 import { metricsMiddleware } from './metrics/middleware';
+import { metricsRouter } from './metrics/router';
+import { EfpsWatchdog } from './util/efps';
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
@@ -57,46 +56,26 @@ app.use(((err, _req, res, _next) => {
   res.status(500).send('Internal server error');
 }) as ErrorRequestHandler);
 
-export interface HttpServerInfo {
-  server: http.Server;
-  port: number;
-  protocol: 'http' | 'https';
-}
+const startHttpServer = () => {
+  const cert = process.env.MOTD_SSL_CERT;
+  const key = process.env.MOTD_SSL_PRIVATE_KEY;
+  const port = Number(process.env.MOTD_WEB_PORT);
 
-export let httpServerInfo: HttpServerInfo = null;
+  if (!cert) {
+    throw new Error(
+      'Trying to start HTTPS server without supplying a certificate',
+    );
+  }
 
-const cert = process.env.MOTD_SSL_CERT;
-const key = process.env.MOTD_SSL_PRIVATE_KEY;
+  if (!key) {
+    throw new Error(
+      'Trying to start HTTPS server without supplying a private key',
+    );
+  }
 
-if (!cert) {
-  throw new Error(
-    'Trying to start HTTPS server without supplying a certificate',
-  );
-}
-
-if (!key) {
-  throw new Error(
-    'Trying to start HTTPS server without supplying a private key',
-  );
-}
-
-httpServerInfo = {
-  server: https.createServer({ cert, key }, app),
-  port: Number(process.env.MOTD_WEB_PORT),
-  protocol: 'https',
-};
-console.log('Connecting to database...');
-
-db.init().then(() => {
-  console.log('Database initialized');
-
-  const { server, port, protocol } = httpServerInfo;
+  const server = https.createServer({ cert, key }, app);
 
   server.listen(port, () => {
-    console.log(
-      `${protocol.toUpperCase()} server is listening on port ${port}`,
-    );
-
     new EfpsWatchdog();
 
     const wsServer = new WebSocketServer({ noServer: true });
@@ -119,5 +98,20 @@ db.init().then(() => {
     server.on('error', (err) => {
       console.error('WS server error:', err);
     });
+
+    console.log(`HTTPS server is listening on port ${port}`);
   });
-});
+
+  return server;
+};
+
+console.log('Connecting to database...');
+
+db.init()
+  .then(() => {
+    console.log('Database initialized');
+    startHttpServer();
+  })
+  .catch((e) => {
+    console.error('Failed to initialize database:', e);
+  });
