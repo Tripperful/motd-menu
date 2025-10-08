@@ -9,7 +9,18 @@ const unknownGeo: GeoData = {
   full: 'Unknown City, Unknown Country',
 };
 
+const steamP2pGeo: GeoData = {
+  country: 'Steam P2P',
+  countryCode: 'P2P',
+  city: '',
+  full: 'Steam P2P',
+};
+
 export const getGeoDataByIp = async (ip: string): Promise<GeoData> => {
+  if (ip.startsWith('169.254.')) {
+    return steamP2pGeo;
+  }
+
   try {
     const geoData = geoip.lookup(ip);
 
@@ -25,7 +36,9 @@ export const getGeoDataByIp = async (ip: string): Promise<GeoData> => {
   }
 };
 
-export const getGeoDataBySteamId = async (steamId: string): Promise<GeoData> => {
+export const getGeoDataBySteamId = async (
+  steamId: string,
+): Promise<GeoData> => {
   const lastIp = await db.client.getLastIp(steamId);
 
   return lastIp ? await getGeoDataByIp(lastIp) : unknownGeo;

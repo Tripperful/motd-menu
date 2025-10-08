@@ -249,6 +249,7 @@ export const countryNameByCode = {
   ZM: 'Zambia',
   ZW: 'Zimbabwe',
   XX: 'Unknown Country',
+  P2P: 'Steam P2P',
 };
 
 export type CountryCode = keyof typeof countryNameByCode;
