@@ -1,0 +1,33 @@
+name: Package artifact
+
+on:
+  workflow_call:
+    inputs:
+      build_name:
+        required: true
+        type: string
+    
+    outputs:
+      artifact_name:
+        description: 'The name of the build artifact'
+        value: ${{ inputs.build_name }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare files
+        run: |
+          cp -r geoip-data/* node_modules/geoip-lite/data/
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            ./Dockerfile
+            ./docker-compose.yaml
+            ./prometheus
+            ./packages/*/dist
+            ./node_modules/geoip-lite/data

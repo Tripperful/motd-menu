@@ -1,0 +1,47 @@
+name: Update GeoIP data
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Calculate geoip cache key
+        id: cache-key
+        run: |
+          YEAR=$(date +'%Y')
+          echo "key=geoip-${YEAR}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Try restoring geoip cache
+        id: cache-restore
+        uses: actions/cache@v4
+        with:
+          path: ./geoip-data
+          key: ${{ steps.cache-key.outputs.key }}
+
+      - name: Update geoip if not cached
+        env:
+          MOTD_MAXMIND_LICENSE_KEY: ${{ secrets.MOTD_MAXMIND_LICENSE_KEY }}
+        run: |
+          if [[ "${{ steps.cache-restore.outputs.cache-hit }}" == "true" ]]; then
+            echo "Cache hit! Using cached files."
+          else
+            echo "Cache miss! Generating files..."
+            npm run geoip:update
+          fi
+        shell: bash
+
+      - name: Update cache if needed
+        if: ${{ steps.cache-restore.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v4
+        with:
+          path: ./geoip-data
+          key: ${{ steps.cache-key.outputs.key }}

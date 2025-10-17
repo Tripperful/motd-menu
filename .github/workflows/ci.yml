@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'The deployment environment'
+        required: true
+        type: environment
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  update-geoip:
+    uses: ./.github/workflows/update-geoip.yml
+    with:
+      environment: ${{ inputs.environment }}
+
+  package-artifact:
+    uses: ./.github/workflows/package-artifact.yml
+    needs: [build, update-geoip]
+    with:
+      build_name: ${{ needs.build.outputs.build_name }}
+
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    needs: package-artifact
+    with:
+      build_name: ${{ needs.package-artifact.outputs.artifact_name }}
+      environment: ${{ inputs.environment }}
