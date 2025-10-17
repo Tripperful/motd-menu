@@ -5,7 +5,7 @@ import { RequestHandler } from 'express';
 import { IncomingMessage } from 'http';
 import { db } from './db';
 import { isPrometheusRequest } from './metrics/util';
-import { dbgErr, dbgWarn, logDbgInfo } from './util';
+import { logDbgInfo } from './util';
 import { initPreferredLanguages } from './util/language';
 import { SrcdsWsApiClient } from './ws/servers/srcds/SrcdsWsApiClient';
 import { SrcdsWsApiServer } from './ws/servers/srcds/SrcdsWsApiServer';
@@ -102,7 +102,7 @@ const authHandler: RequestHandler = async (req, res, next) => {
   }
 
   try {
-    const { cookie, token, remoteId, isQueryAuth } = getMotdReqAuthParams(req);
+    const { token, remoteId, isQueryAuth } = getMotdReqAuthParams(req);
 
     if (!token) {
       throw 'Unauthorized';
@@ -116,18 +116,6 @@ const authHandler: RequestHandler = async (req, res, next) => {
       connectedServers?.find((s) => s.getInfo()?.sessionId === remoteId);
 
     if (!srcds && remoteId) {
-      dbgWarn(
-        `Auth token for non-existent remoteId: ${remoteId}, request info: ${JSON.stringify(
-          {
-            cookie,
-            token,
-            remoteId,
-            query: req.query,
-            url: req.url,
-          },
-        )}`,
-      );
-
       throw 'Unauthorized';
     }
 
@@ -180,8 +168,6 @@ const authHandler: RequestHandler = async (req, res, next) => {
 
     next();
   } catch (e) {
-    dbgErr('Auth error:', e);
-
     res.clearCookie('version');
     res.clearCookie('token');
     res.clearCookie('remoteId');
