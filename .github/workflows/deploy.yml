@@ -32,6 +32,16 @@ jobs:
     environment: ${{ inputs.environment }}
 
     steps:
+      - name: Debug Environment and Secret
+        run: |
+          echo "Received environment: ${{ inputs.environment }}"
+          echo "Vars.INSTANCE_HOST: ${{ vars.INSTANCE_HOST }}"
+          echo "Secret raw (masked): ${{ secrets.INSTANCE_SSH_PRIVATE_KEY }}" | sed 's/.\{10\}/[MASKED]/' > /tmp/id_rsa
+          chmod 600 /tmp/id_rsa
+          echo "Secret contents (first 100 chars):"
+          head -c 100 /tmp/id_rsa
+          echo "..."
+
       - name: Download the build artifact
         uses: actions/download-artifact@v4
         with:
