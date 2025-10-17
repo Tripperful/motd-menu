@@ -16,6 +16,8 @@ declare namespace NodeJS {
   interface ProcessEnv {
     MOTD_ROOT_ADMINS: string;
     MOTD_WEB_PORT: string;
+    MOTD_DOMAIN: string;
+    MOTD_EMAIL: string;
     MOTD_DEBUG_LOG: string;
     MOTD_SSL_CERT: string;
     MOTD_SSL_PRIVATE_KEY: string;

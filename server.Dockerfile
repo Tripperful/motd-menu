@@ -1,4 +1,4 @@
-FROM node:22.8.0 as server
+FROM node:25.0.0 as server
 
 COPY ./packages/server/dist /motd-menu/packages/server/dist
 COPY ./packages/client/dist /motd-menu/packages/client/dist

@@ -2,14 +2,16 @@ name: motd-menu
 volumes:
   postgres_data:
   prometheus_data:
+  certbot-etc:
+  certbot-var:
+  certbot-log:
 services:
   db:
     image: 'postgres:latest'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - .env
     healthcheck:
       test:
         [
@@ -26,22 +28,14 @@ services:
     build:
       context: .
       target: server
+      dockerfile: server.Dockerfile
     depends_on:
       db:
         condition: service_healthy
-    environment:
-      - MOTD_ROOT_ADMINS=${MOTD_ROOT_ADMINS}
-      - MOTD_WEB_PORT=${MOTD_WEB_PORT}
-      - MOTD_DEBUG_LOG=${MOTD_DEBUG_LOG}
-      - MOTD_SSL_CERT=${MOTD_SSL_CERT}
-      - MOTD_SSL_PRIVATE_KEY=${MOTD_SSL_PRIVATE_KEY}
-      - MOTD_EFPS_KEY=${MOTD_EFPS_KEY}
-      - MOTD_MAXMIND_LICENSE_KEY=${MOTD_MAXMIND_LICENSE_KEY}
-      - YANDEX_TRANSLATE_API_KEY=${YANDEX_TRANSLATE_API_KEY}
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=${POSTGRES_PORT}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+    env_file:
+      - .env
     healthcheck:
       test:
         [
@@ -69,3 +63,18 @@ services:
       - '--config.file=/etc/prometheus/config.yaml'
       - '--web.config.file=/etc/prometheus/web.yaml'
     restart: unless-stopped
+
+  certbot:
+    build:
+      context: .
+      target: certbot
+      dockerfile: certbot.Dockerfile
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - certbot-log:/var/log/letsencrypt
+    env_file:
+      - .env
+    ports:
+      - 80:80
+    entrypoint: ./start.sh

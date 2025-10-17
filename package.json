@@ -13,6 +13,7 @@
     "watch:client": "npm run watch -w packages/client",
     "storybook": "npm run storybook -w packages/client",
     "build": "concurrently -n sv,cl \"npm run build:server\" \"npm run build:client\"",
+    "docker": "docker compose -p motd-menu up --build -d",
     "docker:build": "docker compose build",
     "docker:save": "docker compose save",
     "geoip:update": "npx tsx ./scripts/geoip-update.ts",

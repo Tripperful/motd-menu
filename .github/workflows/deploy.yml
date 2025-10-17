@@ -32,16 +32,6 @@ jobs:
     environment: ${{ inputs.environment }}
 
     steps:
-      - name: Debug Environment and Secret
-        run: |
-          echo "Received environment: ${{ inputs.environment }}"
-          echo "Vars.INSTANCE_HOST: ${{ vars.INSTANCE_HOST }}"
-          echo "Secret raw (masked): ${{ secrets.INSTANCE_SSH_PRIVATE_KEY }}" | sed 's/.\{10\}/[MASKED]/' > /tmp/id_rsa
-          chmod 600 /tmp/id_rsa
-          echo "Secret contents (first 100 chars):"
-          head -c 100 /tmp/id_rsa
-          echo "..."
-
       - name: Download the build artifact
         uses: actions/download-artifact@v4
         with:
@@ -53,23 +43,23 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.INSTANCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ vars.INSTANCE_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.INSTANCE_HOST }} >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
-          ssh -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} "rm -d -r -f ~/build"
-          scp -i ~/.ssh/id_rsa -r ~/build ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }}:~/
+          ssh -i ~/.ssh/id_rsa ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }} "rm -d -r -f ~/build"
+          scp -i ~/.ssh/id_rsa -r ~/build ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }}:~/
 
       - name: Write .env file to the server
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} "bash -c 'cat > ~/build/.env <<EOF
-          MOTD_ROOT_ADMINS=\"${{ vars.MOTD_ROOT_ADMINS }}\"
-          MOTD_WEB_PORT=\"${{ vars.MOTD_WEB_PORT }}\"
+          ssh -i ~/.ssh/id_rsa ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }} "bash -c 'cat > ~/build/.env <<EOF
+          MOTD_ROOT_ADMINS=\"${{ secrets.MOTD_ROOT_ADMINS }}\"
+          MOTD_WEB_PORT=\"${{ secrets.MOTD_WEB_PORT }}\"
+          MOTD_DOMAIN=\"${{ secrets.MOTD_DOMAIN }}\"
+          MOTD_EMAIL=\"${{ secrets.MOTD_EMAIL }}\"
           MOTD_DEBUG_LOG=\"${{ vars.MOTD_DEBUG_LOG }}\"
-          MOTD_SSL_CERT=\"${{ secrets.MOTD_SSL_CERT }}\"
-          MOTD_SSL_PRIVATE_KEY=\"${{ secrets.MOTD_SSL_PRIVATE_KEY }}\"
           MOTD_EFPS_KEY=\"${{ secrets.MOTD_EFPS_KEY }}\"
           MOTD_MAXMIND_LICENSE_KEY=\"${{ secrets.MOTD_MAXMIND_LICENSE_KEY }}\"
-          POSTGRES_HOST=\"${{ vars.POSTGRES_HOST }}\"
-          POSTGRES_PORT=\"${{ vars.POSTGRES_PORT }}\"
+          POSTGRES_HOST=\"${{ secrets.POSTGRES_HOST }}\"
+          POSTGRES_PORT=\"${{ secrets.POSTGRES_PORT }}\"
           POSTGRES_USER=\"${{ secrets.POSTGRES_USER }}\"
           POSTGRES_PASSWORD=\"${{ secrets.POSTGRES_PASSWORD }}\"
           YANDEX_TRANSLATE_API_KEY=\"${{ secrets.YANDEX_TRANSLATE_API_KEY }}\"
@@ -77,7 +67,7 @@ jobs:
 
       - name: Write prometheus web config to the server (via decoded base64)
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} <<'EOF'
+          ssh -i ~/.ssh/id_rsa ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }} <<'EOF'
             mkdir -p ~/build/prometheus
             echo "basic_auth_users:" > ~/build/prometheus/web.yaml
             echo -n "  admin: \"" >> ~/build/prometheus/web.yaml
@@ -88,5 +78,5 @@ jobs:
 
       - name: Deploy the build
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} "
+          ssh -i ~/.ssh/id_rsa ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }} "
           cd ~/build && docker compose -p motd-menu up --build -d"
