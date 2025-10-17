@@ -30,16 +30,21 @@ jobs:
       matrix:
         node-version: [25.x]
 
+    env:
+      REF: ${{ github.event.inputs.branch || github.ref_name }}
+
     outputs:
       build_name: ${{ steps.build_name.outputs.build_name }}
 
     steps:
-      - name: Output build name
-        id: build_name
-        run: echo "build_name=build-${{ inputs.branch }}-${{ github.run_number }}" >> $GITHUB_OUTPUT
-
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{ env.REF }}
+
+      - name: Output build name
+        id: build_name
+        run: echo "build_name=build-${{ github.run_number }}-${{ env.REF }}" >> $GITHUB_OUTPUT
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
