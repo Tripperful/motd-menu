@@ -72,7 +72,7 @@ jobs:
 
       - name: Cache miss — regenerate GeoIP files and update cache
         if: steps.cache-restore.outputs.cache-hit != 'true'
-        uses: ./.github/actions/update-geoip.yml
+        uses: ./.github/actions/update-geoip
         with:
           cache-key: ${{ steps.cache-key.outputs.key }}
           license-key: ${{ secrets.MOTD_MAXMIND_LICENSE_KEY }}
