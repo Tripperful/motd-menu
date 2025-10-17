@@ -60,7 +60,7 @@ jobs:
 
       - name: Calculate geoip cache key
         id: cache-key
-        run: echo "key=geoip-$(date +'%Y')" >> $GITHUB_ENV
+        run: echo "key=geoip-$(date +'%Y')" >> $GITHUB_OUTPUT
         shell: bash
 
       - name: Try restoring geoip cache
