@@ -26,10 +26,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [25.x]
-
     env:
       REF: ${{ github.event.inputs.branch || github.ref_name }}
 
@@ -46,10 +42,10 @@ jobs:
         id: build_name
         run: echo "build_name=build-${{ github.run_number }}-${{ env.REF }}" >> $GITHUB_OUTPUT
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 25.x
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 25.x
           cache: 'npm'
 
       - name: Install dependencies
