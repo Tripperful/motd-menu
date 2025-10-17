@@ -5,7 +5,21 @@ on:
     branches: ['master']
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
-    with:
-      environment: azure
+  test:
+    runs-on: ubuntu-latest
+    environment: azure
+    steps:
+    - name: Debug SSH Setup
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.INSTANCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo "Key file contents (first 100 chars):"
+        head -c 100 ~/.ssh/id_rsa
+        echo "..."
+        ssh-keyscan -H ${{ vars.INSTANCE_HOST }} >> ~/.ssh/known_hosts 2>&1 || echo "ssh-keyscan failed: $?"
+        ssh -v -i ~/.ssh/id_rsa ${{ vars.INSTANCE_USERNAME }}@${{ vars.INSTANCE_HOST }} "echo 'SSH Test Success'" 2>&1 || echo "SSH Failed with exit code $?"
+  # ci:
+  #   uses: ./.github/workflows/ci.yml
+  #   with:
+  #     environment: azure

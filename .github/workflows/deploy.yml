@@ -13,6 +13,10 @@ on:
 
   workflow_dispatch:
     inputs:
+      run_id:
+        description: 'The GitHub Actions run ID of the build to deploy'
+        required: false
+        type: string
       build_name:
         description: 'The name of the build artifact to deploy'
         required: true
@@ -33,6 +37,7 @@ jobs:
         with:
           name: ${{ inputs.build_name }}
           path: ~/build
+          run-id: ${{ inputs.run_id || github.run_id }}
 
       - name: Debug SSH Setup
         run: |
