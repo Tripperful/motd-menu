@@ -80,7 +80,8 @@ jobs:
         with:
           name: ${{ steps.build_name.outputs.build_name }}
           path: |
-            ./Dockerfile
+            ./*.Dockerfile
+            ./entry
             ./docker-compose.yaml
             ./prometheus
             ./packages/*/dist
