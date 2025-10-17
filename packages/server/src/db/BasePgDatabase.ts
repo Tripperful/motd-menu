@@ -53,8 +53,24 @@ export class BasePgDatabase {
       .sort(sqlOrderCmp)
       .map((sqlPath) => sqlContext(sqlPath).default as string);
 
-    for (const sql of sqlScripts) {
-      await this.pg.query(sql);
+    // Brute-force retry to resolve dependency issues between scripts
+    const caughtErrors = new Set<string>();
+
+    while (sqlScripts.length > 0) {
+      const script = sqlScripts.shift();
+
+      try {
+        await this.pg.query(script);
+      } catch (e) {
+        const error = e.toString();
+
+        if (caughtErrors.has(error))
+          throw e;
+
+        // Remember the error and try this script later
+        caughtErrors.add(error);
+        sqlScripts.push(script);
+      }
     }
   }
 
