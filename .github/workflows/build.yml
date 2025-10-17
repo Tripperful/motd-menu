@@ -1,4 +1,5 @@
 name: Build
+description: Build the project and create a build artifact
 
 on:
   workflow_call:
@@ -41,7 +42,7 @@ jobs:
 
       - name: Output build name
         id: build_name
-        run: echo "build_name=build-${{ github.run_number }}-${{ env.REF }}" >> $GITHUB_OUTPUT
+        run: echo "build_name=build-$(date +'%d-%m-%Y-%H-%M-%S')-${{ env.REF }}-$(echo ${{ github.sha }} | cut -c1-8)" >> $GITHUB_OUTPUT
 
       - name: Use Node.js 25.x
         uses: actions/setup-node@v3
