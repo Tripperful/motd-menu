@@ -9,9 +9,10 @@ runs:
   using: "composite"
   steps:
     - name: Regenerate GeoIP files
-      run: npm run geoip:update
+      shell: bash
       env:
         MOTD_MAXMIND_LICENSE_KEY: ${{ inputs.license-key }}
+      run: npm run geoip:update
 
     - name: Save files to cache
       uses: actions/cache/save@v4
