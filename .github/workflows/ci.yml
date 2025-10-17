@@ -19,6 +19,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       environment: ${{ inputs.environment }}
+    secrets: inherit
 
   deploy:
     uses: ./.github/workflows/deploy.yml
@@ -26,3 +27,4 @@ jobs:
     with:
       build_name: ${{ needs.build.outputs.build_name }}
       environment: ${{ inputs.environment }}
+    secrets: inherit

@@ -9,3 +9,4 @@ jobs:
     uses: ./.github/workflows/ci.yml
     with:
       environment: azure
+    secrets: inherit
