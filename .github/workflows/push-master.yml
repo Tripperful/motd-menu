@@ -1,0 +1,11 @@
+name: On master push
+
+on:
+  push:
+    branches: ['master']
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    with:
+      environment: azure

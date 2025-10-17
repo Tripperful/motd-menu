@@ -2,6 +2,10 @@ name: Build
 
 on:
   workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
     outputs:
       build_name:
         description: 'The name of the build'
@@ -13,6 +17,10 @@ on:
         required: true
         type: string
         default: master
+      environment:
+        description: 'API keys environment'
+        required: true
+        type: environment
 
 jobs:
   build:
@@ -26,10 +34,12 @@ jobs:
       build_name: ${{ steps.build_name.outputs.build_name }}
 
     steps:
+      - name: Output build name
+        id: build_name
+        run: echo "build_name=build-${{ inputs.branch }}-${{ github.run_number }}" >> $GITHUB_OUTPUT
+
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -43,6 +53,32 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Output build name
-        id: build_name
-        run: echo "build_name=build-${{ inputs.branch }}-${{ github.run_number }}" >> $GITHUB_OUTPUT
+      - name: Calculate geoip cache key
+        id: cache-key
+        run: echo "key=geoip-$(date +'%Y')" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Try restoring geoip cache
+        id: cache-restore
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules/geoip-lite/data
+          key: ${{ steps.cache-key.outputs.key }}
+
+      - name: Cache miss — regenerate GeoIP files and update cache
+        if: steps.cache-restore.outputs.cache-hit != 'true'
+        uses: ./.github/actions/update-geoip.yml
+        with:
+          cache-key: ${{ steps.cache-key.outputs.key }}
+          license-key: ${{ secrets.MOTD_MAXMIND_LICENSE_KEY }}
+
+      - name: Create a build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.build_name.outputs.build_name }}
+          path: |
+            ./Dockerfile
+            ./docker-compose.yaml
+            ./prometheus
+            ./packages/*/dist
+            ./node_modules/geoip-lite/data

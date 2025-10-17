@@ -1,0 +1,20 @@
+name: Update GeoIP Cache
+description: Regenerates and caches GeoIP data
+inputs:
+  cache-key:
+    required: true
+  license-key:
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Regenerate GeoIP files
+      run: npm run geoip:update
+      env:
+        MOTD_MAXMIND_LICENSE_KEY: ${{ inputs.license-key }}
+
+    - name: Save files to cache
+      uses: actions/cache/save@v4
+      with:
+        path: ./node_modules/geoip-lite/data
+        key: ${{ inputs.cache-key }}
