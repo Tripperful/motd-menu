@@ -80,9 +80,8 @@ jobs:
         with:
           name: ${{ steps.build_name.outputs.build_name }}
           path: |
-            ./*.Dockerfile
-            ./entry
             ./docker-compose.yaml
+            ./docker
             ./prometheus
             ./packages/*/dist
             ./node_modules/geoip-lite/data
