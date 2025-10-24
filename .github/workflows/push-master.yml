@@ -8,5 +8,5 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
     with:
-      environment: azure
+      environment: prod
     secrets: inherit
