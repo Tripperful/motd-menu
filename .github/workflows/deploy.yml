@@ -62,6 +62,8 @@ jobs:
           POSTGRES_PORT=\"${{ secrets.POSTGRES_PORT }}\"
           POSTGRES_USER=\"${{ secrets.POSTGRES_USER }}\"
           POSTGRES_PASSWORD=\"${{ secrets.POSTGRES_PASSWORD }}\"
+          TELEGRAM_API_ID=\"${{ secrets.TELEGRAM_API_ID }}\"
+          TELEGRAM_API_HASH=\"${{ secrets.TELEGRAM_API_HASH }}\"
           YANDEX_TRANSLATE_API_KEY=\"${{ secrets.YANDEX_TRANSLATE_API_KEY }}\"
           EOF'"
 
