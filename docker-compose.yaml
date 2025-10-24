@@ -28,7 +28,7 @@ services:
     build:
       context: .
       target: server
-      dockerfile: server.Dockerfile
+      dockerfile: docker/server.Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -68,7 +68,7 @@ services:
     build:
       context: .
       target: certbot
-      dockerfile: certbot.Dockerfile
+      dockerfile: docker/certbot.Dockerfile
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
@@ -77,4 +77,13 @@ services:
       - .env
     ports:
       - 80:80
-    entrypoint: ./start.sh
+
+  telegram-api:
+    build:
+      context: .
+      target: telegram-api
+      dockerfile: docker/telegram-api.Dockerfile
+    env_file:
+      - .env
+    ports:
+      - 8081:8081
