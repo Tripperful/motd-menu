@@ -39,14 +39,13 @@ jobs:
           path: ~/build
           run-id: ${{ inputs.run_id || github.run_id }}
 
-      - name: Copy the build to the server
+      - name: Copy the build to the server using rsync
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.INSTANCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.INSTANCE_HOST }} >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
-          ssh -i ~/.ssh/id_rsa ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }} "rm -d -r -f ~/build"
-          scp -i ~/.ssh/id_rsa -r ~/build ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }}:~/
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" --delete ~/build/ ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }}:~/build/
 
       - name: Write .env file to the server
         run: |

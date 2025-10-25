@@ -5,6 +5,7 @@ volumes:
   certbot-etc:
   certbot-var:
   certbot-log:
+  telegram-bot-api-data:
 services:
   db:
     image: 'postgres:latest'
@@ -78,12 +79,11 @@ services:
     ports:
       - 80:80
 
-  telegram-api:
-    build:
-      context: .
-      target: telegram-api
-      dockerfile: docker/telegram-api.Dockerfile
+  telegram-bot-api:
+    image: aiogram/telegram-bot-api:latest
     env_file:
       - .env
+    volumes:
+      - telegram-bot-api-data:/var/lib/telegram-bot-api
     ports:
       - 8081:8081
