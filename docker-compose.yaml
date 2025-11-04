@@ -23,7 +23,7 @@ services:
       retries: 5
     restart: unless-stopped
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
   server:
     build:
       context: .
@@ -86,4 +86,4 @@ services:
     env_file:
       - .env
     ports:
-      - 8081:8081
+      - 127.0.0.1:8081:8081
