@@ -142,11 +142,19 @@ const startHttpServer = async () => {
 
 console.log('Connecting to database...');
 
-db.init()
-  .then(() => {
+(async () => {
+  try {
+    await db.init();
     console.log('Database initialized');
-    startHttpServer();
-  })
-  .catch((e) => {
+  } catch (e) {
     console.error('Failed to initialize database:', e);
-  });
+    process.exit(1);
+  }
+
+  try {
+    await startHttpServer();
+  } catch (e) {
+    console.error('Failed to start HTTP server:', e);
+    process.exit(1);
+  }
+})();

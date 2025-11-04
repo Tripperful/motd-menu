@@ -19,4 +19,7 @@ Copy `.env.example` to `.env`
 Change the values
 
 ### Launching
-`docker compose up`
+```
+npm run build
+npm run docker
+```
