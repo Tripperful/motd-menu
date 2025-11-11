@@ -1909,3 +1909,81 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION get_cvar_similarity(
+    p_ref_steam_id TEXT,
+    p_limit INTEGER DEFAULT 10
+)
+RETURNS JSONB
+LANGUAGE sql
+STABLE
+AS $$
+WITH distinct_cvars AS (
+    SELECT
+        cvar,
+        array_agg(DISTINCT value) AS ref_values
+    FROM client_cvars
+    WHERE steam_id = p_ref_steam_id::BIGINT
+    GROUP BY cvar
+),
+cvar_count AS (
+    SELECT COUNT(*) AS total_cvars FROM distinct_cvars
+),
+player_cvars AS (
+    SELECT
+        steam_id,
+        cvar,
+        array_agg(DISTINCT value) AS target_values
+    FROM client_cvars
+    WHERE steam_id != p_ref_steam_id::BIGINT
+    GROUP BY steam_id, cvar
+),
+matched_cvars AS (
+    SELECT
+        p.steam_id,
+        COUNT(dc.cvar) AS matching_cvars
+    FROM player_cvars p
+    JOIN distinct_cvars dc
+      ON p.cvar = dc.cvar
+     AND p.target_values && dc.ref_values
+    GROUP BY p.steam_id
+),
+unmatched_cvars AS (
+    SELECT
+        p.steam_id,
+        dc.cvar,
+        dc.ref_values,
+        COALESCE(p.target_values, '{}') AS target_values
+    FROM distinct_cvars dc
+    LEFT JOIN player_cvars p
+          ON p.cvar = dc.cvar
+    WHERE p.target_values IS NULL
+       OR NOT (p.target_values && dc.ref_values)
+),
+results AS (
+    SELECT
+        jsonb_build_object(
+            'steam_id', m.steam_id::text,
+            'matching_cvars', m.matching_cvars,
+            'total_cvars', c.total_cvars,
+            'match_percentage', ROUND(m.matching_cvars::NUMERIC / c.total_cvars * 100, 2),
+            'unmatched_info', COALESCE(
+                jsonb_agg(
+                    jsonb_build_object(
+                        'cvar', uc.cvar,
+                        'ref_values', uc.ref_values,
+                        'target_values', uc.target_values
+                    )
+                ) FILTER (WHERE uc.cvar IS NOT NULL),
+                '[]'::JSONB
+            )
+        ) AS result_json
+    FROM matched_cvars m
+    CROSS JOIN cvar_count c
+    LEFT JOIN unmatched_cvars uc ON uc.steam_id = m.steam_id
+    GROUP BY m.steam_id, m.matching_cvars, c.total_cvars
+    ORDER BY (m.matching_cvars::NUMERIC / c.total_cvars) DESC
+    LIMIT p_limit
+)
+SELECT jsonb_agg(result_json ORDER BY (result_json->>'match_percentage')::NUMERIC DESC)
+FROM results;
+$$;

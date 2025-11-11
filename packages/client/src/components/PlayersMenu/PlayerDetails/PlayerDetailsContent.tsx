@@ -21,6 +21,7 @@ import { outlineButton } from '~styles/elements';
 import { theme } from '~styles/theme';
 import { MapsReviewsPopup } from './MapsReviewsPopup';
 import { PlayerAka } from './PlayerAka';
+import { PlayerCvarsSimilarityPopup } from './PlayerCvarsSimilarityPopup';
 import { PlayerMatchesPopup } from './PlayerMatchesPopup';
 import { PlayerPermissionsPopup } from './PlayerPermissions';
 import { PlayerSettingsPopup } from './PlayerSettingsPopup';
@@ -84,6 +85,7 @@ const PlayerDetailsContent: FC<{ steamId: string }> = ({ steamId }) => {
   const isOnline = useIsPlayerOnline(steamId);
   const profileLink = steamProfileLink(player.steamId);
   const canViewPermissions = useCheckPermission('permissions_view');
+  const canViewCvarsSimilarity = useCheckPermission('cvars_advanced_view');
   const canEditTeam = useCheckPermission('teams_others_edit') && isOnline;
   const countryCode = player.geo?.countryCode;
   const lastGeo = player.geo?.full;
@@ -140,6 +142,12 @@ const PlayerDetailsContent: FC<{ steamId: string }> = ({ steamId }) => {
             Permissions
           </Link>
         )}
+        {canViewCvarsSimilarity && (
+          <Link className={c.profileButton} to="cvarsSimilarity">
+            <UserInspectIcon />
+            Cvars Similarity
+          </Link>
+        )}
       </div>
       {canEditTeam && <SetPlayerTeam steamId={steamId} />}
       <PlayerStats steamId={steamId} />
@@ -162,6 +170,10 @@ const PlayerDetailsContent: FC<{ steamId: string }> = ({ steamId }) => {
         <Route
           path="/permissions/*"
           element={<PlayerPermissionsPopup profile={player} />}
+        />
+        <Route
+          path="/cvarsSimilarity/*"
+          element={<PlayerCvarsSimilarityPopup profile={player} />}
         />
       </Routes>
     </>

@@ -4,6 +4,7 @@ import {
   ClientSettingsMetadataData,
   ClientSettingsValues,
   CustomRankData,
+  CvarSimilarityData,
   EfpsMatchSummary,
   EfpsMatchSummaryStat,
   EntityTeleportData,
@@ -266,6 +267,13 @@ export class PgDatabase extends BasePgDatabase implements Database {
       (await this.select<PlayerServerStats[]>(
         'get_client_servers_stats',
         steamId,
+      )) ?? [],
+
+    getCvarSimilarity: async (steamId: string, limit = 10) =>
+      (await this.select<CvarSimilarityData[]>(
+        'get_cvar_similarity',
+        steamId,
+        limit,
       )) ?? [],
   };
 

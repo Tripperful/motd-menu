@@ -208,3 +208,22 @@ playersRouter.get('/serversStats/:steamId', async (req, res) => {
     res.status(500).end();
   }
 });
+
+playersRouter.get('/cvarSimilarity/:steamId', async (req, res) => {
+  try {
+    const {
+      sessionData: { permissions },
+    } = res.locals;
+
+    if (!permissions.includes('cvars_advanced_view')) {
+      return res.status(403).end();
+    }
+
+    const { steamId } = req.params;
+
+    res.status(200).json(await db.client.getCvarSimilarity(steamId));
+  } catch (e) {
+    console.error(e);
+    res.status(500).end();
+  }
+});

@@ -51,3 +51,16 @@ export interface PlayerServerStats {
 }
 
 export type BalancedTeamsData = { steamId: string; elo: number }[][];
+
+interface CvarUnmatchedInfo {
+  cvar: string;
+  ref_values: string[];
+  target_values: string[];
+}
+export interface CvarSimilarityData {
+  steam_id: string;
+  total_cvars: number;
+  matching_cvars: number;
+  match_percentage: number;
+  unmatched_info: CvarUnmatchedInfo[];
+}

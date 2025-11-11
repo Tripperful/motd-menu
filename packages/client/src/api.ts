@@ -6,6 +6,7 @@ import {
   ClientSettingsValues,
   CustomRankData,
   Cvar,
+  CvarSimilarityData,
   EfpsMatchSummaryStat,
   MapDetailsData,
   MapPreviewData,
@@ -575,6 +576,14 @@ class MotdApi {
 
   public async applyBalancedTeams(players: string[]) {
     await this.post(`match/balance`, JSON.stringify({ players }));
+  }
+
+  public async getCvarSimilarity(
+    steamId: string,
+  ): Promise<CvarSimilarityData[]> {
+    return JSON.parse(
+      await this.get(`players/cvarSimilarity/${steamId}`),
+    ) as CvarSimilarityData[];
   }
 }
 

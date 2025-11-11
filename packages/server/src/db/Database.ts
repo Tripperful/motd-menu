@@ -4,6 +4,7 @@ import {
   ClientSettingsMetadataData,
   ClientSettingsValues,
   CustomRankData,
+  CvarSimilarityData,
   EfpsMatchSummary,
   EfpsMatchSummaryStat,
   EntityTeleportData,
@@ -177,6 +178,7 @@ export interface Database {
     getCustomRankSubscription(steamId: string): Promise<number>;
     getLastIp(steamId: string): Promise<string>;
     getServersStats(steamId: string): Promise<PlayerServerStats[]>;
+    getCvarSimilarity(steamId: string, limit?: number): Promise<CvarSimilarityData[]>;
   };
   server: {
     getById(serverId: number): Promise<ServerInfo>;
