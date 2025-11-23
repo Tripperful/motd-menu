@@ -30,11 +30,15 @@ const detect = async (text: string, languageCodeHints?: string[]) => {
     throw new Error(`Yandex Translate detect error: ${res.statusText}`);
   }
 
-  const data = await res.json() as {languageCode: string;};
+  const data = (await res.json()) as { languageCode: string };
   return data.languageCode;
 };
 
-const translate = async (text: string, sourceLanguageCode: string, targetLanguageCode: string) => {
+const translate = async (
+  text: string,
+  sourceLanguageCode: string,
+  targetLanguageCode: string,
+) => {
   const res = await fetch(
     'https://translate.api.cloud.yandex.net/translate/v2/translate',
     {
@@ -55,7 +59,7 @@ const translate = async (text: string, sourceLanguageCode: string, targetLanguag
     throw new Error(`Yandex Translate translate error: ${res.statusText}`);
   }
 
-  const data = await res.json() as { translations: { text: string; }[] };
+  const data = (await res.json()) as { translations: { text: string }[] };
   return data.translations[0].text;
 };
 
@@ -76,16 +80,23 @@ export const translateMessageForPlayers = async (
   const { steamId, msg, teamIdx, teamOnly } = data;
   if (msg.startsWith('!') || msg.startsWith('@')) return;
 
-  const players = await srcds.request('get_players_request');
+  const [players, { mm_teamchat_visible_to_spec }] = await Promise.all([
+    srcds.request('get_players_request'),
+    srcds.request('get_cvars_request', ['mm_teamchat_visible_to_spec']),
+  ]);
 
   const playersLanguages: Record<string, string[]> = {};
 
   await Promise.all(
     players
       .filter((p) => {
-        if (p.steamId === steamId) return false;
-        if (teamOnly && p.teamIdx !== teamIdx && p.teamIdx !== 1) return false;
-        return true;
+        if (p.steamId === steamId) return false; // skip author
+
+        return (
+          !teamOnly || // global chat
+          p.teamIdx === teamIdx || // same team chat
+          (p.teamIdx === 1 && mm_teamchat_visible_to_spec !== '0') // spectators see team chat
+        );
       })
       .map(async (player) => {
         const [settings, languages] = await Promise.all([
@@ -101,7 +112,9 @@ export const translateMessageForPlayers = async (
 
   if (Object.keys(playersLanguages).length === 0) return;
 
-  const authorLanguages = provideHintLanguages ? await db.chat.getPreferredLanguages(steamId) : [];
+  const authorLanguages = provideHintLanguages
+    ? await db.chat.getPreferredLanguages(steamId)
+    : [];
   const detectedLanguage = await detect(msg, authorLanguages);
 
   if (!supportedLanguages[detectedLanguage]) return;
