@@ -8,7 +8,7 @@ volumes:
   telegram-bot-api-data:
 services:
   db:
-    image: 'postgres:latest'
+    image: 'postgres:17'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
