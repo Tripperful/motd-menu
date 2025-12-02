@@ -9,6 +9,7 @@ import { translateMessageForPlayers } from 'src/util/language';
 import { getRankData, toSrcdsRankData } from 'src/util/ranks';
 import { SrcdsWsApiServer } from './SrcdsWsApiServer';
 import { chargerUseHandler } from './chargerUseHandler';
+import { handleChatCommand } from './chatCommandHandlers';
 
 const srcdsWsServer = SrcdsWsApiServer.getInstace();
 
@@ -95,21 +96,8 @@ srcdsWsServer.onMessage('player_chat', async (srcds, data) => {
 
   const cmd = msg.toLowerCase();
 
-  if (cmd === '!votespec') {
-    const players = await srcds.request('get_players_request');
-    const callee = players.find((p) => p.steamId === steamId);
-
-    if (callee?.teamIdx === 1) return;
-
-    const isMatch =
-      (await srcds.request('get_cvars_request', ['mp_match'])).mp_match !== '0';
-
-    if (isMatch) return;
-
-    srcds.send('motd_open', {
-      url: 'vote/spec',
-      clients: [steamId],
-    });
+  if (cmd.startsWith('!') && !teamOnly) {
+    await handleChatCommand(steamId, cmd.substring(1), data, srcds);
   }
 });
 
