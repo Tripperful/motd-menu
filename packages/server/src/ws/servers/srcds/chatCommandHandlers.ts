@@ -67,7 +67,7 @@ export const handleChatCommand: (
 
         srcds.send('motd_open', {
           url: `maps/${randomMap}`,
-          clients,
+          clients: [steamId],
         });
 
         return true;
