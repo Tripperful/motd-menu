@@ -65,6 +65,13 @@ export const getMotdUserCredentials = async (
       }
 
       authCache[token] = { ts: Date.now(), auth: srcdsAuth };
+
+      const reqIp = req.socket.remoteAddress?.replace(/^.*:/, '');
+
+      db.client
+        .updateLastIp(srcdsAuth.steamId, reqIp)
+        .catch(() => {});
+
       return srcdsAuth;
     }
   } catch {

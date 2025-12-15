@@ -228,6 +228,9 @@ export class PgDatabase extends BasePgDatabase implements Database {
     getLastIp: (steamId: string) =>
       this.select<string>('get_last_client_ip', steamId),
 
+    updateLastIp: (steamId: string, ip: string) =>
+      this.call('update_last_client_ip', steamId, ip),
+
     settings: {
       getMetadata: async () =>
         this.select<ClientSettingsMetadataData>('get_client_settings_metadata'),

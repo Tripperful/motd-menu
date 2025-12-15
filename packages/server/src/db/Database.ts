@@ -177,6 +177,7 @@ export interface Database {
     setCustomRank(steamId: string, rank: CustomRankData): Promise<void>;
     getCustomRankSubscription(steamId: string): Promise<number>;
     getLastIp(steamId: string): Promise<string>;
+    updateLastIp(steamId: string, ip: string): Promise<void>;
     getServersStats(steamId: string): Promise<PlayerServerStats[]>;
     getCvarSimilarity(steamId: string, limit?: number): Promise<CvarSimilarityData[]>;
   };

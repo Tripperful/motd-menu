@@ -1858,6 +1858,20 @@ OR REPLACE FUNCTION get_last_client_ip (steam_id text) RETURNS text AS $$ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE
+OR REPLACE PROCEDURE update_last_client_ip (steam_id text, ip text) AS $$ BEGIN
+  UPDATE client_connections
+  SET ip = update_last_client_ip.ip::inet
+  WHERE id = (
+    SELECT id
+    FROM client_connections
+    WHERE client_connections.steam_id = update_last_client_ip.steam_id::bigint
+    ORDER BY connected DESC
+    LIMIT 1
+  );
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION find_original_player(match_uuid UUID, current_steam BIGINT) 
 RETURNS BIGINT AS $$
 DECLARE
