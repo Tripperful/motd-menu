@@ -184,13 +184,14 @@ const IntToggleClientSettingControl: FC<
 
 const EnumClientSettingControl: FC<
   PlayerSettingControlProps<EnumClientSettingMetadata>
-> = ({ metadata, value, setValue }) => {
+> = ({ metadata, value, setValue, disabled }) => {
   const c = useStyles();
 
   return (
     <div className={c.enum}>
       <span className={c.settingName}>{metadata.name}</span>
       <DropDown
+        disabled={disabled}
         value={value}
         setValue={setValue}
         options={metadata.options.map((option, idx) => ({
@@ -204,12 +205,13 @@ const EnumClientSettingControl: FC<
 
 const SoundClientSettingControl: FC<
   PlayerSettingControlProps<SoundClientSettingMetadata>
-> = ({ metadata, value, setValue }) => {
+> = ({ metadata, value, setValue, disabled }) => {
   const c = useStyles();
   return (
     <div>
       <span className={c.settingName}>{metadata.name}</span>
       <SoundPicker
+        disabled={disabled}
         sound={value}
         setSound={setValue}
         options={getPickableSounds(SoundCategory.Default)}
