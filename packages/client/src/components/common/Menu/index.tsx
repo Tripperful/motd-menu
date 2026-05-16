@@ -207,9 +207,9 @@ export const Menu: FC<{ items: MenuItemInfo[]; title?: string }> = ({
             <BalanceIcon />
           </MenuBadge>
         )}
-        <MenuBadge to="translation" hint="Chat translation">
+        {/* <MenuBadge to="translation" hint="Chat translation">
           <TranslateIcon />
-        </MenuBadge>
+        </MenuBadge> */}
         <NewsBadge to="news" />
         <MenuBadge to="help" hint="Help">
           <HelpIcon />
