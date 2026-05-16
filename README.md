@@ -1,6 +1,6 @@
 ## MOTD Menu
 
-[DeepWiki docs (AI-generated)](https://deepwiki.com/Tripperful/motd-menu)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Tripperful/motd-menu)
 
 A nice server menu with a maplist, playerlist and so on that is supposed to be open in players' MOTD panel
 
