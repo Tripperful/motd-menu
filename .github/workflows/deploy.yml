@@ -30,6 +30,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
+    env:
+      INSTANCE_SSH_PORT: ${{ secrets.INSTANCE_SSH_PORT || '22' }}
+      INSTANCE_HOST: ${{ secrets.INSTANCE_HOST }}
+      INSTANCE_USERNAME: ${{ secrets.INSTANCE_USERNAME }}
+      INSTANCE_SSH_PRIVATE_KEY: ${{ secrets.INSTANCE_SSH_PRIVATE_KEY }}
 
     steps:
       - name: Download the build artifact
@@ -39,17 +44,21 @@ jobs:
           path: ~/build
           run-id: ${{ inputs.run_id || github.run_id }}
 
-      - name: Copy the build to the server using rsync
+      - name: Copy the build to the server using scp
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.INSTANCE_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.INSTANCE_HOST }} >> ~/.ssh/known_hosts
+          echo "$INSTANCE_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa" --delete ~/build/ ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }}:~/build/
+          ssh-keyscan -p "$INSTANCE_SSH_PORT" -H "$INSTANCE_HOST" >> ~/.ssh/known_hosts
+
+          tar -C ~/build -czf /tmp/build.tar.gz .
+          ssh -p "$INSTANCE_SSH_PORT" -i ~/.ssh/id_rsa "$INSTANCE_USERNAME@$INSTANCE_HOST" "rm -rf ~/build && mkdir -p ~/build"
+          scp -P "$INSTANCE_SSH_PORT" -i ~/.ssh/id_rsa /tmp/build.tar.gz "$INSTANCE_USERNAME@$INSTANCE_HOST:~/build.tar.gz"
+          ssh -p "$INSTANCE_SSH_PORT" -i ~/.ssh/id_rsa "$INSTANCE_USERNAME@$INSTANCE_HOST" "tar -xzf ~/build.tar.gz -C ~/build && rm ~/build.tar.gz"
 
       - name: Write .env file to the server
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }} "bash -c 'cat > ~/build/.env <<EOF
+          ssh -p "$INSTANCE_SSH_PORT" -i ~/.ssh/id_rsa "$INSTANCE_USERNAME@$INSTANCE_HOST" "bash -c 'cat > ~/build/.env <<EOF
           MOTD_ROOT_ADMINS=\"${{ secrets.MOTD_ROOT_ADMINS }}\"
           MOTD_WEB_PORT=\"${{ secrets.MOTD_WEB_PORT }}\"
           MOTD_DOMAIN=\"${{ secrets.MOTD_DOMAIN }}\"
@@ -69,7 +78,7 @@ jobs:
 
       - name: Write prometheus web config to the server (via decoded base64)
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }} <<'EOF'
+          ssh -p "$INSTANCE_SSH_PORT" -i ~/.ssh/id_rsa "$INSTANCE_USERNAME@$INSTANCE_HOST" <<'EOF'
             mkdir -p ~/build/prometheus
             echo "basic_auth_users:" > ~/build/prometheus/web.yaml
             echo -n "  admin: \"" >> ~/build/prometheus/web.yaml
@@ -80,5 +89,5 @@ jobs:
 
       - name: Deploy the build
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.INSTANCE_USERNAME }}@${{ secrets.INSTANCE_HOST }} "
+          ssh -p "$INSTANCE_SSH_PORT" -i ~/.ssh/id_rsa "$INSTANCE_USERNAME@$INSTANCE_HOST" "
           cd ~/build && docker compose -p motd-menu up --build -d"
