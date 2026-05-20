@@ -18,6 +18,7 @@ declare namespace NodeJS {
     MOTD_WEB_PORT: string;
     MOTD_DOMAIN: string;
     MOTD_EMAIL: string;
+    CLOUDFLARE_API_TOKEN: string;
     MOTD_DEBUG_LOG: string;
     MOTD_SSL_CERT: string;
     MOTD_SSL_PRIVATE_KEY: string;

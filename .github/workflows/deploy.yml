@@ -54,6 +54,7 @@ jobs:
           MOTD_WEB_PORT=\"${{ secrets.MOTD_WEB_PORT }}\"
           MOTD_DOMAIN=\"${{ secrets.MOTD_DOMAIN }}\"
           MOTD_EMAIL=\"${{ secrets.MOTD_EMAIL }}\"
+          CLOUDFLARE_API_TOKEN=\"${{ secrets.CLOUDFLARE_API_TOKEN }}\"
           MOTD_DEBUG_LOG=\"${{ vars.MOTD_DEBUG_LOG }}\"
           MOTD_EFPS_KEY=\"${{ secrets.MOTD_EFPS_KEY }}\"
           MOTD_MAXMIND_LICENSE_KEY=\"${{ secrets.MOTD_MAXMIND_LICENSE_KEY }}\"
