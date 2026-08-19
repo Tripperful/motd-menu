@@ -78,6 +78,7 @@ services:
       - .env
     ports:
       - 80:80
+    restart: unless-stopped
 
   telegram-bot-api:
     image: aiogram/telegram-bot-api:latest
